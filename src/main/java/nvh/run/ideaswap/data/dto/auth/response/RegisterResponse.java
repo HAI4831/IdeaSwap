@@ -1,4 +1,4 @@
-package nvh.run.authsystemgradle.data.dto.auth.response;
+package nvh.run.ideaswap.data.dto.auth.response;
 
 import lombok.Builder;
 

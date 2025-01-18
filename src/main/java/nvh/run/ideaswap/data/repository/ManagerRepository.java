@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
 
-public interface ManagersRepository extends MongoRepository<Managers, String> {
+public interface ManagerRepository extends MongoRepository<Managers, String> {
     Optional<Managers> findByUsername(String username);
 }
 

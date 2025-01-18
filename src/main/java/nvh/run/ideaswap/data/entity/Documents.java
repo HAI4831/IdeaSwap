@@ -1,5 +1,8 @@
-package com.run.ideaswapserver.data.entity;
+package nvh.run.ideaswap.data.entity;
 
+//import jakarta.persistence.Column;
+//import jakarta.persistence.EnumType;
+//import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -9,7 +12,9 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 
@@ -22,29 +27,41 @@ public class Documents {
     @Id
     private String id;
 
-    @NotBlank(message = "ID người dùng không được để trống")
+    @Field("userID")
+    @NotBlank(message = "Documents reference ID người dùng không được để trống")
+    @DBRef(lazy = true)
     private String userID;
 
     @NotBlank(message = "Tiêu đề không được để trống")
-    @Size(max = 255, message = "Tiêu đề không được quá 255 ký tự")
+    @Size(max = 100, message = "Tiêu đề không được quá 100 ký tự")
     private String title;
 
-    @Size(max = 1000, message = "Mô tả không được quá 1000 ký tự")
+    @NotBlank(message = "Mô tả không được để trống")
+    @Size(max = 5000, message = "Mô tả không được quá 5000 ký tự")
     private String description;
 
-    @Size(max = 500, message = "URL tệp không được quá 500 ký tự")
+    @NotBlank(message = "fileUrl không được để trống")
+    @Size(max = 100, message = "URL tệp không được quá 100 ký tự")
     private String fileUrl;
 
-    private int countDownload;
+//    @Column(name = "count_download",nullable = false,columnDefinition = "int default 0")
+    private int countDownload=0;
 
+    @NotBlank(message = "imageUrl không được để trống")
+    @Size(max = 150, message = "URL tệp không được quá 150 ký tự")
     private String imageUrl;
 
-    private String status; // References Censorships collection
+//    @Enumerated(EnumType.STRING)//dùng cho jpa
+//    @Column(nullable = false) // dùng cho jpa
+    @Field("status")
+    private Status status;
 
     private double score;
 
+    @Field("categoryID")
     @NotBlank(message = "ID danh mục không được để trống")
-    private String categoryID;
+    @DBRef
+    private Categories categoryID;
 
     @CreatedDate
     private LocalDateTime createdAt;

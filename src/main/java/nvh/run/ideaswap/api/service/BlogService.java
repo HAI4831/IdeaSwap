@@ -1,100 +1,123 @@
-
 package nvh.run.ideaswap.api.service;
 
-import jakarta.validation.Valid;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import nvh.run.ideaswap.api.service.intf.IBlogService;
 import nvh.run.ideaswap.data.dto.BlogDTO;
 import nvh.run.ideaswap.data.entity.Blogs;
 import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.repository.BlogRepository;
-import nvh.run.ideaswap.errors.BlogNotFoundException;
-import nvh.run.ideaswap.errors.UserNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-@Service
-@Validated
-public class BlogServiceImpl implements BlogService {
-    private final BlogRepository blogRepository;
-    @Autowired
-    public BlogServiceImpl(BlogRepository blogRepository) {
-        this.blogRepository = blogRepository;
-    }
-    @Override
-public List<BlogDTO> getAllBlogs() {
+import java.util.Map;
 
-return blogRepository.findAll().stream()
-        .map(blog -> new BlogDTO(blog.getId(), blog.getContent(), blog.getUrl(), Optional.ofNullable(blog.getUserID()).map(Users::getId).orElse(null)))
-        .collect(Collectors.toList());
-    }
+@Service
+@Transactional
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
+@Slf4j
+public class BlogService implements IBlogService {
+    BlogRepository blogRepository;
+    UserService userService;
+
     @Override
-    public BlogDTO getBlogById(Long id) {
-        Blogs blog = blogRepository.findById(id.toString())
-                .orElseThrow(() -> new BlogNotFoundException("Blog not found"));
-        return new BlogDTO(blog.getId(), blog.getContent(), blog.getUrl(), Optional.ofNullable(blog.getUserID()).map(Users::getId).orElse(null));
+    public ResponseEntity<Object> getAllBlogs() {
+        List<Blogs> blogs;
+        try {
+            blogs = blogRepository.findAll();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(
+                    Map.of(
+                            "success", false,
+                            "message", "Retrieve List Blogs failed",
+                            "error", e.getMessage()
+                    )
+            );
+        }
+        return ResponseEntity.status(200).body(
+                Map.of(
+                        "success", true,
+                        "message", "Retrieve List Blogs successfully",
+                        "blogs", blogs
+                )
+        );
     }
+
     @Override
-    public BlogDTO getBlogById(String id) {
-        Blogs blog = blogRepository.findById(id).orElseThrow(() -> new BlogNotFoundException("Blog not found"));
-        return new BlogDTO(blog.getId(), blog.getContent(), blog.getUrl(), Optional.ofNullable(blog.getUserID()).map(Users::getId).orElse(null));
+    public ResponseEntity<Object> getBlogById(String id) {
+        Blogs blog = blogRepository.findById(id).orElseThrow(() -> new RuntimeException("Blog not found"));
+        return ResponseEntity.status(200).body(
+                Map.of(
+                        "success", true,
+                        "message", "Retrieve Blog By ID successfully",
+                        "blog", blog
+                )
+        );
     }
+
     @Override
-    public BlogDTO createBlog(@Valid BlogDTO blogDTO) throws UserNotFoundException {
-        validateBlogDTO(blogDTO);
-        Users user = userRepository.findById(blogDTO.getUserID())
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+    public ResponseEntity<Object> createBlog(BlogDTO blogDTO) {
+        log.info("user find for blog : {}",userService.findById(blogDTO.getUserID()));
+        Users user = userService.findById(blogDTO.getUserID());
         Blogs blog = Blogs.builder()
                 .content(blogDTO.getContent())
                 .url(blogDTO.getUrl())
-                .userID(user)
+                .userID(user) // Assumes that userID is properly populated in the DTO
                 .build();
-        Blogs savedBlog = blogRepository.save(blog);
-        return new BlogDTO(savedBlog.getId(), savedBlog.getContent(), savedBlog.getUrl(), savedBlog.getUserID().getId());
+        Blogs savedBlog ;
+        savedBlog = blogRepository.save(blog);
+//        try {
+//
+//        } catch (Exception e) {
+//            return ResponseEntity.status(500).body(
+//                    Map.of(
+//                            "success", false,
+//                            "message", "Create Blog failed",
+//                            "error", e.getMessage()
+//                    )
+//            );
+//        }
+        return ResponseEntity.status(201).body(
+                Map.of(
+                        "success", true,
+                        "message", "Create Blog successfully",
+                        "blog", savedBlog
+                )
+        );
     }
-    @Override
-    Blogs blog = blogRepository.findById(id.toString())
-            .orElseThrow(() -> new BlogNotFoundException("Blog not found"));
-blog.setContent(blogDTO.getContent());
-blog.setUrl(blogDTO.getUrl());
-Users user = userRepository.findById(blogDTO.getUserID())
-        .orElseThrow(() -> new UserNotFoundException("User not found"));
-blog.setUserID(user);
-Blogs updatedBlog = blogRepository.save(blog);
-return new BlogDTO(updatedBlog.getId(), updatedBlog.getContent(), updatedBlog.getUrl(), updatedBlog.getUserID().getId());
-}
 
-validateBlogDTO(blogDTO);
-blog.setContent(blogDTO.getContent());
-blog.setUrl(blogDTO.getUrl());
-
-    public ResponseEntity<String> deleteBlog(Long id) {
-        Blogs blog = blogRepository.findById(id.toString())
-                .orElseThrow(() -> new BlogNotFoundException("Blog not found"));
-        blogRepository.delete(blog);
-        return ResponseEntity.ok("Blog deleted successfully");
-    }
     @Override
-    public BlogDTO updateBlog(String id, BlogDTO blogDTO) {
-        Blogs blog = blogRepository.findById(id)
-                .orElseThrow(() -> new BlogNotFoundException("Blog not found"));
-        validateBlogDTO(blogDTO);
-        Users user = userRepository.findById(blogDTO.getUserID())
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-        blog.setContent(blogDTO.getContent());
-        blog.setUrl(blogDTO.getUrl());
-        blog.setUserID(user);
-        Blogs updatedBlog = blogRepository.save(blog);
-        return new BlogDTO(updatedBlog.getId(), updatedBlog.getContent(), updatedBlog.getUrl(), Optional.ofNullable(updatedBlog.getUserID()).map(Users::getId).orElse(null));
+    public ResponseEntity<Object> updateBlog(String id, BlogDTO blogDTO) {
+        Blogs existingBlog = blogRepository.findById(id).orElseThrow(() -> new RuntimeException("Blog not found"));
+
+        existingBlog.setContent(blogDTO.getContent());
+        existingBlog.setUrl(blogDTO.getUrl());
+//        existingBlog.setUserID(blogDTO.getUserID());
+
+        Blogs updatedBlog = blogRepository.save(existingBlog);
+        return ResponseEntity.status(200).body(
+                Map.of(
+                        "success", true,
+                        "message", "Update Blog successfully",
+                        "blog", updatedBlog
+                )
+        );
     }
-public ResponseEntity<String> deleteBlog(String id) {
-    public ResponseEntity<String> deleteBlog(String id) {
-        Blogs blog = blogRepository.findById(id)
-                .orElseThrow(() -> new BlogNotFoundException("Blog not found"));
+
+    @Override
+    public ResponseEntity<Object> deleteBlog(String id) {
+        Blogs blog = blogRepository.findById(id).orElseThrow(() -> new RuntimeException("Blog not found"));
         blogRepository.delete(blog);
-        return ResponseEntity.ok("Blog deleted successfully");
+        return ResponseEntity.status(200).body(
+                Map.of(
+                        "success", true,
+                        "message", "Delete Blog successfully"
+                )
+        );
     }
 }

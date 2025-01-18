@@ -1,4 +1,4 @@
-package nvh.run.authsystemgradle.common.security.jwt;
+package nvh.run.ideaswap.common.security.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -8,8 +8,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import nvh.run.authsystemgradle.common.security.service.UserDetailsExtImpl;
-import nvh.run.authsystemgradle.common.security.service.UserDetailsServiceImpl;
+import nvh.run.ideaswap.common.security.service.UserDetailsExtImpl;
+import nvh.run.ideaswap.common.security.service.UserDetailsServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

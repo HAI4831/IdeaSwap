@@ -20,18 +20,23 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class Heart {
+public class Hearts {
     @Id
     private String id;
 
     @Field("userID")
     @DBRef
     @NotNull(message = "Người dùng không được để trống")
-    private User user;
+    private Users userID;
 
     @Field("referenceID")
     @NotBlank(message = "ID tham chiếu không được để trống")
-    private String referenceID;
+    @DBRef
+    private Object referenceID;
+//    referenceID: {
+//        type: Schema.Types.ObjectId,
+//                required: true,
+//    }
 
     @CreatedDate
     private LocalDateTime createdAt;

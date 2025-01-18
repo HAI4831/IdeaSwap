@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
-public class SharesDto {
+public class ShareDto {
     private String id;
 
     private String userID; // Chỉ lưu trữ ID của Users thay vì tham chiếu đầy đủ.

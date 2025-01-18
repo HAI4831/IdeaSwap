@@ -1,7 +1,14 @@
 package nvh.run.ideaswap.common.exceptions.exception.common;
 
+import java.io.Serial;
+
 public class CommonException extends RuntimeException {
-  public CommonException(String message) {
-    super(message);
-  }
+    @Serial
+    private static final long serialVersionUID = 944218762645229018L;
+//    private final WithHttpStatusCode errorKey;
+//    private final transient Object[] args;
+
+    public CommonException(String message) {
+        super(message);
+    }
 }

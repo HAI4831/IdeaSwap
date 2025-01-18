@@ -1,6 +1,5 @@
-package nvh.run.authsystemgradle.common.exceptions.exception.global;
+package nvh.run.ideaswap.common.exceptions.exception.global;
 
-import nvh.run.authsystemgradle.common.exceptions.exception.custom.auth.DatabaseException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -24,18 +23,26 @@ import java.util.stream.Collectors;
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(DatabaseException.class)
-    public ResponseEntity<Object> handleDatabaseException(DatabaseException ex) {
-        log.warn("Database exception occurred: {}", ex.getMessage());
 
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("success", false);
-        body.put("error", ex.getMessage());
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
-    }
+//    private ResponseEntity<Object> createResponseError(String message){
+//        Map<String, Object> body = new HashMap<>();
+//        body.put("timestamp", LocalDateTime.now());
+//        body.put("success", false);
+//        body.put("error", message);
+////        "path": "/categories"
+//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+//    }
+////    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    @ExceptionHandler(RuntimeException.class)
+//    public ResponseEntity<Object> handleRuntimeException(RuntimeException e) {
+//        log.warn("Runtime exception occurred: {}", e.getMessage());
+//        return createResponseError(e.getMessage());
+//    }
+//    @ExceptionHandler(DatabaseException.class)
+//    public ResponseEntity<Object> handleDatabaseException(DatabaseException ex) {
+//        log.warn("Database exception occurred: {}", ex.getMessage());
+//        return createResponseError(ex.getMessage());
+//    }
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<String> handleConstraintViolationException(ConstraintViolationException ex) {

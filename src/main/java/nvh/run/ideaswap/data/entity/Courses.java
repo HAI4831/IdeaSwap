@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 
@@ -18,26 +20,32 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "courses")
-public class Course {
+public class Courses {
 
     @Id
     private String id;
 
-    @NotBlank(message = "ID người dùng không được để trống")
-    private String userID;
+    @Field("userID")
+    @NotBlank(message = "Courses tham chiếu tới ID người dùng không được để trống")
+    @DBRef(lazy = true)
+    private Users userID;
 
     @NotBlank(message = "ID danh mục không được để trống")
     private String categoryID;
 
     @NotBlank(message = "Tiêu đề không được để trống")
-    @Size(max = 255, message = "Tiêu đề không được quá 255 ký tự")
+    @Size(max = 100, message = "Tiêu đề không được quá 100 ký tự")
     private String title;
 
-    @Size(max = 1000, message = "Mô tả không được quá 1000 ký tự")
+    @NotBlank(message = "Mô tả không được để trống")
+    @Size(max = 5000, message = "Mô tả không được quá 5000 ký tự")
     private String description;
 
+    @NotBlank(message = "imageUrl không được để trống")
+    @Size(max = 150, message = "imageUrl không được quá 150 ký tự")
     private String imageUrl;
 
+    @NotBlank(message = "view không được để trống")
     private int view;
 
     @CreatedDate

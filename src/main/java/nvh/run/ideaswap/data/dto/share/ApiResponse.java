@@ -1,4 +1,4 @@
-package nvh.run.authsystemgradle.data.dto.share;
+package nvh.run.ideaswap.data.dto.share;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;

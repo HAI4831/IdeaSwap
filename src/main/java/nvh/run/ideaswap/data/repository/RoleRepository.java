@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
 
-public interface RolesRepository extends MongoRepository<Roles, String> {
+public interface RoleRepository extends MongoRepository<Roles, String> {
     Optional<Roles> findByName(String name);
 }
 

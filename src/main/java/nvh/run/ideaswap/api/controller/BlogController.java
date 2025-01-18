@@ -1,44 +1,39 @@
 package nvh.run.ideaswap.api.controller;
 
+import nvh.run.ideaswap.api.service.intf.IBlogService;
+import nvh.run.ideaswap.data.dto.BlogDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/blog")
 public class BlogController {
-
-    private final BlogService blogService;
-
     @Autowired
-    public BlogController(BlogService blogService) {
-        this.blogService = blogService;
-    }
+    private IBlogService blogService;
 
     @GetMapping
-    public List<BlogDTO> getAllBlogs() {
+    public ResponseEntity<Object> getAllBlogs() {
         return blogService.getAllBlogs();
     }
 
     @GetMapping("/{id}")
-    public BlogDTO getBlogById(@PathVariable Long id) {
+    public ResponseEntity<Object> getBlogById(@PathVariable String id) {
         return blogService.getBlogById(id);
     }
 
     @PostMapping
-    public BlogDTO createBlog(@RequestBody BlogDTO blogDTO) {
+    public ResponseEntity<Object> createBlog(@RequestBody BlogDTO blogDTO) {
         return blogService.createBlog(blogDTO);
     }
 
     @PutMapping("/{id}")
-    public BlogDTO updateBlog(@PathVariable Long id, @RequestBody BlogDTO blogDTO) {
+    public ResponseEntity<Object> updateBlog(@PathVariable String id, @RequestBody BlogDTO blogDTO) {
         return blogService.updateBlog(id, blogDTO);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteBlog(@PathVariable Long id) {
-        blogService.deleteBlog(id);
+    public ResponseEntity<Object> deleteBlog(@PathVariable String id) {
+        return blogService.deleteBlog(id);
     }
 }
-

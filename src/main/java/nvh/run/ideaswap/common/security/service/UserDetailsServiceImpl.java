@@ -1,10 +1,10 @@
-package nvh.run.authsystemgradle.common.security.service;
+package nvh.run.ideaswap.common.security.service;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import nvh.run.authsystemgradle.data.entity.User;
-import nvh.run.authsystemgradle.data.repository.IUserRepository;
+import nvh.run.ideaswap.data.entity.Users;
+import nvh.run.ideaswap.data.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,7 +20,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
+        Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
 
         return UserDetailsExtImpl.build(user);

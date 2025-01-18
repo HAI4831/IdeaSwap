@@ -11,6 +11,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
@@ -20,7 +21,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "blogs")
-public class Blog {
+public class Blogs {
     @Id
     private String id;
     @NotBlank(message = "Nội dung không được để trống")
@@ -31,13 +32,17 @@ public class Blog {
     @Size(max = 1000, message = "URL không được quá 1000 ký tự")
     private String url;
 
-    @Field(name="userID")
+//    @Field(name="userID")
     @DBRef
-    private User user;
+//    @DocumentReference
+    private Users userID;
+//    private String userID;
 
     @Field(name="categoryID")
-    @DBRef
-    private Category category;
+    @DocumentReference
+//    @DBRef
+//    private String categoryID;
+    private Categories categoryID;
 
     @CreatedDate
     private LocalDateTime createdDate;

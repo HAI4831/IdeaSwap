@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 
@@ -18,7 +20,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "comments")
-public class Comment {
+public class Comments {
 
     @Id
     private String id;
@@ -27,12 +29,16 @@ public class Comment {
     @Size(max = 1000, message = "Nội dung không được quá 1000 ký tự")
     private String content;
 
-    private String parentCommentID;
+    private Object parentCommentID;
 
+    @Field(name="userID")
     @NotBlank(message = "ID người dùng không được để trống")
+    @DBRef
     private String userID;
 
-    private String referenceID;
+    @Field(name = "referenceID")
+    @DBRef
+    private Object referenceID;
 
     @CreatedDate
     private LocalDateTime createdDate;

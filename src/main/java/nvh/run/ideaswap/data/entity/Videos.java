@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -19,33 +20,43 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class Video {
+public class Videos {
     @Id
     private String id;
 
     @Field("userID")
     @NotBlank(message = "ID người dùng không được để trống")
-    private String userID;
+    @DBRef
+    private Users userID;
 
     @Field("title")
     @NotBlank(message = "Tiêu đề không được để trống")
+    @Size(max = 100, message = "Tiêu đề không được quá 100 kí tự")
     private String title;
 
     @Field("description")
-    @Size(max = 500, message = "Mô tả không được vượt quá 500 ký tự")
+    @NotBlank(message = "Mô tả không được để trống")
+    @Size(max = 5000, message = "Mô tả không được vượt quá 5000 ký tự")
     private String description;
 
     @Field("imageUrl")
+    @NotBlank(message = "imageUrl không được để trống")
+    @Size(max = 150, message = "imageUrl không được vượt quá 150 ký tự")
     private String imageUrl;
 
     @Field("videoUrl")
+    @NotBlank(message = "videoUrl không được để trống")
+    @Size(max = 100, message = "videoUrl không được vượt quá 100 ký tự")
     private String videoUrl;
 
     @Field("view")
+    @NotBlank(message = "view không được để trống")
     private int view;
 
     @Field("courseID")
-    private String courseID;
+    @NotBlank(message = "courseID không được để trống")
+    @DBRef
+    private Courses courseID;
 
     @CreatedDate
     private LocalDateTime createdAt;

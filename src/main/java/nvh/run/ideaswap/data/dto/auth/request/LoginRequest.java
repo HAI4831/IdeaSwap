@@ -1,10 +1,11 @@
-package nvh.run.authsystemgradle.data.dto.auth.request;
+package nvh.run.ideaswap.data.dto.auth.request;
 
-import lombok.Builder;
 import lombok.Getter;
+import nvh.run.ideaswap.common.validator.UniqueUsername;
 
 @Getter
 public class LoginRequest {
+    @UniqueUsername
     private String username;
     private String password;
 }

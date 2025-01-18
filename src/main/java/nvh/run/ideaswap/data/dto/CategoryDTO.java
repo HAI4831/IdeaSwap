@@ -1,4 +1,15 @@
-package nvh.run.ideaswap.data;
+package nvh.run.ideaswap.data.dto;
 
-public class CategoryDto {
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class CategoryDTO {
+    private String name;
+    private String description;
 }

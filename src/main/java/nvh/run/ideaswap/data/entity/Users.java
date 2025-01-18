@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class User {
+public class Users {
 
     @Id
     private String id;
@@ -89,13 +89,15 @@ public class User {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public User(User other) {
+    public Users(Users other) {
         if (other != null) {
             copyFromOther(other);
         }
     }
+    @Field("__v")
+    private Long version;
 
-    private void copyFromOther(User other) {
+    private void copyFromOther(Users other) {
         this.id = other.id;
         this.firstName = other.firstName;
         this.lastName = other.lastName;

@@ -24,7 +24,8 @@ repositories {
 }
 
 dependencies {
-    implementation ''
+    implementation 'org.springdoc:springdoc-openapi-ui:1.8.0'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.8.0'
     // https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk15on
     implementation 'org.bouncycastle:bcpkix-jdk15on:1.68'
 

@@ -1,10 +1,10 @@
-package nvh.run.authsystemgradle.data.repository;
+package nvh.run.ideaswap.data.repository;
 
-import nvh.run.authsystemgradle.data.entity.Role;
+import nvh.run.ideaswap.data.entity.Roles;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
 
-public interface IRoleRepository extends MongoRepository<Role, String> {
-    Optional<Role> findByName(String name);
+public interface IRoleRepository extends MongoRepository<Roles, String> {
+    Optional<Roles> findByName(String name);
 }

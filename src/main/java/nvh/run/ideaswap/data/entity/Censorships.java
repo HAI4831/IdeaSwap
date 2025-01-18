@@ -26,12 +26,17 @@ public class Censorships {
 
     @Field(name="contentID")
     @DBRef
-    private String contentID;
+    private Object contentID;
 
     @NotBlank(message = "Trạng thái không được để trống")
-    @Size(max = 20, message = "Trạng thái không được quá 20 ký tự")
-    private String status; // approved, pending, rejected
+    @Size(max = 10, message = "Trạng thái không được quá 10 ký tự")
 
+//    @Enumerated(EnumType.STRING)
+//    @Column(name = "status", nullable = false, columnDefinition = "varchar(10) default 'pending'")// dùng cho jpa
+    @Field(name = "status")
+    private Status status=Status.PENDING;
+
+    @NotBlank(message = "Phản hồi không được để trống")
     @Size(max = 500, message = "Phản hồi không được quá 500 ký tự")
     private String feedback;
 
@@ -40,4 +45,5 @@ public class Censorships {
 
     @LastModifiedDate
     private LocalDateTime lastModifiedDate;
+
 }

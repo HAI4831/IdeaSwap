@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
 
-public interface MessagesRepository extends MongoRepository<Messages, String> {
+public interface MessageRepository extends MongoRepository<Messages, String> {
     List<Messages> findByConversationId(String conversationId);
 }
 

@@ -1,4 +1,4 @@
-package nvh.run.authsystemgradle.common.security.jwt;
+package nvh.run.ideaswap.common.security.jwt;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;

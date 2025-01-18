@@ -1,4 +1,4 @@
-package nvh.run.authsystemgradle.common.exceptions.exception.custom.auth;
+package nvh.run.ideaswap.common.exceptions.exception.custom.auth;
 
 public class DatabaseException extends RuntimeException {
     public DatabaseException(String message) {

@@ -1,9 +1,9 @@
-package nvh.run.authsystemgradle.common.validator.impl;
+package nvh.run.ideaswap.common.validator.impl;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import nvh.run.authsystemgradle.api.service.IUserService;
-import nvh.run.authsystemgradle.common.validator.UniqueUsername;
+import nvh.run.ideaswap.api.service.intf.IUserService;
+import nvh.run.ideaswap.common.validator.UniqueUsername;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class UniqueUsernameValidator implements ConstraintValidator<UniqueUsername, String> {

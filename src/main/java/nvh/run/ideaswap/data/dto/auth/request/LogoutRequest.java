@@ -1,6 +1,8 @@
-package nvh.run.authsystemgradle.data.dto.auth.request;
+package nvh.run.ideaswap.data.dto.auth.request;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
 @Getter

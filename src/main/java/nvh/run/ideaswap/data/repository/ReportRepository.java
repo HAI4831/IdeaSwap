@@ -5,6 +5,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
 
-public interface ReportsRepository extends MongoRepository<Reports, String> {
+public interface ReportRepository extends MongoRepository<Reports, String> {
     List<Reports> findByStatus(String status);
 }

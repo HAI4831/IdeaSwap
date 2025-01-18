@@ -1,4 +1,4 @@
-package nvh.run.authsystemgradle.common.exceptions;
+package nvh.run.ideaswap.common.exceptions;
 
 public enum ErrorCode {
     USER_NOT_FOUND("USER-001", "User not found"),

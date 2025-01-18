@@ -1,4 +1,4 @@
-package nvh.run.authsystemgradle.common.security.jwt;
+package nvh.run.ideaswap.common.security.jwt;
 
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;

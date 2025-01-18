@@ -20,13 +20,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "banners")
-public class Banner {
+public class Banners {
     @Id
     private String id;
 
     @Field("managerID")
     @DBRef
-    private Manager manager;
+    private Managers manager;
 
     @Field("name")
     @NotBlank(message = "Tên banner không được để trống")

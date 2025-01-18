@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "categories")
-public class Category {
+public class Categories {
     @Id
     private String id;
     @NotBlank(message = "Tên danh mục không được để trống")

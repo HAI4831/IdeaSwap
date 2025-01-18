@@ -1,10 +1,10 @@
-package nvh.run.authsystemgradle.common.security.service;
+package nvh.run.ideaswap.common.security.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
-import nvh.run.authsystemgradle.data.entity.User;
+import nvh.run.ideaswap.data.entity.Users;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,18 +16,18 @@ import java.util.List;
 import java.util.Objects;
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class UserDetailsExtImpl extends User implements Serializable,UserDetails, CredentialsContainer {
+public class UserDetailsExtImpl extends Users implements Serializable,UserDetails, CredentialsContainer {
     private static final long serialVersionUID = 1L;
     Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsExtImpl(User user, Collection<? extends GrantedAuthority> authorities) {
+    public UserDetailsExtImpl(Users user, Collection<? extends GrantedAuthority> authorities) {
         // Gọi constructor của lớp cha để sao chép các thuộc tính từ user
         super(user);
 //        BeanUtils.copyProperties(user, this); //tương tự super(user.getAttributes...)
         this.authorities = authorities;
     }
 
-    public static UserDetailsExtImpl build(User user) {
+    public static UserDetailsExtImpl build(Users user) {
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.getRoleID().getName()));
 
         return new UserDetailsExtImpl(user, authorities);

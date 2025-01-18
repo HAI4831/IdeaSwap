@@ -1,20 +1,21 @@
-package nvh.run.authsystemgradle.api.service;
+package nvh.run.ideaswap.api.service;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import nvh.run.authsystemgradle.common.exceptions.exception.custom.auth.DatabaseException;
-import nvh.run.authsystemgradle.common.exceptions.exception.custom.auth.RoleNotFoundException;
-import nvh.run.authsystemgradle.common.security.jwt.JwtUtilities;
-import nvh.run.authsystemgradle.common.security.service.UserDetailsExtImpl;
-import nvh.run.authsystemgradle.data.dto.auth.request.LoginRequest;
-import nvh.run.authsystemgradle.data.dto.auth.request.LogoutRequest;
-import nvh.run.authsystemgradle.data.dto.auth.request.RefreshTokenRequest;
-import nvh.run.authsystemgradle.data.dto.auth.request.RegisterRequest;
-import nvh.run.authsystemgradle.data.dto.share.ApiResponse;
-import nvh.run.authsystemgradle.data.entity.Role;
-import nvh.run.authsystemgradle.data.entity.User;
-import nvh.run.authsystemgradle.data.repository.IUserRepository;
+import nvh.run.ideaswap.api.service.intf.IAuthService;
+import nvh.run.ideaswap.api.service.intf.IRoleService;
+import nvh.run.ideaswap.common.exceptions.exception.custom.auth.DatabaseException;
+import nvh.run.ideaswap.common.security.jwt.JwtUtilities;
+import nvh.run.ideaswap.common.security.service.UserDetailsExtImpl;
+import nvh.run.ideaswap.data.dto.auth.request.LoginRequest;
+import nvh.run.ideaswap.data.dto.auth.request.LogoutRequest;
+import nvh.run.ideaswap.data.dto.auth.request.RefreshTokenRequest;
+import nvh.run.ideaswap.data.dto.auth.request.RegisterRequest;
+import nvh.run.ideaswap.data.dto.share.ApiResponse;
+import nvh.run.ideaswap.data.entity.Users;
+import nvh.run.ideaswap.data.entity.Roles;
+import nvh.run.ideaswap.data.repository.IUserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import nvh.run.ideaswap.common.exceptions.exception.custom.auth.RoleNotFoundException;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -43,8 +44,8 @@ public class AuthService implements IAuthService {
 
     public ResponseEntity<Object> register(RegisterRequest registerRequest) {
         try {
-            Role role = iRoleService.findByName("user");
-            User user = iUserRepository.save(User.builder()
+            Roles role = iRoleService.findByName("user");
+            Users user = iUserRepository.save(Users.builder()
                     .username(registerRequest.getUsername())
                     .password(passwordEncoder.encode(registerRequest.getPassword()))  // Encode password
                     .firstName(registerRequest.getFirstName())
@@ -94,13 +95,13 @@ public class AuthService implements IAuthService {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<User>> registerApi(RegisterRequest registerRequest) {
+    public ResponseEntity<ApiResponse<Users>> registerApi(RegisterRequest registerRequest) {
         try {
             // Lấy role mặc định
-            Role role = iRoleService.findByName("user");
+            Roles role = iRoleService.findByName("user");
 
             // Tạo và lưu thông tin User
-            User user = iUserRepository.save(User.builder()
+            Users user = iUserRepository.save(Users.builder()
                     .username(registerRequest.getUsername())
                     .password(passwordEncoder.encode(registerRequest.getPassword())) // Encode password
                     .firstName(registerRequest.getFirstName())
@@ -117,45 +118,45 @@ public class AuthService implements IAuthService {
                     .build());
 
             // Tạo và trả về response thành công
-            ApiResponse<User> response = ApiResponse.<User>builder()
+            ApiResponse<Users> response = ApiResponse.<Users>builder()
                     .status(201)
                     .success(true)
                     .message("User registered successfully")
                     .data(user)
-                    .clazz(User.class) // Lưu kiểu dữ liệu User
+                    .clazz(Users.class) // Lưu kiểu dữ liệu User
                     .build();
 
             return ResponseEntity.status(201).body(response);
 
         } catch (RoleNotFoundException e) {
             // Trường hợp role không tìm thấy
-            ApiResponse<User> response = ApiResponse.<User>builder()
+            ApiResponse<Users> response = ApiResponse.<Users>builder()
                     .status(400)
                     .success(false)
                     .message(e.getMessage())
-                    .clazz(User.class) // Đảm bảo consistency
+                    .clazz(Users.class) // Đảm bảo consistency
                     .build();
 
             return ResponseEntity.badRequest().body(response);
 
         } catch (DatabaseException e) {
             // Trường hợp lỗi database
-            ApiResponse<User> response = ApiResponse.<User>builder()
+            ApiResponse<Users> response = ApiResponse.<Users>builder()
                     .status(500)
                     .success(false)
                     .message(e.getMessage())
-                    .clazz(User.class)
+                    .clazz(Users.class)
                     .build();
 
             return ResponseEntity.status(500).body(response);
 
         } catch (Exception e) {
             // Trường hợp lỗi không xác định
-            ApiResponse<User> response = ApiResponse.<User>builder()
+            ApiResponse<Users> response = ApiResponse.<Users>builder()
                     .status(500)
                     .success(false)
                     .message("An unexpected error occurred")
-                    .clazz(User.class)
+                    .clazz(Users.class)
                     .build();
 
             return ResponseEntity.status(500).body(response);
@@ -267,7 +268,7 @@ public class AuthService implements IAuthService {
             String username = jwtUtilities.extractUsername(token);
 
             // Retrieve the user from the database
-            User user = iUserRepository.findByUsername(username)
+            Users user = iUserRepository.findByUsername(username)
                     .orElseThrow(() -> new DatabaseException("User not found"));
 
             // Create authentication object

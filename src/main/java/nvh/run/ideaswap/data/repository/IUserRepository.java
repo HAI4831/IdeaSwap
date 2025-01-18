@@ -1,16 +1,17 @@
-package nvh.run.authsystemgradle.data.repository;
+package nvh.run.ideaswap.data.repository;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import nvh.run.authsystemgradle.data.entity.User;
+import nvh.run.ideaswap.data.entity.Users;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
 
-public interface IUserRepository extends MongoRepository<User, String> {
-    Optional<User> findByUsernameOrEmail(String username, String email);
-    Optional<User> findById(String id);
-    Optional<User> findByUsername(String username);
+public interface IUserRepository extends MongoRepository<Users, String> {
+    Optional<Users> findByUsernameOrEmail(String username, String email);
+    @NotNull Optional<Users> findById(@NotNull String id);
+    Optional<Users> findByUsername(String username);
 
     Optional<Boolean> existsByUsername(@NotBlank(message = "Tên người dùng không được để trống") String username);
 

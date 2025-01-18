@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class NotificationsDTO {
+public class NotificationDTO {
     private String id;
     private String description;
     private String imageUrl;

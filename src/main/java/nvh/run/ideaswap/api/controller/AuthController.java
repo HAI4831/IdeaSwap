@@ -1,16 +1,18 @@
-package nvh.run.authsystemgradle.api.controller;
+package nvh.run.ideaswap.api.controller;
 
-import nvh.run.authsystemgradle.api.service.IAuthService;
-import nvh.run.authsystemgradle.data.dto.auth.request.LoginRequest;
-import nvh.run.authsystemgradle.data.dto.auth.request.LogoutRequest;
-import nvh.run.authsystemgradle.data.dto.auth.request.RefreshTokenRequest;
-import nvh.run.authsystemgradle.data.dto.auth.request.RegisterRequest;
-import nvh.run.authsystemgradle.data.dto.share.ApiResponse;
-import nvh.run.authsystemgradle.data.entity.User;
+
+import nvh.run.ideaswap.api.service.intf.IAuthService;
+import nvh.run.ideaswap.data.dto.auth.request.LoginRequest;
+import nvh.run.ideaswap.data.dto.auth.request.LogoutRequest;
+import nvh.run.ideaswap.data.dto.auth.request.RefreshTokenRequest;
+import nvh.run.ideaswap.data.dto.auth.request.RegisterRequest;
+import nvh.run.ideaswap.data.dto.share.ApiResponse;
+import nvh.run.ideaswap.data.entity.Users;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -25,7 +27,7 @@ public class AuthController {
     }
     @PostMapping("/registerApi")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<ApiResponse<User>> registerApi(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<ApiResponse<Users>> registerApi(@RequestBody RegisterRequest registerRequest) {
         return authService.registerApi(registerRequest);
     }
     @ResponseStatus(HttpStatus.OK)

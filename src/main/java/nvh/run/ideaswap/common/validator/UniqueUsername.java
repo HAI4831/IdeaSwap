@@ -1,8 +1,8 @@
-package nvh.run.authsystemgradle.common.validator;
+package nvh.run.ideaswap.common.validator;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
-import nvh.run.authsystemgradle.common.validator.impl.UniqueUsernameValidator;
+import nvh.run.ideaswap.common.validator.impl.UniqueUsernameValidator;
 
 import java.lang.annotation.*;
 

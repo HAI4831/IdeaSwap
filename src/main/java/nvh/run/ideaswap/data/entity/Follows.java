@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 
@@ -22,10 +24,13 @@ public class Follows {
     private String id;
 
     @NotBlank(message = "ID người theo dõi không được để trống")
-    private String followerID;
+    @DBRef
+    private Object followerID;
 
+    @Field("userID")
+    @DBRef
     @NotBlank(message = "ID người dùng không được để trống")
-    private String userID;
+    private Users userID;
 
     @CreatedDate
     private LocalDateTime createdAt;

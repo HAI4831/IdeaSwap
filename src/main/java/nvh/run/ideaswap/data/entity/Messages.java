@@ -7,7 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -19,14 +21,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class Message {
+public class Messages {
     @Id
     private String id;
 
     @Field("senderID")
     @DBRef
     @NotNull(message = "Người gửi không được để trống")
-    private User sender;
+    private Users senderId;
 
     @Field("content")
     @NotBlank(message = "Nội dung không được để trống")
@@ -34,6 +36,8 @@ public class Message {
     private String content;
 
     @Field("messageParentID")
+    @DBRef
+//    @Column(nullable = true)
     private String messageParentID;
 
     @Field("conversationID")
@@ -48,6 +52,9 @@ public class Message {
     @NotBlank(message = "Loại không được để trống")
     private String type;
 
+    @CreatedDate
     private LocalDateTime createdAt;
+
+    @LastModifiedDate
     private LocalDateTime updatedAt;
 }

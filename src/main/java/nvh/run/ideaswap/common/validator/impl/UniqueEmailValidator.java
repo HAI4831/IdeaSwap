@@ -1,9 +1,9 @@
-package nvh.run.authsystemgradle.common.validator.impl;
+package nvh.run.ideaswap.common.validator.impl;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import nvh.run.authsystemgradle.api.service.IUserService;
-import nvh.run.authsystemgradle.common.validator.UniqueEmail;
+import nvh.run.ideaswap.api.service.intf.IUserService;
+import nvh.run.ideaswap.common.validator.UniqueEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class UniqueEmailValidator implements ConstraintValidator<UniqueEmail, String> {

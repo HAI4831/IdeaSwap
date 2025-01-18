@@ -1,4 +1,4 @@
-package nvh.run.ideaswap.api.service;
+package nvh.run.ideaswap.api.service.intf;
 
 
 import nvh.run.ideaswap.data.dto.auth.request.LoginRequest;

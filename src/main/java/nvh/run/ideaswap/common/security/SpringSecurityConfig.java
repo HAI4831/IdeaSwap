@@ -1,11 +1,11 @@
-package nvh.run.authsystemgradle.common.security;
+package nvh.run.ideaswap.common.security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import nvh.run.authsystemgradle.common.security.jwt.AuthEntryPointJwt;
-import nvh.run.authsystemgradle.common.security.jwt.JwtAuthenticationFilter;
-import nvh.run.authsystemgradle.common.security.service.UserDetailsServiceImpl;
+import nvh.run.ideaswap.common.security.jwt.AuthEntryPointJwt;
+import nvh.run.ideaswap.common.security.jwt.JwtAuthenticationFilter;
+import nvh.run.ideaswap.common.security.service.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -48,6 +48,7 @@ public class SpringSecurityConfig {
                                 "/api/v1/auth/register",
                                 "/api/v1/auth/registerApi"
                         ).permitAll()
+                        .requestMatchers("/api/v1/banner").hasAuthority("user")
                         .requestMatchers("/api/v1/auth/account").hasAuthority("user")
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .requestMatchers("/superadmin/**").hasAuthority("SUPERADMIN")

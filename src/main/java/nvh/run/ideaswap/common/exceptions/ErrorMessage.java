@@ -1,4 +1,4 @@
-package nvh.run.authsystemgradle.common.exceptions;
+package nvh.run.ideaswap.common.exceptions;
 
 import java.util.Date;
 
