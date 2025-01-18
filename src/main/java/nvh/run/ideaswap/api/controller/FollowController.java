@@ -1,0 +1,4 @@
+package nvh.run.ideaswap.api.controller;
+
+public class FollowController {
+}
