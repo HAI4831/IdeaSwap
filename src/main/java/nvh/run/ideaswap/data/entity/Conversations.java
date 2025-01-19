@@ -31,5 +31,5 @@ public class Conversations {
     private LocalDateTime createdDate;
 
     @LastModifiedDate
-    private LocalDateTime lastModifiedDate;
+    private LocalDateTime updatedDate;
 }

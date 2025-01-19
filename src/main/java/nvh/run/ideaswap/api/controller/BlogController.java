@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/blog")
+@RequestMapping("/api/v1/blogs")
 public class BlogController {
     @Autowired
     private IBlogService blogService;

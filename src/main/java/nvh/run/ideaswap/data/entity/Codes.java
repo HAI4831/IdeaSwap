@@ -45,5 +45,5 @@ public class Codes {
     private LocalDateTime createdDate;
 
     @LastModifiedDate
-    private LocalDateTime lastModifiedDate;
+    private LocalDateTime updatedDate;
 }

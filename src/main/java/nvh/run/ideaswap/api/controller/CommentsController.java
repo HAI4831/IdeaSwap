@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/comments")
+@RequestMapping("/api/v1/comment")
 @RequiredArgsConstructor
 public class CommentsController {
     private final IComments commentsService;

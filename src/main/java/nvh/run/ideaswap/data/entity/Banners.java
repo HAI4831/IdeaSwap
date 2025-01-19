@@ -25,8 +25,10 @@ public class Banners {
     private String id;
 
     @Field("managerID")
+//    @DocumentReference(lookup = "{'id' : ?#{#target.managerID}}")
     @DBRef
-    private Managers manager;
+    private Object manager;
+//    private Managers manager;
 
     @Field("name")
     @NotBlank(message = "Tên banner không được để trống")
@@ -47,5 +49,5 @@ public class Banners {
     private LocalDateTime createdDate;
 
     @LastModifiedDate
-    private LocalDateTime lastModifiedDate;
+    private LocalDateTime updatedDate;
 }

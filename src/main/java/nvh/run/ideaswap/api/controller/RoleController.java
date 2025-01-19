@@ -3,19 +3,19 @@ package nvh.run.ideaswap.api.controller;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import nvh.run.ideaswap.api.service.intf.IRole;
+import nvh.run.ideaswap.api.service.intf.IRoleService;
 import nvh.run.ideaswap.data.dto.RoleDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/roles")
+@RequestMapping("/api/v1/role")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RoleController {
 
-    IRole roleService;
+    IRoleService roleService;
 
     @GetMapping
     public ResponseEntity<Object> getAllRoles() {

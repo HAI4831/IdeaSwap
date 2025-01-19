@@ -52,7 +52,7 @@ public class CensorshipsService implements ICensorships {
         Censorships censorship = censorshipsRepository.save(
                 Censorships.builder()
                         .contentID(censorshipsDTO.getContentID())
-                        .status(censorshipsDTO.getStatus() == null ? Status.PENDING : censorshipsDTO.getStatus())
+                        .status(censorshipsDTO.getStatus() == null ? Status.pending : censorshipsDTO.getStatus())
                         .feedback(censorshipsDTO.getFeedback())
                         .build()
         );

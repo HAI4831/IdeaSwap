@@ -28,10 +28,12 @@ public class Categories {
     @NotBlank(message = "Mô tả không được để trống")
     @Size(max = 5000, message = "Mô tả không được quá 500 ký tự")
     private String description;
-
+//    @Field(name = "roleID")
+//    @DBRef
+//    private Roles roleID;
     @CreatedDate
     private LocalDateTime createdDate;
 
     @LastModifiedDate
-    private LocalDateTime lastModifiedDate;
+    private LocalDateTime updatedDate;
 }

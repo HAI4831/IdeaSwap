@@ -9,6 +9,7 @@ import nvh.run.ideaswap.data.dto.FollowDTO;
 import nvh.run.ideaswap.data.entity.Follows;
 import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.repository.FollowRepository;
+import nvh.run.ideaswap.data.repository.IUserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ import java.util.Map;
 public class FollowService implements IFollowService {
     FollowRepository followRepository;
     IUserService iUserService;
+    IUserRepository iUserRepository;
 
     @Override
     public ResponseEntity<Object> getAllFollows() {
@@ -41,10 +43,10 @@ public class FollowService implements IFollowService {
 
     @Override
     public ResponseEntity<Object> createFollow(FollowDTO followDTO) {
-        Users user= iUserService.getUserById(followDTO.getUserID());
+        Users user= iUserRepository.findById(followDTO.getUserID()).orElseThrow(() -> new RuntimeException("User not found"));
         Follows follow = Follows.builder()
                 .followerID(followDTO.getFollowerID())
-                .userID(new Users(followDTO.getUserID()))  // Assuming `Users` has a no-arg constructor
+                .userID(user)  // Assuming `Users` has a no-arg constructor
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();

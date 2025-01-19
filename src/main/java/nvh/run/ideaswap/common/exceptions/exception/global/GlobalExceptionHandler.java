@@ -1,8 +1,10 @@
 package nvh.run.ideaswap.common.exceptions.exception.global;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -23,21 +25,41 @@ import java.util.stream.Collectors;
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-
-//    private ResponseEntity<Object> createResponseError(String message){
-//        Map<String, Object> body = new HashMap<>();
-//        body.put("timestamp", LocalDateTime.now());
-//        body.put("success", false);
-//        body.put("error", message);
-////        "path": "/categories"
-//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
-//    }
-////    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    @ExceptionHandler(RuntimeException.class)
-//    public ResponseEntity<Object> handleRuntimeException(RuntimeException e) {
-//        log.warn("Runtime exception occurred: {}", e.getMessage());
-//        return createResponseError(e.getMessage());
-//    }
+    @Autowired
+    private HttpServletRequest request;
+        public static ResponseEntity<Object> createResponseError(String message, String errorClass, Throwable cause, StackTraceElement[] stackTrace, HttpStatus status){
+            ErrorResponse errorResponse = new ErrorResponse();
+            errorResponse.setTimestamp(LocalDateTime.now());
+            errorResponse.setSuccess(false);
+            errorResponse.setMessage(message);
+            errorResponse.setErrorClass(errorClass);
+//            errorResponse.setPath(request.getRequestURI());
+            errorResponse.setStatus(status.value());
+            errorResponse.setCause(cause);
+            errorResponse.setStackTrace(stackTrace);
+            return ResponseEntity.status(status).body(errorResponse);
+//            Map<String, Object> body = new HashMap<>();
+//            body.put("timestamp", LocalDateTime.now());
+//            body.put("success", false);
+//            body.put("message", message);
+//            body.put("error", cause);
+//            body.put("stackTrace", stackTrace);
+//            body.put("errorClass", errorClass);
+//            body.put("path", request.getRequestURI());
+//            body.put("status", HttpStatus.BAD_REQUEST.value());
+//            body.put("class", getClass().getSimpleName());
+    //        "path": "/categories"
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+        }
+    //    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//        @ExceptionHandler(RuntimeException.class)
+//        public ResponseEntity<Object> handleRuntimeException(RuntimeException e) {
+//            log.warn("Runtime exception occurred: {}", e.getMessage());
+//            log.warn("Exception class: {}", e.getClass());
+//            log.warn("Exception cause: {}", e.getCause());
+//            log.warn("Exception stack trace: {}", e.getStackTrace());
+//            return createResponseError(e.getMessage(),e.getClass().getName(),e.getCause(),e.getStackTrace(),HttpStatus.BAD_REQUEST);
+//        }
 //    @ExceptionHandler(DatabaseException.class)
 //    public ResponseEntity<Object> handleDatabaseException(DatabaseException ex) {
 //        log.warn("Database exception occurred: {}", ex.getMessage());

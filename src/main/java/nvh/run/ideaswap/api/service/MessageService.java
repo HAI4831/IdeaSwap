@@ -4,8 +4,11 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.api.service.intf.IMessage;
+import nvh.run.ideaswap.api.service.intf.IUserService;
 import nvh.run.ideaswap.data.dto.MessageDTO;
 import nvh.run.ideaswap.data.entity.Messages;
+import nvh.run.ideaswap.data.entity.Users;
+import nvh.run.ideaswap.data.repository.IUserRepository;
 import nvh.run.ideaswap.data.repository.MessageRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class MessageService implements IMessage {
     MessageRepository messageRepository;
+    IUserService IUserService;
+    IUserRepository IUserRepository;
 
     @Override
     public ResponseEntity<Object> getAllMessages() {
@@ -46,8 +51,10 @@ public class MessageService implements IMessage {
 
     @Override
     public ResponseEntity<Object> createMessage(MessageDTO messageDTO) {
+        Users user = IUserRepository.findById(messageDTO.getSenderId()).orElseThrow(() -> new RuntimeException("User not found"));
+//        Users user = IUserService.getUserById(messageDTO.getSenderId());
         Messages savedMessage = messageRepository.save(
-                Messages.builder().content(messageDTO.getContent()).sender(messageDTO.getSender()).build()
+                Messages.builder().content(messageDTO.getContent()).senderId(user).build()
         );
         return ResponseEntity.status(201).body(
                 Map.of("success", true, "message", "Create Message successfully", "data", savedMessage)
@@ -57,8 +64,10 @@ public class MessageService implements IMessage {
     @Override
     public ResponseEntity<Object> updateMessage(String id, MessageDTO messageDTO) {
         getMessageById(id);
+        Users user = IUserRepository.findById(messageDTO.getSenderId()).orElseThrow(() -> new RuntimeException("User not found"));
+//        Users user = IUserService.getUserById(messageDTO.getSenderId());
         Messages updatedMessage = messageRepository.save(
-                Messages.builder().id(id).content(messageDTO.getContent()).sender(messageDTO.getSender()).build()
+                Messages.builder().id(id).content(messageDTO.getContent()).senderId(user).build()
         );
         return ResponseEntity.ok(
                 Map.of("success", true, "message", "Update Message successfully", "data", updatedMessage)

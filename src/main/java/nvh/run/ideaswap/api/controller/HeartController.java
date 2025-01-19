@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/v1/hearts")
+@RequestMapping("/api/v1/heart")
 @RequiredArgsConstructor
 public class HeartController {
     private final IHeartService heartService;

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import nvh.run.ideaswap.data.entity.ReferenceTypeEnum;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class NotificationDTO {
     private boolean isUnRead;
     private List<String> userIds;
     private String actorId;
-    private String referenceType;
+    private ReferenceTypeEnum referenceType;
     private boolean isModal;
     private String referenceId;
 }

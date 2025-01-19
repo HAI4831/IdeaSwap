@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.api.service.intf.IAuthService;
 import nvh.run.ideaswap.api.service.intf.IRoleService;
 import nvh.run.ideaswap.common.exceptions.exception.custom.auth.DatabaseException;
+import nvh.run.ideaswap.common.exceptions.exception.custom.auth.RoleNotFoundException;
 import nvh.run.ideaswap.common.security.jwt.JwtUtilities;
 import nvh.run.ideaswap.common.security.service.UserDetailsExtImpl;
 import nvh.run.ideaswap.data.dto.auth.request.LoginRequest;
@@ -13,8 +14,8 @@ import nvh.run.ideaswap.data.dto.auth.request.LogoutRequest;
 import nvh.run.ideaswap.data.dto.auth.request.RefreshTokenRequest;
 import nvh.run.ideaswap.data.dto.auth.request.RegisterRequest;
 import nvh.run.ideaswap.data.dto.share.ApiResponse;
-import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.entity.Roles;
+import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.repository.IUserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import nvh.run.ideaswap.common.exceptions.exception.custom.auth.RoleNotFoundException;
+
 import java.time.LocalDateTime;
 import java.util.Map;
 

@@ -48,7 +48,15 @@ public class NotificationService implements INotification {
     @Override
     public ResponseEntity<Object> createNotification(NotificationDTO notificationDTO) {
         Notifications savedNotification = notificationRepository.save(
-                Notifications.builder().title(notificationDTO.getTitle()).content(notificationDTO.getContent()).build()
+                Notifications.builder()
+                        .description(notificationDTO.getDescription())
+                        .imageUrl(notificationDTO.getImageUrl())
+                        .isUnRead(notificationDTO.isUnRead())
+                        .userIDs(notificationDTO.getUserIds())
+                        .actorID(notificationDTO.getActorId())
+                        .referenceType(notificationDTO.getReferenceType())
+                        .referenceID(notificationDTO.getReferenceId())
+                .build()
         );
         return ResponseEntity.status(201).body(
                 Map.of("success", true, "message", "Create Notification successfully", "data", savedNotification)
@@ -58,9 +66,15 @@ public class NotificationService implements INotification {
     @Override
     public ResponseEntity<Object> updateNotification(String id, NotificationDTO notificationDTO) {
         getNotificationById(id);
-        Notifications updatedNotification = notificationRepository.save(
-                Notifications.builder().id(id).title(notificationDTO.getTitle()).content(notificationDTO.getContent()).build()
-        );
+        Notifications updatedNotification = Notifications.builder()
+                .description(notificationDTO.getDescription())
+                .imageUrl(notificationDTO.getImageUrl())
+                .isUnRead(notificationDTO.isUnRead())
+                .userIDs(notificationDTO.getUserIds())
+                .actorID(notificationDTO.getActorId())
+                .referenceType(notificationDTO.getReferenceType())
+                .referenceID(notificationDTO.getReferenceId())
+                .build();
         return ResponseEntity.ok(
                 Map.of("success", true, "message", "Update Notification successfully", "data", updatedNotification)
         );

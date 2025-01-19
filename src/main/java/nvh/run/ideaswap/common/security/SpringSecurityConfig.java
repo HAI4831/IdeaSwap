@@ -46,13 +46,37 @@ public class SpringSecurityConfig {
                                 "/api/products",
                                 "api/v1/auth/login",
                                 "/api/v1/auth/register",
-                                "/api/v1/auth/registerApi"
+                                "/api/v1/auth/registerApi",
+                                "/swagger-ui.html",
+                                "/swagger*/*"
                         ).permitAll()
+                        .requestMatchers("/api/v1/products/*").hasAuthority("user")
+                        .requestMatchers("/api/v1/banner/*").hasAuthority("user")
+                        .requestMatchers("/api/v1/blogs/*").hasAuthority("user")
+                        .requestMatchers("/api/v1/censorships/*").hasAuthority("user")
+                        .requestMatchers("/api/v1/code/*").hasAuthority("user")
+                        .requestMatchers("/api/v1/comment/*").hasAuthority("user")
+                        .requestMatchers("/api/v1/conversation/*").hasAuthority("user")
+                        .requestMatchers("/api/v1/course/*").hasAuthority("user")
+                        .requestMatchers("/api/v1/document/*").hasAuthority("user")
+                        .requestMatchers("/api/v1/follow/*").hasAuthority("user")
+                        .requestMatchers("/api/v1/heart/*").hasAuthority("user")
+                        .requestMatchers("/api/v1/message/*").hasAuthority("user")//not have
+                        .requestMatchers("/api/v1/notification/*").hasAuthority("user")
+                        .requestMatchers("/api/v1/roles/*").hasAuthority("user")
+                        .requestMatchers("/api/v1/share/*").hasAuthority("user")
+                        .requestMatchers("/api/v1/user/*").hasAuthority("user")
+                        .requestMatchers("/api/v1/video/*").hasAuthority("user")
+                        .requestMatchers("/api/v1/admin/auth/*").hasAuthority("user")//not have
+                        .requestMatchers("/api/v1/manager/*").hasAuthority("user")//not have
+                        .requestMatchers("/api/v1/contact/*").hasAuthority("user")
                         .requestMatchers("/api/v1/banner").hasAuthority("user")
                         .requestMatchers("/api/v1/auth/account").hasAuthority("user")
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .requestMatchers("/superadmin/**").hasAuthority("SUPERADMIN")
-                        .anyRequest().authenticated()
+                        .anyRequest()
+                        .permitAll()
+//                        .authenticated()
                 );
 //                .exceptionHandling()
 //                .authenticationEntryPoint(spnegoEntryPoint())

@@ -5,7 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.api.service.intf.ICourses;
 import nvh.run.ideaswap.data.dto.CoursesDTO;
+import nvh.run.ideaswap.data.entity.Categories;
 import nvh.run.ideaswap.data.entity.Courses;
+import nvh.run.ideaswap.data.repository.CategoryRepository;
 import nvh.run.ideaswap.data.repository.CoursesRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -13,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CoursesService implements ICourses {
     CoursesRepository coursesRepository;
+    CategoryRepository categoryRepository;
 
     @Override
     public ResponseEntity<Object> getAllCourses() {
@@ -41,10 +43,11 @@ public class CoursesService implements ICourses {
 
     @Override
     public ResponseEntity<Object> createCourse(CoursesDTO coursesDTO) {
+        Categories category = categoryRepository.findById(coursesDTO.getCategoryId()).orElseThrow(()->new RuntimeException("Category not found"));
         Courses course = coursesRepository.save(
                 Courses.builder()
                         .userID(null) // Resolve Users entity reference in actual implementation
-                        .categoryID(coursesDTO.getCategoryId())
+                        .categoryID(category)
                         .title(coursesDTO.getTitle())
                         .description(coursesDTO.getDescription())
                         .imageUrl(coursesDTO.getImageUrl())
@@ -59,11 +62,12 @@ public class CoursesService implements ICourses {
     @Override
     public ResponseEntity<Object> updateCourse(String id, CoursesDTO coursesDTO) {
         getCourseById(id);
+        Categories category = categoryRepository.findById(coursesDTO.getCategoryId()).orElseThrow(()->new RuntimeException("Category not found"));
         Courses updatedCourse = coursesRepository.save(
                 Courses.builder()
                         .id(id)
                         .userID(null) // Resolve Users entity reference
-                        .categoryID(coursesDTO.getCategoryId())
+                        .categoryID(category)
                         .title(coursesDTO.getTitle())
                         .description(coursesDTO.getDescription())
                         .imageUrl(coursesDTO.getImageUrl())

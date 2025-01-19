@@ -30,8 +30,10 @@ public class Courses {
     @DBRef(lazy = true)
     private Users userID;
 
+    @Field("categoryID")
     @NotBlank(message = "ID danh mục không được để trống")
-    private String categoryID;
+    @DBRef
+    private Categories categoryID;
 
     @NotBlank(message = "Tiêu đề không được để trống")
     @Size(max = 100, message = "Tiêu đề không được quá 100 ký tự")

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/v1/follows")
+@RequestMapping("/api/v1/follow")
 @RequiredArgsConstructor
 public class FollowController {
     private final IFollowService followService;

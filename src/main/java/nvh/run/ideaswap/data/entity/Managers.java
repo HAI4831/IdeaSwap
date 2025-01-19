@@ -1,6 +1,7 @@
 package nvh.run.ideaswap.data.entity;
 
 //import jakarta.persistence.Column;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -80,7 +81,8 @@ public class Managers {
 
     @Field("roleID")
     @DBRef
-    private Roles roleID;
+    private Object roleID;
+//    private Roles roleID;
 
     @CreatedDate
     private LocalDateTime createdAt;

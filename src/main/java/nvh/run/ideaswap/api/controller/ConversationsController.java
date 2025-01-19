@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/conversations")
+@RequestMapping("/api/v1/conversation")
 @RequiredArgsConstructor
 public class ConversationsController {
     private final IConversations conversationsService;

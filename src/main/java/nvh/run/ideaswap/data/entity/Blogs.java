@@ -1,5 +1,7 @@
 package nvh.run.ideaswap.data.entity;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -9,19 +11,24 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "blogs")
 public class Blogs {
+    public String toJson() {
+        try {
+            return new ObjectMapper().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error converting to JSON", e);
+        }
+    }
     @Id
     private String id;
     @NotBlank(message = "Nội dung không được để trống")
@@ -32,10 +39,12 @@ public class Blogs {
     @Size(max = 1000, message = "URL không được quá 1000 ký tự")
     private String url;
 
-//    @Field(name="userID")
-    @DBRef
-//    @DocumentReference
+    @Field(name="userID")
+//    @DBRef
+    @DocumentReference
     private Users userID;
+//    private ObjectId userID;
+//    private Object userID;
 //    private String userID;
 
     @Field(name="categoryID")
@@ -48,5 +57,5 @@ public class Blogs {
     private LocalDateTime createdDate;
 
     @LastModifiedDate
-    private LocalDateTime lastModifiedDate;
+    private LocalDateTime updatedDate;
 }

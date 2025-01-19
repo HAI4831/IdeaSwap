@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import nvh.run.ideaswap.data.entity.Status;
+import org.bson.types.ObjectId;
 
 @Data
 @NoArgsConstructor
@@ -16,10 +17,10 @@ import nvh.run.ideaswap.data.entity.Status;
 public class CensorshipsDTO {
     private String id;
 
-    private Object contentID;
+    private ObjectId contentID;
 
-    @NotBlank(message = "Trạng thái không được để trống")
-    @Size(max = 10, message = "Trạng thái không được quá 10 ký tự")
+//    @NotBlank(message = "Trạng thái không được để trống")
+//    @Size(max = 10, message = "Trạng thái không được quá 10 ký tự")
     private Status status;
 
     @NotBlank(message = "Phản hồi không được để trống")

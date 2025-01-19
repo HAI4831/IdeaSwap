@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -26,15 +27,15 @@ public class Censorships {
 
     @Field(name="contentID")
     @DBRef
-    private Object contentID;
+    private ObjectId contentID;
 
-    @NotBlank(message = "Trạng thái không được để trống")
-    @Size(max = 10, message = "Trạng thái không được quá 10 ký tự")
+//    @NotBlank(message = "Trạng thái không được để trống")
+//    @Size(max = 10, message = "Trạng thái không được quá 10 ký tự")
 
 //    @Enumerated(EnumType.STRING)
 //    @Column(name = "status", nullable = false, columnDefinition = "varchar(10) default 'pending'")// dùng cho jpa
     @Field(name = "status")
-    private Status status=Status.PENDING;
+    private Status status=Status.pending;
 
     @NotBlank(message = "Phản hồi không được để trống")
     @Size(max = 500, message = "Phản hồi không được quá 500 ký tự")
@@ -44,6 +45,6 @@ public class Censorships {
     private LocalDateTime createdDate;
 
     @LastModifiedDate
-    private LocalDateTime lastModifiedDate;
+    private LocalDateTime updatedDate;
 
 }

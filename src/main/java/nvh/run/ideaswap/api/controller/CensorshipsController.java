@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/censorships")
+@RequestMapping("/api/v1/censorships")
 @RequiredArgsConstructor
 public class CensorshipsController {
     private final ICensorships censorshipsService;

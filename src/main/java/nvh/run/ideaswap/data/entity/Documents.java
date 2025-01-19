@@ -30,7 +30,7 @@ public class Documents {
     @Field("userID")
     @NotBlank(message = "Documents reference ID người dùng không được để trống")
     @DBRef(lazy = true)
-    private String userID;
+    private Object userID;
 
     @NotBlank(message = "Tiêu đề không được để trống")
     @Size(max = 100, message = "Tiêu đề không được quá 100 ký tự")
@@ -61,7 +61,7 @@ public class Documents {
     @Field("categoryID")
     @NotBlank(message = "ID danh mục không được để trống")
     @DBRef
-    private Categories categoryID;
+    private Object categoryID;
 
     @CreatedDate
     private LocalDateTime createdAt;

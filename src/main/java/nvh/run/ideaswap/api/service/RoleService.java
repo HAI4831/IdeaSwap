@@ -3,7 +3,7 @@ package nvh.run.ideaswap.api.service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import nvh.run.ideaswap.api.service.intf.IRole;
+import nvh.run.ideaswap.api.service.intf.IRoleService;
 import nvh.run.ideaswap.data.dto.RoleDTO;
 import nvh.run.ideaswap.data.entity.Roles;
 import nvh.run.ideaswap.data.repository.RoleRepository;
@@ -19,7 +19,7 @@ import java.util.Map;
 @Transactional
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
-public class RoleService implements IRole {
+public class RoleService implements IRoleService {
     RoleRepository roleRepository;
 
     @Override
@@ -98,5 +98,10 @@ public class RoleService implements IRole {
         responseBody.put("message", "Delete Role successfully");
         roleRepository.deleteById(id);
         return ResponseEntity.status(200).body(responseBody);
+    }
+
+    @Override
+    public Roles findByName(String name) {
+        return roleRepository.findByName(name).orElseThrow(() -> new RuntimeException("Role not found"));
     }
 }
