@@ -23,14 +23,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "documents")
-public class Documents {
+public class Documents implements  java.io.Serializable , Cloneable {
     @Id
     private String id;
 
     @Field("userID")
     @NotBlank(message = "Documents reference ID người dùng không được để trống")
     @DBRef(lazy = true)
-    private Object userID;
+    private Users userID;
 
     @NotBlank(message = "Tiêu đề không được để trống")
     @Size(max = 100, message = "Tiêu đề không được quá 100 ký tự")
@@ -61,7 +61,7 @@ public class Documents {
     @Field("categoryID")
     @NotBlank(message = "ID danh mục không được để trống")
     @DBRef
-    private Object categoryID;
+    private Categories categoryID;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -77,6 +77,17 @@ public class Documents {
         // Simulate Cloudinary upload
         String uploadedUrl = "https://cloudinary.com/mock_image_url";
         return new UploadResponse(true, "Tải lên thành công", uploadedUrl);
+    }
+
+    @Override
+    public Documents clone() {
+        try {
+            Documents clone = (Documents) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 
     public static class UploadResponse {

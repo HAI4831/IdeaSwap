@@ -19,7 +19,7 @@ public class ErrorResponse {
     private String path;
     private int status;
     private String exceptionDetails;
-    Throwable cause;
+    Throwable error;
     StackTraceElement[] stackTrace;
 }
 

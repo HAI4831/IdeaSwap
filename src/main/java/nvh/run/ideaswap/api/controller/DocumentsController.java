@@ -1,51 +1,93 @@
 package nvh.run.ideaswap.api.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import nvh.run.ideaswap.api.service.intf.IDocuments;
 import nvh.run.ideaswap.data.dto.DocumentsDTO;
+import nvh.run.ideaswap.service.DocumentsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/document")
 @RequiredArgsConstructor
 public class DocumentsController {
-    private final IDocuments documentsService;
+    private final DocumentsService documentsService;
 
     @GetMapping
     public ResponseEntity<Object> getAllDocuments() {
-        return documentsService.getAllDocuments();
+        return ResponseEntity.ok(
+                Map.of(
+                        "success", true,
+                        "message", "Retrieve documents successfully",
+                        "documents", documentsService.getAllDocuments()
+                )
+        );
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getDocumentById(@PathVariable String id) {
-        return documentsService.getDocumentById(id);
+        return ResponseEntity.ok(
+                Map.of(
+                        "success", true,
+                        "message", "Retrieve document successfully",
+                        "document", documentsService.getDocumentById(id)
+                )
+        );
     }
 
     @PostMapping
     public ResponseEntity<Object> createDocument(@Valid @RequestBody DocumentsDTO documentsDTO) {
-        return documentsService.createDocument(documentsDTO);
+        return ResponseEntity.status(201).body(
+                Map.of(
+                        "success", true,
+                        "message", "Document created successfully",
+                        "document", documentsService.createDocument(documentsDTO)
+                )
+        );
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateDocument(@PathVariable String id, @Valid @RequestBody DocumentsDTO documentsDTO) {
-        return documentsService.updateDocument(id, documentsDTO);
+        return ResponseEntity.ok(
+                Map.of(
+                        "success", true,
+                        "message", "Document updated successfully",
+                        "document", documentsService.updateDocument(id, documentsDTO)
+                )
+        );
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteDocument(@PathVariable String id) {
-        return documentsService.deleteDocument(id);
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "Document deleted successfully",
+                "document",documentsService.deleteDocument(id)
+        ));
+
     }
 
     @PatchMapping("/update/view/{id}")
     public ResponseEntity<Object> incrementView(@PathVariable String id) {
-        return documentsService.incrementDownload(id);
+        return ResponseEntity.ok(
+                Map.of(
+                        "success", true,
+                        "message", "Download count updated successfully",
+                        "document", documentsService.incrementDownload(id)
+                )
+        );
     }
 
     @GetMapping("/search")
     public ResponseEntity<Object> searchDocuments(@RequestParam String keyword) {
-        return documentsService.searchDocuments(keyword);
+        return ResponseEntity.ok(
+                Map.of(
+                        "success", true,
+                        "message", "Search results retrieved successfully",
+                        "documents", documentsService.searchDocuments(keyword)
+                )
+        );
     }
 }

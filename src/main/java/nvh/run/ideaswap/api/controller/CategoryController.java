@@ -3,7 +3,7 @@ package nvh.run.ideaswap.api.controller;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import nvh.run.ideaswap.api.service.CategoryService;
+import nvh.run.ideaswap.service.CategoryService;
 import nvh.run.ideaswap.data.dto.CategoryDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

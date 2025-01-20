@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "censorships")
-public class Censorships {
+public class Censorships implements  java.io.Serializable , Cloneable {
     @Id
     private String id;
 
@@ -35,7 +35,7 @@ public class Censorships {
 //    @Enumerated(EnumType.STRING)
 //    @Column(name = "status", nullable = false, columnDefinition = "varchar(10) default 'pending'")// dùng cho jpa
     @Field(name = "status")
-    private Status status=Status.pending;
+    private Status status=Status.PENDING;
 
     @NotBlank(message = "Phản hồi không được để trống")
     @Size(max = 500, message = "Phản hồi không được quá 500 ký tự")
@@ -47,4 +47,14 @@ public class Censorships {
     @LastModifiedDate
     private LocalDateTime updatedDate;
 
+    @Override
+    public Censorships clone() {
+        try {
+            Censorships clone = (Censorships) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

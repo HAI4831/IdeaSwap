@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import nvh.run.ideaswap.common.validator.UniquePhoneNumber;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -24,7 +25,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class Managers {
+public class Managers implements  java.io.Serializable , Cloneable {
     @Id
     private String id;
 
@@ -54,6 +55,7 @@ public class Managers {
     @Field("phoneNumber")
     @NotBlank(message = "Số điện thoại không được để trống")
     @Size(max = 10, message = "phoneNumber không quá 10 kí tự")
+    @UniquePhoneNumber
     private String phoneNumber;
 
     @Field("address")
@@ -77,16 +79,27 @@ public class Managers {
 
     @Field("gender")
 //    @Column(nullable = false, columnDefinition = "VARCHAR(150) DEFAULT 'Male'")
-    private String gender="Male";
+    private Gender gender;
 
     @Field("roleID")
     @DBRef
-    private Object roleID;
-//    private Roles roleID;
+//    private Object roleID;
+    private Roles roleID;
 
     @CreatedDate
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    @Override
+    public Managers clone() {
+        try {
+            Managers clone = (Managers) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

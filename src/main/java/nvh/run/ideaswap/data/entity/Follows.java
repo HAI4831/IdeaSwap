@@ -19,13 +19,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "follows")
-public class Follows {
+public class Follows implements  java.io.Serializable , Cloneable {
     @Id
     private String id;
 
     @NotBlank(message = "ID người theo dõi không được để trống")
     @DBRef
-    private Object followerID;
+    private Follows followerID;
 
     @Field("userID")
     @DBRef
@@ -37,4 +37,15 @@ public class Follows {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    @Override
+    public Follows clone() {
+        try {
+            Follows clone = (Follows) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

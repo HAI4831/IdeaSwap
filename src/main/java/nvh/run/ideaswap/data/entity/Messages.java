@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -21,7 +22,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class Messages {
+public class Messages implements  java.io.Serializable , Cloneable {
     @Id
     private String id;
 
@@ -36,9 +37,9 @@ public class Messages {
     private String content;
 
     @Field("messageParentID")
-    @DBRef
+//    @DBRef
 //    @Column(nullable = true)
-    private String messageParentID;
+    private ObjectId messageParentID;
 
     @Field("conversationID")
     @DBRef
@@ -57,4 +58,15 @@ public class Messages {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    @Override
+    public Messages clone() {
+        try {
+            Messages clone = (Messages) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

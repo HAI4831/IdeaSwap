@@ -18,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "conversations")
-public class Conversations {
+public class Conversations implements  java.io.Serializable , Cloneable {
     @Id
     private String id;
 
@@ -32,4 +32,15 @@ public class Conversations {
 
     @LastModifiedDate
     private LocalDateTime updatedDate;
+
+    @Override
+    public Conversations clone() {
+        try {
+            Conversations clone = (Conversations) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

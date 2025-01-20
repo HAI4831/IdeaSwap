@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "courses")
-public class Courses {
+public class Courses implements  java.io.Serializable , Cloneable {
 
     @Id
     private String id;
@@ -64,6 +64,17 @@ public class Courses {
         // Simulate Cloudinary upload
         String uploadedUrl = "https://cloudinary.com/mock_image_url";
         return new UploadResponse(true, "Tải lên thành công", uploadedUrl);
+    }
+
+    @Override
+    public Courses clone() {
+        try {
+            Courses clone = (Courses) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 
     public static class UploadResponse {

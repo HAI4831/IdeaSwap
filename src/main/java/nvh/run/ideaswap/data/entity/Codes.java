@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "codes")
-public class Codes {
+public class Codes implements  java.io.Serializable , Cloneable {
     @Id
     private String id;
 
@@ -46,4 +46,15 @@ public class Codes {
 
     @LastModifiedDate
     private LocalDateTime updatedDate;
+
+    @Override
+    public Codes clone() {
+        try {
+            Codes clone = (Codes) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

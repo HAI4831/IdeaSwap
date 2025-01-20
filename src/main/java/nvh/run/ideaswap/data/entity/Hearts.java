@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class Hearts {
+public class Hearts implements  java.io.Serializable , Cloneable {
     @Id
     private String id;
 
@@ -31,16 +31,22 @@ public class Hearts {
 
     @Field("referenceID")
     @NotBlank(message = "ID tham chiếu không được để trống")
-    @DBRef
-    private Object referenceID;
-//    referenceID: {
-//        type: Schema.Types.ObjectId,
-//                required: true,
-//    }
+    private String referenceID;
 
     @CreatedDate
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    @Override
+    public Hearts clone() {
+        try {
+            Hearts clone = (Hearts) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

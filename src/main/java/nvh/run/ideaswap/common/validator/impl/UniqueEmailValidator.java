@@ -2,14 +2,14 @@ package nvh.run.ideaswap.common.validator.impl;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import nvh.run.ideaswap.api.service.intf.IUserService;
+import nvh.run.ideaswap.service.UserService;
 import nvh.run.ideaswap.common.validator.UniqueEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class UniqueEmailValidator implements ConstraintValidator<UniqueEmail, String> {
 
     @Autowired
-    private IUserService iUserService;
+    private UserService iUserService;
 
     @Override
     public void initialize(UniqueEmail constraint) {

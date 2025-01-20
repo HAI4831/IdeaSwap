@@ -1,13 +1,13 @@
 package nvh.run.ideaswap.api.controller;
 
-import nvh.run.ideaswap.data.entity.Banners;
-import nvh.run.ideaswap.api.service.BannerService;
+import nvh.run.ideaswap.data.dto.BannerDTO;
+import nvh.run.ideaswap.service.BannerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/banner")
@@ -18,29 +18,59 @@ public class BannerController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Banners> createBanner(@RequestBody Banners banner) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(bannerService.createBanner(banner));
+    public ResponseEntity<Object> createBanner(@RequestBody BannerDTO bannerDTO) {
+        return ResponseEntity.status(201).body(
+                Map.of(
+                        "success", true,
+                        "message","Create Banner successfully",
+                        "banner",bannerService.createBanner(bannerDTO)
+                )
+        );
     }
 
     @GetMapping
-    public ResponseEntity<List<Banners>> getAllBanners() {
-        return ResponseEntity.ok(bannerService.getAllBanners());
+    public ResponseEntity<Object> getAllBanners() {
+        return  ResponseEntity.status(201).body(
+                Map.of(
+                        "success", true,
+                        "message", "Retrieve List Banners successfully",
+                        "banners",bannerService.getAllBanners()
+                )
+        );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Banners> getBannerById(@PathVariable String id) {
-        return ResponseEntity.ok(bannerService.getBannerById(id));
+    public ResponseEntity<Object> getBannerById(@PathVariable String id) {
+        return ResponseEntity.status(201).body(
+                Map.of(
+                        "success", true,
+                        "message", "Retrieve Banner By ID successfully",
+                        "banner",bannerService.getBannerById(id)
+                )
+        );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Banners> updateBanner(@PathVariable String id, @RequestBody Banners banner) {
-        return ResponseEntity.ok(bannerService.updateBanner(id, banner));
+    public ResponseEntity<Object> updateBanner(@PathVariable String id, @RequestBody BannerDTO bannerDTO) {
+        return ResponseEntity.status(201).body(
+                Map.of(
+                        "success", true,
+                        "message", "Update Banner successfully",
+                        "banner", bannerService.updateBanner(id,bannerDTO)
+                )
+        );
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteBanner(@PathVariable String id) {
-        bannerService.deleteBanner(id);
+    public ResponseEntity<Object> deleteBanner(@PathVariable String id) {
+        return ResponseEntity.status(201).body(
+                Map.of(
+                        "success", true,
+                        "message" ,"Delete Banner successfully",
+                        "banner", bannerService.deleteBanner(id)
+                )
+        );
     }
 }
 

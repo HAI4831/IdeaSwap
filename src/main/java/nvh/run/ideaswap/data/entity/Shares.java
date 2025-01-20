@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -19,7 +20,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class Shares {
+public class Shares implements  java.io.Serializable , Cloneable {
     @Id
     private String id;
 
@@ -30,12 +31,23 @@ public class Shares {
 
     @Field("referenceID")
     @NotBlank(message = "ID tham chiếu không được để trống")
-    @DBRef
-    private Object referenceID;
+//    @DBRef
+    private ObjectId referenceID;
 
     @CreatedDate
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    @Override
+    public Shares clone() {
+        try {
+            Shares clone = (Shares) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

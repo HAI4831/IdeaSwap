@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "categories")
-public class Categories {
+public class Categories implements  java.io.Serializable , Cloneable {
     @Id
     private String id;
     @NotBlank(message = "Tên danh mục không được để trống")
@@ -28,12 +28,20 @@ public class Categories {
     @NotBlank(message = "Mô tả không được để trống")
     @Size(max = 5000, message = "Mô tả không được quá 500 ký tự")
     private String description;
-//    @Field(name = "roleID")
-//    @DBRef
-//    private Roles roleID;
     @CreatedDate
     private LocalDateTime createdDate;
 
     @LastModifiedDate
     private LocalDateTime updatedDate;
+
+    @Override
+    public Categories clone() {
+        try {
+            Categories clone = (Categories) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

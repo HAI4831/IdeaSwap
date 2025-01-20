@@ -20,15 +20,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "banners")
-public class Banners {
+public class Banners implements java.io.Serializable , Cloneable {
     @Id
     private String id;
 
     @Field("managerID")
 //    @DocumentReference(lookup = "{'id' : ?#{#target.managerID}}")
     @DBRef
-    private Object manager;
-//    private Managers manager;
+//    private Object manager;
+    private Managers manager;
 
     @Field("name")
     @NotBlank(message = "Tên banner không được để trống")
@@ -50,4 +50,15 @@ public class Banners {
 
     @LastModifiedDate
     private LocalDateTime updatedDate;
+
+    @Override
+    public Banners clone() {
+        try {
+            Banners clone = (Banners) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

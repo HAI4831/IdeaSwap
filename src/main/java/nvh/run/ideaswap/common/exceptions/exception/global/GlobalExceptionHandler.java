@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import nvh.run.ideaswap.common.exceptions.exception.custom.auth.DatabaseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -13,114 +14,125 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
     @Autowired
     private HttpServletRequest request;
-        public static ResponseEntity<Object> createResponseError(String message, String errorClass, Throwable cause, StackTraceElement[] stackTrace, HttpStatus status){
-            ErrorResponse errorResponse = new ErrorResponse();
-            errorResponse.setTimestamp(LocalDateTime.now());
-            errorResponse.setSuccess(false);
-            errorResponse.setMessage(message);
-            errorResponse.setErrorClass(errorClass);
-//            errorResponse.setPath(request.getRequestURI());
-            errorResponse.setStatus(status.value());
-            errorResponse.setCause(cause);
-            errorResponse.setStackTrace(stackTrace);
-            return ResponseEntity.status(status).body(errorResponse);
-//            Map<String, Object> body = new HashMap<>();
-//            body.put("timestamp", LocalDateTime.now());
-//            body.put("success", false);
-//            body.put("message", message);
-//            body.put("error", cause);
-//            body.put("stackTrace", stackTrace);
-//            body.put("errorClass", errorClass);
-//            body.put("path", request.getRequestURI());
-//            body.put("status", HttpStatus.BAD_REQUEST.value());
-//            body.put("class", getClass().getSimpleName());
-    //        "path": "/categories"
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
-        }
-    //    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//        @ExceptionHandler(RuntimeException.class)
-//        public ResponseEntity<Object> handleRuntimeException(RuntimeException e) {
-//            log.warn("Runtime exception occurred: {}", e.getMessage());
-//            log.warn("Exception class: {}", e.getClass());
-//            log.warn("Exception cause: {}", e.getCause());
-//            log.warn("Exception stack trace: {}", e.getStackTrace());
-//            return createResponseError(e.getMessage(),e.getClass().getName(),e.getCause(),e.getStackTrace(),HttpStatus.BAD_REQUEST);
-//        }
-//    @ExceptionHandler(DatabaseException.class)
-//    public ResponseEntity<Object> handleDatabaseException(DatabaseException ex) {
-//        log.warn("Database exception occurred: {}", ex.getMessage());
-//        return createResponseError(ex.getMessage());
-//    }
+
+    @ExceptionHandler(DatabaseException.class)
+    public ResponseEntity<Object> handleDatabaseException(DatabaseException ex) {
+        log.error("DatabaseException occurred: {}", ex.getMessage(), ex);
+        return createResponseError(
+                ex.getMessage(),
+                DatabaseException.class.getName(),
+                ex.getCause(),
+                ex.getStackTrace(),
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
+    }
+
+    private ResponseEntity<Object> createResponseError(String message, String errorClass, Throwable cause, StackTraceElement[] stackTrace, HttpStatus status) {
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setTimestamp(LocalDateTime.now());
+        errorResponse.setSuccess(false);
+        errorResponse.setMessage(message);
+        errorResponse.setErrorClass(errorClass);
+        errorResponse.setPath(request.getRequestURI());
+        errorResponse.setStatus(status.value());
+        errorResponse.setError(cause);
+        errorResponse.setStackTrace(stackTrace);
+        return ResponseEntity.status(status).body(errorResponse);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Object> handleRuntimeException(RuntimeException e) {
+        log.warn("Runtime exception occurred: {}", e.getMessage(), e);
+        return createResponseError(
+                e.getMessage(),
+                e.getClass().getName(),
+                e.getCause(),
+                e.getStackTrace(),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException e) {
+        log.warn("Illegal argument exception occurred: {}", e.getMessage(), e);
+        return createResponseError(
+                e.getMessage(),
+                e.getClass().getName(),
+                e.getCause(),
+                e.getStackTrace(),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
     @ExceptionHandler(ConstraintViolationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<String> handleConstraintViolationException(ConstraintViolationException ex) {
-        log.warn("start handleConstraintViolationException");
+    public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex) {
+        log.warn("ConstraintViolationException occurred: {}", ex.getMessage(), ex);
         String errorMessages = ex.getConstraintViolations().stream()
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining(", "));
-        return new ResponseEntity<>(errorMessages, HttpStatus.BAD_REQUEST);
+        return createResponseError(
+                errorMessages,
+                ConstraintViolationException.class.getName(),
+                ex.getCause(),
+                ex.getStackTrace(),
+                HttpStatus.BAD_REQUEST
+        );
     }
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex,
             HttpHeaders headers,
-            HttpStatusCode status, // Thay đổi từ HttpStatus sang HttpStatusCode
+            HttpStatusCode status,
             WebRequest request) {
+        log.warn("MethodArgumentNotValidException occurred: {}", ex.getMessage(), ex);
 
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", status.value());
+        Map<String, String> errors = ex.getBindingResult().getFieldErrors().stream()
+                .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
 
-        // Lấy danh sách các lỗi xác thực
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-
-        body.put("errors", errors);
-
-        return new ResponseEntity<>(body, headers, status);
+        return createResponseError(
+                "Validation failed",
+                MethodArgumentNotValidException.class.getName(),
+                null,
+                ex.getStackTrace(),
+                HttpStatus.BAD_REQUEST
+        );
     }
 
-    // Xử lý ngoại lệ ResourceNotFoundException
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Object> handleResourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.NOT_FOUND.value()); // Sử dụng HttpStatusCode
-        body.put("error", "Not Found");
-        body.put("message", ex.getMessage());
-        body.put("path", request.getDescription(false).replace("uri=", ""));
-
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    public ResponseEntity<Object> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        log.warn("ResourceNotFoundException occurred: {}", ex.getMessage(), ex);
+        return createResponseError(
+                ex.getMessage(),
+                ResourceNotFoundException.class.getName(),
+                null,
+                ex.getStackTrace(),
+                HttpStatus.NOT_FOUND
+        );
     }
 
-    // Xử lý các ngoại lệ khác dạng Exception (nếu cần)
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatusCode.valueOf(500).value());
-        body.put("error", "Internal Server Error");
-        body.put("message", ex.getMessage());
-        body.put("path", request.getDescription(false).replace("uri=", ""));
-
-        return new ResponseEntity<>(body, HttpStatusCode.valueOf(500));
+    public ResponseEntity<Object> handleAllExceptions(Exception ex) {
+        log.error("Unhandled exception occurred: {}", ex.getMessage(), ex);
+        return createResponseError(
+                "Internal server error",
+                ex.getClass().getName(),
+                ex.getCause(),
+                ex.getStackTrace(),
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
     }
 }

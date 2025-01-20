@@ -1,11 +1,11 @@
 package nvh.run.ideaswap.data.dto.auth.response;
 
 import lombok.Builder;
+import lombok.Getter;
 
 @Builder
+@Getter
 public class LoginResponse {
-    private boolean success;
-    private String message;
     private String accessToken;
     private String refreshToken;
 }

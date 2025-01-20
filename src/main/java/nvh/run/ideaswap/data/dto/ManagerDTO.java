@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import nvh.run.ideaswap.common.validator.IsObjectID;
+import nvh.run.ideaswap.data.entity.Gender;
 
 import java.time.LocalDate;
 
@@ -12,6 +14,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class ManagerDTO {
+    @IsObjectID
     private String id;
     private String firstName;
     private String lastName;
@@ -21,7 +24,8 @@ public class ManagerDTO {
     private String address;
     private String avatar;
     private LocalDate birthday;
-    private String gender;
+    private Gender gender;
+    @IsObjectID
     private String roleId;
 }
 

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -20,7 +21,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class Reports {
+public class Reports implements  java.io.Serializable , Cloneable {
     @Id
     private String id;
 
@@ -31,8 +32,8 @@ public class Reports {
 
     @Field("referenceID")
     @NotBlank(message = "ID tham chiếu không được để trống")
-    @DBRef
-    private Object referenceID;
+//    @DBRef
+    private ObjectId referenceID;
 
     @Field("userID")
     @NotBlank(message = "ID người dùng không được để trống")
@@ -47,7 +48,7 @@ public class Reports {
     @Field("status")
     @NotBlank(message = "Trạng thái không được để trống")
     @Size(max = 50, message = "Trạng tháikhông được quá 50 kí tự ")
-    private String status;
+    private Status status;
 
     @Field("moderatorID")
     @NotBlank(message = "moderatorID không được để trống")
@@ -59,4 +60,15 @@ public class Reports {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    @Override
+    public Reports clone() {
+        try {
+            Reports clone = (Reports) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

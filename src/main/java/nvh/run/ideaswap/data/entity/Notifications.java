@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -25,7 +26,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class Notifications {
+public class Notifications implements  java.io.Serializable , Cloneable {
     @Id
     private String id;
 
@@ -46,12 +47,13 @@ public class Notifications {
 
     @Field("userIDs")
     @NotNull(message = "Danh sách người dùng không được để trống")
-    private List<String> userIDs;
+    @DBRef
+    private List<Users> userIDs;
 
     @Field("actorID")
     @NotBlank(message = "ID diễn viên không được để trống")
-    @DBRef
-    private Object actorID;
+//    @DBRef
+    private ObjectId actorID;
 
     @Field("referenceType")
     @NotBlank(message = "referenceType không được để trống")
@@ -65,11 +67,22 @@ public class Notifications {
 
     @Field("referenceID")
     @NotBlank(message = "referenceID tham chiếu không được để trống")
-    private Object referenceID;
+    private ObjectId referenceID;
 
     @CreatedDate
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    @Override
+    public Notifications clone() {
+        try {
+            Notifications clone = (Notifications) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "blogs")
-public class Blogs {
+public class Blogs implements  java.io.Serializable , Cloneable {
     public String toJson() {
         try {
             return new ObjectMapper().writeValueAsString(this);
@@ -40,16 +40,16 @@ public class Blogs {
     private String url;
 
     @Field(name="userID")
-//    @DBRef
-    @DocumentReference
+    @DBRef
+//    @DocumentReference
     private Users userID;
 //    private ObjectId userID;
 //    private Object userID;
 //    private String userID;
 
     @Field(name="categoryID")
-    @DocumentReference
-//    @DBRef
+//    @DocumentReference
+    @DBRef
 //    private String categoryID;
     private Categories categoryID;
 
@@ -58,4 +58,15 @@ public class Blogs {
 
     @LastModifiedDate
     private LocalDateTime updatedDate;
+
+    @Override
+    public Blogs clone() {
+        try {
+            Blogs clone = (Blogs) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

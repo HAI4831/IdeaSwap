@@ -7,10 +7,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import nvh.run.ideaswap.common.validator.UniquePhoneNumber;
 import nvh.run.ideaswap.common.validator.UniqueUsername;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -21,7 +23,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class Users {
+public class Users implements  java.io.Serializable , Cloneable {
 
     @Id
     private String id;
@@ -51,6 +53,7 @@ public class Users {
 
     @Field("phoneNumber")
     @Size(max = 10, message = "Số điện thoại không được vượt quá 10 ký tự")
+    @UniquePhoneNumber
     private String phoneNumber;
 
     @Field("address")
@@ -66,13 +69,13 @@ public class Users {
     private String avatar;
 
     @Field("gender")
-    private String gender;
+    private Gender gender;
 
     @Field("rating")
     private int rating;
 
-//    @DBRef
     @Field("roleID")
+    @DBRef
 //    private Object roleID;
     private Roles roleID;
 
@@ -113,5 +116,16 @@ public class Users {
         this.description = other.description;
         this.createdAt = other.createdAt;
         this.updatedAt = other.updatedAt;
+    }
+
+    @Override
+    public Users clone() {
+        try {
+            Users clone = (Users) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

@@ -1,13 +1,18 @@
 package nvh.run.ideaswap.data.dto.auth.request;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import nvh.run.ideaswap.common.validator.UniqueEmail;
 import nvh.run.ideaswap.common.validator.UniqueUsername;
+import nvh.run.ideaswap.data.entity.Gender;
+
+import java.time.LocalDateTime;
 
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RegisterRequest {
 
     @NotBlank(message = "Tên không được để trống")
@@ -32,4 +37,12 @@ public class RegisterRequest {
     @NotBlank(message = "Mật khẩu không được để trống")
     @Size(min = 8, message = "Mật khẩu phải có ít nhất 8 ký tự")
     private String password;
+
+    private String phoneNumber;
+    private String address;
+    private String avatar;
+    private Gender gender;
+    private int rating;
+    private String description;
+    private LocalDateTime birthday;
 }

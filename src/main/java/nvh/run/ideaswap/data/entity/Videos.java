@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class Videos {
+public class Videos implements  java.io.Serializable , Cloneable {
     @Id
     private String id;
 
@@ -63,4 +63,15 @@ public class Videos {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    @Override
+    public Videos clone() {
+        try {
+            Videos clone = (Videos) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

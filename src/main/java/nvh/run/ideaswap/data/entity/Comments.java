@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -20,7 +21,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "comments")
-public class Comments {
+public class Comments implements  java.io.Serializable , Cloneable {
 
     @Id
     private String id;
@@ -29,15 +30,14 @@ public class Comments {
     @Size(max = 1000, message = "Nội dung không được quá 1000 ký tự")
     private String content;
 
-    private Object parentCommentID;
+    private ObjectId parentCommentID;
 
     @Field(name="userID")
     @NotBlank(message = "ID người dùng không được để trống")
     @DBRef
-    private String userID;
+    private Users userID;
 
     @Field(name = "referenceID")
-    @DBRef
     private Object referenceID;
 
     @CreatedDate
@@ -45,4 +45,15 @@ public class Comments {
 
     @LastModifiedDate
     private LocalDateTime updatedDate;
+
+    @Override
+    public Comments clone() {
+        try {
+            Comments clone = (Comments) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }
