@@ -75,15 +75,15 @@ public class SpringSecurityConfig {
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .requestMatchers("/superadmin/**").hasAuthority("SUPERADMIN")
                         .anyRequest()
-                        .permitAll()
-//                        .authenticated()
+//                        .permitAll()
+                        .authenticated()
                 );
 //                .exceptionHandling()
 //                .authenticationEntryPoint(spnegoEntryPoint())
 //                .and()
-        http.exceptionHandling(ex->ex.authenticationEntryPoint(new AuthEntryPointJwt()));
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.exceptionHandling(ex->ex.authenticationEntryPoint(new AuthEntryPointJwt()));
         http.logout(logout -> logout
                 .logoutUrl("/logout") // Đặt URL logout tùy chỉnh
                 .logoutSuccessUrl("/home") // Chuyển hướng sau khi logout thành công

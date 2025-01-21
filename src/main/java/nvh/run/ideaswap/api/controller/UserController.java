@@ -1,8 +1,8 @@
 package nvh.run.ideaswap.api.controller;
 
 import lombok.RequiredArgsConstructor;
+import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.service.UserService;
-import nvh.run.ideaswap.data.dto.UserDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -37,23 +37,23 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createUser(@Validated @RequestBody UserDTO userDTO) {
+    public ResponseEntity<Object> createUser(@Validated @RequestBody Users user) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
                         "message", "User created successfully",
-                        "user", userService.createUser(userDTO)
+                        "user", userService.createUser(user)
                 )
         );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateUser(@PathVariable String id, @Validated @RequestBody UserDTO userDTO) {
+    public ResponseEntity<Object> updateUser(@PathVariable String id, @Validated @RequestBody Users user) {
         return ResponseEntity.status(200).body(
                 Map.of(
                         "success", true,
                         "message", "User updated successfully",
-                        "user", userService.updateUser(id, userDTO)
+                        "user", userService.updateUser(id, user)
                 )
         );
     }

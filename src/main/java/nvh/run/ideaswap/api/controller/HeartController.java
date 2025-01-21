@@ -2,7 +2,7 @@ package nvh.run.ideaswap.api.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import nvh.run.ideaswap.data.dto.HeartDTO;
+import nvh.run.ideaswap.data.entity.Hearts;
 import nvh.run.ideaswap.service.HeartService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +12,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/heart")
 @RequiredArgsConstructor
-public class HeartController {
+public class    HeartController {
     private final HeartService heartService;
 
     @GetMapping
@@ -20,7 +20,7 @@ public class HeartController {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
-                        "message", "Retrieve hearts successfully",
+                        "message", "Retrieve hearts List successfully",
                         "hearts", heartService.getAllHearts()
                 )
         );
@@ -31,7 +31,7 @@ public class HeartController {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
-                        "message", "Retrieve hearts by user successfully",
+                        "message", "Retrieve hearts by user ID successfully",
                         "hearts", heartService.getHeartsByUserID(userID)
                 )
         );
@@ -42,19 +42,19 @@ public class HeartController {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
-                        "message", "Heart created successfully"
+                        "message", "Retrieve hearts by reference successfully"
                         , "heart", heartService.getHeartsByReferenceID(referenceID)
                 )
         );
     }
 
     @PostMapping
-    public ResponseEntity<Object> createHeart(@Valid @RequestBody HeartDTO heartDTO) {
+    public ResponseEntity<Object> createHeart(@Valid @RequestBody Hearts heart) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
-                        "message", "Heart deleted successfully",
-                        "heart", heartService.createHeart(heartDTO)
+                        "message", "Heart created successfully",
+                        "heart", heartService.createHeart(heart)
                 ));
 
     }
@@ -64,7 +64,7 @@ public class HeartController {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
-                        "message", "Retrieve hearts by reference successfully",
+                        "message", "Heart deleted successfully",
                         "hearts", heartService.deleteHeart(id)
                 )
         );

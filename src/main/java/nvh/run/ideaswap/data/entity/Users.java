@@ -2,13 +2,13 @@ package nvh.run.ideaswap.data.entity;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import nvh.run.ideaswap.common.validator.UniquePhoneNumber;
-import nvh.run.ideaswap.common.validator.UniqueUsername;
+import nvh.run.ideaswap.common.validator.IsObjectID;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -16,75 +16,67 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-
+//c1
 @Document(collection = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class Users implements  java.io.Serializable , Cloneable {
+public class Users
+//        implements  java.io.Serializable , Cloneable
+{
 
     @Id
+    @IsObjectID
     private String id;
 
-    @Field("firstName")
     @NotBlank(message = "Tên không được để trống")
     @Size(max = 100, message = "Tên không được vượt quá 100 ký tự")
     private String firstName;
 
-    @Field("lastName")
     @NotBlank(message = "Họ không được để trống")
     @Size(max = 100, message = "Họ không được vượt quá 100 ký tự")
     private String lastName;
 
-    @Field("username")
     @NotBlank(message = "Tên người dùng không được để trống")
     @Size(max = 50, message = "Tên người dùng không được vượt quá 50 ký tự")
-    @UniqueUsername
+//    @UniqueUsername
     private String username;
 
-    @Field("email")
     @Email(message = "Email không hợp lệ")
     @NotBlank(message = "Email không được để trống")
     @Size(max = 320, message = "Email không được vượt quá 320 ký tự")
-    @UniqueUsername
+//    @UniqueUsername
     private String email;
 
-    @Field("phoneNumber")
     @Size(max = 10, message = "Số điện thoại không được vượt quá 10 ký tự")
-    @UniquePhoneNumber
+//    @UniquePhoneNumber
     private String phoneNumber;
 
-    @Field("address")
     @Size(max = 1000, message = "Địa chỉ không được vượt quá 1000 ký tự")
     private String address;
 
-    @Field("password")
     @NotBlank(message = "Mật khẩu không được để trống")
     @Size(min = 7, message = "Mật khẩu phải có ít nhất 7 ký tự")
     private String password;
 
-    @Field("avatar")
     private String avatar;
 
-    @Field("gender")
+    @NotNull(message = "gender can not null")
     private Gender gender;
 
-    @Field("rating")
     private int rating;
 
-    @Field("roleID")
     @DBRef
 //    private Object roleID;
     private Roles roleID;
 
-    @Field("description")
     @Size(max = 5000, message = "Mô tả không được vượt quá 5000 ký tự")
     private String description;
 
-    @Field("birthday")
-    private LocalDateTime birthday;
+    private LocalDate birthday;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -118,14 +110,14 @@ public class Users implements  java.io.Serializable , Cloneable {
         this.updatedAt = other.updatedAt;
     }
 
-    @Override
-    public Users clone() {
-        try {
-            Users clone = (Users) super.clone();
-            // TODO: copy mutable state here, so the clone can't change the internals of the original
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
-    }
+//    @Override
+//    public Users clone() {
+//        try {
+//            Users clone = (Users) super.clone();
+//            // TODO: copy mutable state here, so the clone can't change the internals of the original
+//            return clone;
+//        } catch (CloneNotSupportedException e) {
+//            throw new AssertionError();
+//        }
+//    }
 }

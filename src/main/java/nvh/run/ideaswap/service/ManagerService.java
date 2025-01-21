@@ -3,7 +3,6 @@ package nvh.run.ideaswap.service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import nvh.run.ideaswap.data.dto.ManagerDTO;
 import nvh.run.ideaswap.data.entity.Managers;
 import nvh.run.ideaswap.data.repository.ManagerRepository;
 import org.springframework.stereotype.Service;
@@ -18,42 +17,55 @@ import java.util.List;
 public class ManagerService {
     ManagerRepository managerRepository;
 
-    public ManagerDTO getAllManagers() {
-        List<Managers> managers = managerRepository.findAll();
-        return ManagerDTO.builder().build();
+    public List<Managers> getAllManagers() {
+        List<Managers> managers ;
+        try {
+            managers = managerRepository.findAll();
+        } catch (Exception e) {
+            throw new RuntimeException("Get all managers failed",e);
+        }
+        return managers;
     }
 
-    public ManagerDTO getManagerById(String id) {
-        Managers manager = managerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Manager not found"));
-        return ManagerDTO.builder().build();
+    public Managers getManagerById(String id) {
+        Managers manager ;
+        try {
+            manager = managerRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Manager not found"));
+        } catch (Exception e) {
+            throw new RuntimeException("Get manager failed",e);
+        }
+        return manager;
     }
 
-    public ManagerDTO createManager(ManagerDTO managerDTO) {
-        Managers manager = managerRepository.save(
-                Managers.builder()
-                        .firstName(managerDTO.getFirstName())
-                        .lastName(managerDTO.getLastName())
-                        .username(managerDTO.getUsername())
-                        .email(managerDTO.getEmail())
-                        .phoneNumber(managerDTO.getPhoneNumber())
-                        .build()
-        );
-        return ManagerDTO.builder().build();
+    public Managers createManager(Managers manager) {
+        try {
+            manager = managerRepository.save(manager);
+        } catch (Exception e) {
+            throw new RuntimeException("Create manager failed",e);
+        }
+        return manager;
     }
 
-    public ManagerDTO updateManager(String id, ManagerDTO managerDTO) {
-        Managers existingManager = managerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Manager not found"));
-        existingManager.setFirstName(managerDTO.getFirstName());
-        existingManager.setLastName(managerDTO.getLastName());
-        managerRepository.save(existingManager);
-        return ManagerDTO.builder().build();
+    public Managers updateManager(String id, Managers manager) {
+        getManagerById(id);
+        manager.setId(id);
+        try {
+            manager = managerRepository.save(manager);
+        } catch (Exception e) {
+            throw new RuntimeException("Update manager failed",e);
+        }
+        return manager;
     }
 
-    public ManagerDTO deleteManager(String id) {
-        managerRepository.deleteById(id);
-        return ManagerDTO.builder().build();
+    public Managers deleteManager(String id) {
+        Managers manager = getManagerById(id);
+        try {
+            managerRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Delete manager failed",e);
+        }
+        return manager;
     }
 }
 

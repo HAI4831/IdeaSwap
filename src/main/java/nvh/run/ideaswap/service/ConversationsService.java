@@ -3,7 +3,6 @@ package nvh.run.ideaswap.service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import nvh.run.ideaswap.data.dto.ConversationsDTO;
 import nvh.run.ideaswap.data.entity.Conversations;
 import nvh.run.ideaswap.data.repository.ConversationsRepository;
 import org.springframework.stereotype.Service;
@@ -18,42 +17,53 @@ import java.util.List;
 public class ConversationsService {
     ConversationsRepository conversationsRepository;
 
-    public ConversationsDTO getAllConversations() {
-        List<Conversations> conversations = conversationsRepository.findAll();
-        return ConversationsDTO.builder().build();
+    public List<Conversations> getAllConversations() {
+        List<Conversations> conversations;
+        try {
+            conversations = conversationsRepository.findAll();
+        } catch (Exception e) {
+            throw new RuntimeException("Get all conversations failed",e);
+        }
+        return conversations;
     }
 
-    public ConversationsDTO getConversationById(String id) {
-        Conversations conversation = conversationsRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Conversation not found"));
-        return ConversationsDTO.builder().build();
+    public Conversations getConversationById(String id) {
+        Conversations conversation;
+        try {
+            conversation = conversationsRepository.findById(id).orElseThrow(() -> new RuntimeException("Conversation not found"));
+        } catch (Exception e) {
+            throw new RuntimeException("Get conversation failed",e);
+        }
+        return conversation;
     }
 
-    public ConversationsDTO createConversation(ConversationsDTO conversationsDTO) {
-        Conversations conversation = conversationsRepository.save(
-                Conversations.builder()
-                        .members(conversationsDTO.getMembers())
-                        .wallpaperUrl(conversationsDTO.getWallpaperUrl())
-                        .build()
-        );
-        return ConversationsDTO.builder().build();
+    public Conversations createConversation(Conversations conversation) {
+        try {
+            conversation = conversationsRepository.save(conversation);
+        } catch (Exception e) {
+            throw new RuntimeException("Create conversation failed",e);
+        }
+        return conversation;
     }
 
-    public ConversationsDTO updateConversation(String id, ConversationsDTO conversationsDTO) {
+    public Conversations updateConversation(String id, Conversations conversation) {
         getConversationById(id);
-        Conversations updatedConversation = conversationsRepository.save(
-                Conversations.builder()
-                        .id(id)
-                        .members(conversationsDTO.getMembers())
-                        .wallpaperUrl(conversationsDTO.getWallpaperUrl())
-                        .build()
-        );
-        return ConversationsDTO.builder().build();
+        Conversations updatedConversation;
+        try {
+            updatedConversation = conversationsRepository.save(conversation);
+        } catch (Exception e) {
+            throw new RuntimeException("Update conversation failed",e);
+        }
+        return updatedConversation;
     }
 
-    public ConversationsDTO deleteConversation(String id) {
-        getConversationById(id);
-        conversationsRepository.deleteById(id);
-        return ConversationsDTO.builder().build();
+    public Conversations deleteConversation(String id) {
+        Conversations conversation = getConversationById(id);
+        try {
+            conversationsRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Delete conversation failed",e);
+        }
+        return conversation;
     }
 }

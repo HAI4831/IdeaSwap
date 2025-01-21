@@ -12,14 +12,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class ErrorResponse {
-    private LocalDateTime timestamp;
-    private boolean success;
-    private String message;
+    private int status=400;
+    private boolean success=false;
+    private String message="Something went wrong";
+    String error="Something went err";
     private String errorClass;
     private String path;
-    private int status;
-    private String exceptionDetails;
-    Throwable error;
-    StackTraceElement[] stackTrace;
+//    private String exceptionDetails;
+    private LocalDateTime timestamp;
+//    Throwable error;
+//    StackTraceElement[] stackTrace;
 }
 

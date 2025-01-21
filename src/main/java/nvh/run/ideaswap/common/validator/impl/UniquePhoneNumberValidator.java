@@ -19,7 +19,7 @@ public class UniquePhoneNumberValidator implements ConstraintValidator<UniquePho
 
     @Override
     public boolean isValid(String phoneNumber, ConstraintValidatorContext context) {
-        if (phoneNumber == null) {
+        if (phoneNumber == null || phoneNumber.isEmpty()) {
             return true; // Nếu email là null thì không kiểm tra, sẽ bị kiểm tra bởi @NotNull nếu cần
         }
         return !iUserService.existsByPhoneNumber(phoneNumber);

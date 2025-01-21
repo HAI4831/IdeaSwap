@@ -2,7 +2,7 @@ package nvh.run.ideaswap.api.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import nvh.run.ideaswap.data.dto.CoursesDTO;
+import nvh.run.ideaswap.data.entity.Courses;
 import nvh.run.ideaswap.service.CoursesService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,23 +38,23 @@ public class CoursesController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createCourse(@Valid @RequestBody CoursesDTO coursesDTO) {
+    public ResponseEntity<Object> createCourse(@Valid @RequestBody Courses course) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
                         "message", "Course created successfully",
-                        "course", coursesService.createCourse(coursesDTO)
+                        "course", coursesService.createCourse(course)
                 )
         );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateCourse(@PathVariable String id, @Valid @RequestBody CoursesDTO coursesDTO) {
+    public ResponseEntity<Object> updateCourse(@PathVariable String id, @Valid @RequestBody Courses course) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
                         "message", "Course updated successfully",
-                        "course", coursesService.updateCourse(id, coursesDTO)
+                        "course", coursesService.updateCourse(id, course)
                 )
         );
     }

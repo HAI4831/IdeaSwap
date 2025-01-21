@@ -2,7 +2,7 @@ package nvh.run.ideaswap.api.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import nvh.run.ideaswap.data.dto.FollowDTO;
+import nvh.run.ideaswap.data.entity.Follows;
 import nvh.run.ideaswap.service.FollowService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +20,7 @@ public class FollowController {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
-                        "message", "Retrieve follows successfully",
+                        "message", "Retrieve follow list successfully",
                         "follows", followService.getAllFollows()
                 )
         );
@@ -31,19 +31,19 @@ public class FollowController {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
-                        "message", "Retrieve follows by user successfully",
+                        "message", "Retrieve follows by user ID successfully",
                         "follows", followService.getFollowsByUserID(userID)
                 )
         );
     }
 
     @PostMapping
-    public ResponseEntity<Object> createFollow(@Valid @RequestBody FollowDTO followDTO) {
+    public ResponseEntity<Object> createFollow(@Valid @RequestBody Follows follow) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
                         "message", "Follow created successfully",
-                        "follow", followService.createFollow(followDTO)
+                        "follow", followService.createFollow(follow)
                 )
         );
     }
@@ -64,8 +64,8 @@ public class FollowController {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
-                        "message", "Retrieve followers successfully",
-                        "followers", followService.getFollowersByUserID(userID)
+                        "message", "Retrieve followers by user ID successfully",
+                        "followers", followService.getFollowsByUserID(userID)
                 )
         );
     }

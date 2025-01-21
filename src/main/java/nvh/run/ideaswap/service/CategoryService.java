@@ -3,7 +3,6 @@ package nvh.run.ideaswap.service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import nvh.run.ideaswap.data.dto.CategoryDTO;
 import nvh.run.ideaswap.data.entity.Categories;
 import nvh.run.ideaswap.data.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
@@ -17,17 +16,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryService {
     CategoryRepository categoryRepository;
-    public List<CategoryDTO> getAllCategories() {
-        List<CategoryDTO> categoryDTOList;
+    public List<Categories> getAllCategories() {
+        List<Categories> categoryList;
         try{
-            categoryDTOList =categoryRepository.findAll().stream().map(category -> CategoryDTO.builder().build()).toList();
+            categoryList =categoryRepository.findAll();
         }catch (Exception e){
             throw new RuntimeException("Retrieve List Categories failed",e);
         }
-        return categoryDTOList;
+        return categoryList;
     }
 
-    public CategoryDTO getCategoryById(String id) {
+    public Categories getCategoryById(String id) {
         Categories category;
         try {
              category= categoryRepository.findById(id)
@@ -35,53 +34,41 @@ public class CategoryService {
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while retrieving the category", e);
         }
-        return CategoryDTO.builder().build();
+        return category;
     }
 
-    public CategoryDTO createCategory(CategoryDTO categoryDTO) {
+    public Categories createCategory(Categories category) {
         Categories categorySaved;
         try {
             categorySaved=categoryRepository.save(
-                    Categories.builder()
-                            .name(categoryDTO.getName())
-                            .description(categoryDTO.getDescription())
-                            .build()
+                    category
             );
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while creating the category", e);
         }
-        return CategoryDTO.builder().build();
+        return categorySaved;
     }
 
-    public CategoryDTO updateCategory(String id, CategoryDTO categoryDTO) {
+    public Categories updateCategory(String id, Categories category) {
         getCategoryById(id);
         Categories categoryUpdated;
+        category.setId(id);
        try {
-           categoryUpdated=categoryRepository.save(
-                   Categories.builder()
-                           .id(id)
-                           .name(categoryDTO.getName())
-                           .description(categoryDTO.getDescription())
-                           .build()
-           );
+           categoryUpdated=categoryRepository.save(category);
        } catch (Exception e) {
            throw new RuntimeException("An error occurred while updating the category", e);
        }
-       return CategoryDTO.builder().build();
+       return categoryUpdated;
     }
 
-    public CategoryDTO deleteCategory(String id) {
+    public Categories deleteCategory(String id) {
         Categories categories = getCategoryById(id);
-//        ResponseEntity<Object> response = getCategoryById(id);
-//        Map<String, Object> responseBody =  new HashMap<>((Map<String, Object>) response.getBody());
-//        responseBody.put("message", "Delete Category successfully");
-
         try {
             categoryRepository.deleteById(id);
         }catch (Exception e){
             throw new RuntimeException("An error occurred while deleting the category", e);
         }
-        return CategoryDTO.builder().build();
+        return categories;
     }
 
 }

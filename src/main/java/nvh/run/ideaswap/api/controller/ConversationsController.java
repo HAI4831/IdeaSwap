@@ -2,7 +2,7 @@ package nvh.run.ideaswap.api.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import nvh.run.ideaswap.data.dto.ConversationsDTO;
+import nvh.run.ideaswap.data.entity.Conversations;
 import nvh.run.ideaswap.service.ConversationsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,23 +38,23 @@ public class ConversationsController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createConversation(@Valid @RequestBody ConversationsDTO conversationsDTO) {
+    public ResponseEntity<Object> createConversation(@Valid @RequestBody Conversations conversation) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
                         "message", "Conversation created successfully",
-                        "conversation", conversationsService.createConversation(conversationsDTO)
+                        "conversation", conversationsService.createConversation(conversation)
                 )
         );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateConversation(@PathVariable String id, @Valid @RequestBody ConversationsDTO conversationsDTO) {
+    public ResponseEntity<Object> updateConversation(@PathVariable String id, @Valid @RequestBody Conversations conversation) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
                         "message", "Conversation updated successfully",
-                        "conversation", conversationsService.updateConversation(id, conversationsDTO)
+                        "conversation", conversationsService.updateConversation(id, conversation)
                 )
         );
     }

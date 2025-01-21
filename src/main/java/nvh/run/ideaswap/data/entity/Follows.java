@@ -5,29 +5,31 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import nvh.run.ideaswap.common.validator.IsObjectID;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
-
+//c2
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "follows")
-public class Follows implements  java.io.Serializable , Cloneable {
+public class Follows
+//        implements  java.io.Serializable , Cloneable
+{
     @Id
+    @IsObjectID
     private String id;
 
     @NotBlank(message = "ID người theo dõi không được để trống")
     @DBRef
-    private Follows followerID;
+    private Users followerID;
 
-    @Field("userID")
     @DBRef
     @NotBlank(message = "ID người dùng không được để trống")
     private Users userID;
@@ -38,14 +40,14 @@ public class Follows implements  java.io.Serializable , Cloneable {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @Override
-    public Follows clone() {
-        try {
-            Follows clone = (Follows) super.clone();
-            // TODO: copy mutable state here, so the clone can't change the internals of the original
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
-    }
+//    @Override
+//    public Follows clone() {
+//        try {
+//            Follows clone = (Follows) super.clone();
+//            // TODO: copy mutable state here, so the clone can't change the internals of the original
+//            return clone;
+//        } catch (CloneNotSupportedException e) {
+//            throw new AssertionError();
+//        }
+//    }
 }

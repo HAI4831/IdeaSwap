@@ -1,44 +1,45 @@
 package nvh.run.ideaswap.data.entity;
 
 //import jakarta.persistence.Column;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import nvh.run.ideaswap.common.validator.IsObjectID;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
-import java.time.LocalDateTime;
 
+import java.time.LocalDateTime;
+//c1
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "codes")
-public class Codes implements  java.io.Serializable , Cloneable {
+public class Codes
+//        implements  java.io.Serializable , Cloneable
+{
+
     @Id
+    @IsObjectID
     private String id;
 
     @NotBlank(message = "Code cannot be empty")
-
-//    @Column(name = "code",nullable = false,unique = true,length = 10,columnDefinition = "INT UNSIGNED DEFAULT 0")
-    @Field("code")
-    private int code;
+    private int code=0;
 
     @NotBlank(message = "Code expiration cannot be empty")
     private LocalDateTime codeExpiration;
 
-    @NotBlank(message = "User email cannot be empty")
     @Size(max = 255)
-    @Field("userEmail")
-    private String userEmail;
+    private String userEmail;// tham chiếu tới email của user có kiểu string
 
-    @DBRef(lazy = true)
+    @DBRef
     private Users user;
 
     @CreatedDate
@@ -47,14 +48,15 @@ public class Codes implements  java.io.Serializable , Cloneable {
     @LastModifiedDate
     private LocalDateTime updatedDate;
 
-    @Override
-    public Codes clone() {
-        try {
-            Codes clone = (Codes) super.clone();
-            // TODO: copy mutable state here, so the clone can't change the internals of the original
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
-    }
+//    @Override
+//    public Codes clone() {
+//        try {
+//            Codes clone = (Codes) super.clone();
+//            // TODO: copy mutable state here, so the clone can't change the internals of the original
+//            return clone;
+//        } catch (CloneNotSupportedException e) {
+//            throw new AssertionError();
+//        }
+//    }
 }
+//    @Column(name = "code",nullable = false,unique = true,length = 10,columnDefinition = "INT UNSIGNED DEFAULT 0")

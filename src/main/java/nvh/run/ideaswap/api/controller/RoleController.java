@@ -3,7 +3,7 @@ package nvh.run.ideaswap.api.controller;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import nvh.run.ideaswap.data.dto.RoleDTO;
+import nvh.run.ideaswap.data.entity.Roles;
 import nvh.run.ideaswap.service.RoleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -42,23 +42,23 @@ public class RoleController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createRole(@Validated @RequestBody RoleDTO roleDTO) {
+    public ResponseEntity<Object> createRole(@Validated @RequestBody Roles role) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
                         "message", "Create Role successfully",
-                        "role", roleService.createRole(roleDTO)
+                        "role", roleService.createRole(role)
                 )
         );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateRole(@PathVariable("id") String id, @Validated @RequestBody RoleDTO roleDTO) {
+    public ResponseEntity<Object> updateRole(@PathVariable("id") String id, @Validated @RequestBody Roles role) {
         return ResponseEntity.status(200).body(
                 Map.of(
                         "success", true,
                         "message", "Update Role successfully",
-                        "role", roleService.updateRole(id, roleDTO)
+                        "role", roleService.updateRole(id, role)
                 )
         );
     }

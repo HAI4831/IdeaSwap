@@ -3,8 +3,6 @@ package nvh.run.ideaswap.service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import nvh.run.ideaswap.data.dto.CoursesDTO;
-import nvh.run.ideaswap.data.entity.Categories;
 import nvh.run.ideaswap.data.entity.Courses;
 import nvh.run.ideaswap.data.repository.CategoryRepository;
 import nvh.run.ideaswap.data.repository.CoursesRepository;
@@ -21,65 +19,78 @@ public class CoursesService {
     CoursesRepository coursesRepository;
     CategoryRepository categoryRepository;
 
-    public CoursesDTO getAllCourses() {
-        List<Courses> courses = coursesRepository.findAll();
-        return CoursesDTO.builder().build();
+    public List<Courses> getAllCourses() {
+        List<Courses> courseList;
+        try {
+            courseList = coursesRepository.findAll();
+        } catch (Exception e) {
+            throw new RuntimeException("Retrieve List Courses failed",e);
+        }
+        return courseList;
     }
 
-    public CoursesDTO getCourseById(String id) {
-        Courses course = coursesRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Course not found"));
-        return CoursesDTO.builder().build();
+    public Courses getCourseById(String id) {
+        Courses course;
+        try {
+            course = coursesRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Course not found"));
+        } catch (Exception e) {
+            throw new RuntimeException("Course not found",e);
+        }
+        return course;
     }
 
-    public CoursesDTO createCourse(CoursesDTO coursesDTO) {
-        Categories category = categoryRepository.findById(coursesDTO.getCategoryId()).orElseThrow(()->new RuntimeException("Category not found"));
-        Courses course = coursesRepository.save(
-                Courses.builder()
-                        .userID(null) // Resolve Users entity reference in actual implementation
-                        .categoryID(category)
-                        .title(coursesDTO.getTitle())
-                        .description(coursesDTO.getDescription())
-                        .imageUrl(coursesDTO.getImageUrl())
-                        .view(coursesDTO.getView())
-                        .build()
-        );
-        return CoursesDTO.builder().build();
+    public Courses createCourse(Courses course) {
+        try {
+            course = coursesRepository.save(course);
+        } catch (Exception e) {
+            throw new RuntimeException("An error occurred while creating the course",e);
+        }
+        return Courses.builder().build();
     }
 
-    public CoursesDTO updateCourse(String id, CoursesDTO coursesDTO) {
+    public Courses updateCourse(String id, Courses course) {
         getCourseById(id);
-        Categories category = categoryRepository.findById(coursesDTO.getCategoryId()).orElseThrow(()->new RuntimeException("Category not found"));
-        Courses updatedCourse = coursesRepository.save(
-                Courses.builder()
-                        .id(id)
-                        .userID(null) // Resolve Users entity reference
-                        .categoryID(category)
-                        .title(coursesDTO.getTitle())
-                        .description(coursesDTO.getDescription())
-                        .imageUrl(coursesDTO.getImageUrl())
-                        .view(coursesDTO.getView())
-                        .build()
-        );
-        return CoursesDTO.builder().build();
+        course.setId(id);
+        Courses updatedCourse ;
+        try {
+            updatedCourse = coursesRepository.save(course);
+        } catch (Exception e) {
+            throw new RuntimeException("An error occurred while updating the course",e);
+        }
+        return course;
     }
 
-    public CoursesDTO deleteCourse(String id) {
-        getCourseById(id);
-        coursesRepository.deleteById(id);
-        return CoursesDTO.builder().build();
+    public Courses deleteCourse(String id) {
+        Courses courses = getCourseById(id);
+        try {
+            coursesRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new RuntimeException("An error occurred while deleting the course",e);
+        }
+        return courses;
     }
 
-    public CoursesDTO incrementView(String id) {
-        Courses course = coursesRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Course not found"));
+    public Courses incrementView(String id) {
+        Courses course ;
+        try {
+            course = coursesRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Course not found"));
+        } catch (Exception e) {
+            throw new RuntimeException("An error occurred while retrieving the course",e);
+        }
         course.setView(course.getView() + 1);
         coursesRepository.save(course);
-        return CoursesDTO.builder().build();
+        return course;
     }
 
-    public CoursesDTO searchCourses(String keyword) {
-        List<Courses> courses = coursesRepository.findByTitleContainingIgnoreCase(keyword);
-        return CoursesDTO.builder().build();
+    public List<Courses> searchCourses(String keyword) {
+        List<Courses> courses ;
+        try {
+            courses = coursesRepository.findByTitleContainingIgnoreCase(keyword);
+        } catch (Exception e) {
+            throw new RuntimeException("An error occurred while searching the course",e);
+        }
+        return courses;
     }
 }

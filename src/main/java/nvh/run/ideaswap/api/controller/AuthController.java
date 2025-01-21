@@ -32,7 +32,7 @@ public class AuthController {
                 Map.of(
                         "success", true,
                         "message", "User registered successfully",
-                        "user", authService.register(registerRequest)
+                        "user", authService.register(registerRequest).getUser()
                 )
         );
     }

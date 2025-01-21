@@ -2,7 +2,7 @@ package nvh.run.ideaswap.api.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import nvh.run.ideaswap.data.dto.CensorshipsDTO;
+import nvh.run.ideaswap.data.entity.Censorships;
 import nvh.run.ideaswap.service.CensorshipsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,23 +38,23 @@ public class CensorshipsController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createCensorship(@Valid @RequestBody CensorshipsDTO censorshipsDTO) {
+    public ResponseEntity<Object> createCensorship(@Valid @RequestBody Censorships censorship) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
                         "message", "Censorship created successfully",
-                        "censorship", censorshipsService.createCensorship(censorshipsDTO)
+                        "censorship", censorshipsService.createCensorship(censorship)
                 )
         );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateCensorship(@PathVariable String id, @Valid @RequestBody CensorshipsDTO censorshipsDTO) {
+    public ResponseEntity<Object> updateCensorship(@PathVariable String id, @Valid @RequestBody Censorships censorship) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
                         "message", "Censorship updated successfully",
-                        "censorship", censorshipsService.updateCensorship(id, censorshipsDTO)
+                        "censorship", censorshipsService.updateCensorship(id, censorship)
                 )
         );
     }

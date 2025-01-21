@@ -3,9 +3,7 @@ package nvh.run.ideaswap.service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import nvh.run.ideaswap.data.dto.CensorshipsDTO;
 import nvh.run.ideaswap.data.entity.Censorships;
-import nvh.run.ideaswap.data.entity.Status;
 import nvh.run.ideaswap.data.repository.CensorshipsRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,44 +17,55 @@ import java.util.List;
 public class CensorshipsService {
     CensorshipsRepository censorshipsRepository;
 
-    public CensorshipsDTO getAllCensorships() {
-        List<Censorships> censorships = censorshipsRepository.findAll();
-        return CensorshipsDTO.builder().build();
+    public List<Censorships> getAllCensorships() {
+        List<Censorships> censorships;
+        try {
+            censorships = censorshipsRepository.findAll();
+        } catch (Exception e) {
+            throw new RuntimeException("Get all censorships failed",e);
+        }
+        return censorships;
     }
 
-    public CensorshipsDTO getCensorshipById(String id) {
-        Censorships censorship = censorshipsRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Censorship not found"));
-        return CensorshipsDTO.builder().build();
+    public Censorships getCensorshipById(String id) {
+        Censorships censorship;
+        try {
+            censorship = censorshipsRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Censorship not found"));
+        } catch (Exception e) {
+            throw new RuntimeException("Get censorship failed",e);
+        }
+        return censorship;
     }
 
-    public CensorshipsDTO createCensorship(CensorshipsDTO censorshipsDTO) {
-        Censorships censorship = censorshipsRepository.save(
-                Censorships.builder()
-                        .contentID(censorshipsDTO.getContentID())
-                        .status(censorshipsDTO.getStatus() == null ? Status.PENDING : censorshipsDTO.getStatus())
-                        .feedback(censorshipsDTO.getFeedback())
-                        .build()
-        );
-        return CensorshipsDTO.builder().build();
+    public Censorships createCensorship(Censorships censorship) {
+        try {
+            censorship = censorshipsRepository.save(censorship);
+        } catch (Exception e) {
+            throw new RuntimeException("Create censorship failed",e);
+        }
+        return censorship;
     }
 
-    public CensorshipsDTO updateCensorship(String id, CensorshipsDTO censorshipsDTO) {
+    public Censorships updateCensorship(String id, Censorships censorship) {
         getCensorshipById(id);
-        Censorships updatedCensorship = censorshipsRepository.save(
-                Censorships.builder()
-                        .id(id)
-                        .contentID(censorshipsDTO.getContentID())
-                        .status(censorshipsDTO.getStatus())
-                        .feedback(censorshipsDTO.getFeedback())
-                        .build()
-        );
-        return CensorshipsDTO.builder().build();
+        Censorships updatedCensorship;
+        censorship.setId(id);
+        try {
+            updatedCensorship = censorshipsRepository.save(censorship);
+        } catch (Exception e) {
+            throw new RuntimeException("Update censorship failed",e);
+        }
+        return updatedCensorship;
     }
 
-    public CensorshipsDTO deleteCensorship(String id) {
-        getCensorshipById(id);
-        censorshipsRepository.deleteById(id);
-        return CensorshipsDTO.builder().build();
+    public Censorships deleteCensorship(String id) {
+        Censorships censorships = getCensorshipById(id);
+        try {
+            censorshipsRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Delete censorship failed",e);
+        }
+        return censorships;
     }
 }

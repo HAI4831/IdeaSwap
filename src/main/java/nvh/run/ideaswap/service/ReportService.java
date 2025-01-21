@@ -3,99 +3,69 @@ package nvh.run.ideaswap.service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import nvh.run.ideaswap.data.dto.ReportDTO;
-import nvh.run.ideaswap.data.entity.Managers;
 import nvh.run.ideaswap.data.entity.Reports;
-import nvh.run.ideaswap.data.entity.Users;
-import nvh.run.ideaswap.data.repository.IUserRepository;
-import nvh.run.ideaswap.data.repository.ManagerRepository;
 import nvh.run.ideaswap.data.repository.ReportRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Transactional
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
-public class ReportService implements IReport {
+public class ReportService {
     ReportRepository reportRepository;
-    IUserService IUserService;
-    IUserRepository IUserRepository;
-    ManagerService ManagerService;
-    ManagerRepository ManagerRepository;
 
-    @Override
-    public ResponseEntity<Object> getAllReports() {
+    public List<Reports> getAllReports() {
         List<Reports> reports;
         try {
             reports = reportRepository.findAll();
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(
-                    Map.of("success", false, "message", "Retrieve List Reports failed", "error", e.getMessage())
-            );
+           throw new RuntimeException("Get all reports failed",e);
         }
-        return ResponseEntity.ok(
-                Map.of("success", true, "message", "Retrieve List Reports successfully", "data", reports)
-        );
+        return reports;
     }
 
-    @Override
-    public ResponseEntity<Object> getReportById(String id) {
-        Reports report = reportRepository.findById(id).orElseThrow(() -> new RuntimeException("Report not found"));
-        return ResponseEntity.ok(
-                Map.of("success", true, "message", "Retrieve Report By ID successfully", "data", report)
-        );
+    public Reports getReportById(String id) {
+        Reports report ;
+        try {
+            report = reportRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Report not found"));
+        } catch (Exception e) {
+            throw new RuntimeException("Get report failed",e);
+        }
+        return report;
     }
 
-    @Override
-    public ResponseEntity<Object> createReport(ReportDTO reportDTO) {
-        Users user = IUserRepository.findById(reportDTO.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
-//        Users user = IUserService.getUserById(reportDTO.getUserId());
-        Managers manager = ManagerRepository.findById(reportDTO.getModeratorId()).orElseThrow(() -> new RuntimeException("Manager not found"));
-        Reports savedReport = reportRepository.save(
-                Reports.builder()
-                        .referenceID(reportDTO.getReferenceId())
-                        .userID(user)
-                        .type(reportDTO.getType())
-                        .status(reportDTO.getStatus())
-                        .moderatorID(manager)
-                        .content(reportDTO.getContent())
-                        .build()
-        );
-        return ResponseEntity.status(201).body(
-                Map.of("success", true, "message", "Create Report successfully", "data", savedReport)
-        );
+    public Reports createReport(Reports report) {
+        Reports savedReport ;
+        try {
+            savedReport = reportRepository.save(report);
+        } catch (Exception e) {
+            throw new RuntimeException("Create report failed",e);
+        }
+        return savedReport;
     }
 
-    @Override
-    public ResponseEntity<Object> updateReport(String id, ReportDTO reportDTO) {
+    public Reports updateReport(String id, Reports report) {
         getReportById(id);
-        Managers manager = ManagerRepository.findById(reportDTO.getModeratorId()).orElseThrow(() -> new RuntimeException("Manager not found"));
-        Users user = IUserRepository.findById(reportDTO.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
-//        Users user = IUserService.getUserById(reportDTO.getUserId());
-        Reports updatedReport = reportRepository.save(
-                Reports.builder()
-                        .referenceID(reportDTO.getReferenceId())
-                        .userID(user)
-                        .type(reportDTO.getType())
-                        .status(reportDTO.getStatus())
-                        .moderatorID(manager)
-                        .content(reportDTO.getContent())
-                        .build()
-        );
-        return ResponseEntity.ok(
-                Map.of("success", true, "message", "Update Report successfully", "data", updatedReport)
-        );
+        Reports updatedReport ;
+        try {
+            updatedReport = reportRepository.save(report);
+        } catch (Exception e) {
+            throw new RuntimeException("Update report failed",e);
+        }
+        return updatedReport;
     }
 
-    @Override
-    public ResponseEntity<Object> deleteReport(String id) {
-        getReportById(id);
-        reportRepository.deleteById(id);
-        return ResponseEntity.ok(Map.of("success", true, "message", "Delete Report successfully"));
+    public Reports deleteReport(String id) {
+        Reports report= getReportById(id);
+        try {
+            reportRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Delete report failed",e);
+        }
+        return report;
     }
 }

@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.common.exceptions.exception.custom.auth.UsernameAlreadyExistException;
-import nvh.run.ideaswap.data.dto.UserDTO;
 import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.repository.IUserRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,75 +17,94 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class UserService {
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UserService.class);
     IUserRepository iUserRepository;
-    public UserDTO getAllUsers() {
-        List<Users> users = iUserRepository.findAll();
-        return UserDTO.builder().build();
+    public List<Users> getAllUsers() {
+        List<Users> users ;
+        try {
+            users = iUserRepository.findAll();
+        } catch (Exception e) {
+            throw new RuntimeException("Retrieve List Users failed",e);
+        }
+        return users;
     }
 
-    public UserDTO getUserById(String id) {
-        Users user = iUserRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        return UserDTO.builder().build();
+    public Users getUserById(String id) {
+        Users user ;
+        try {
+            user = iUserRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        } catch (Exception e) {
+            throw new RuntimeException("Retrieve User By ID failed",e);
+        }
+        return user;
     }
-    public UserDTO createUser(UserDTO userDTO) {
-        Users user = iUserRepository.save(
-                Users.builder()
-                        .firstName(userDTO.getFirstName())
-                        .lastName(userDTO.getLastName())
-                        .username(userDTO.getUsername())
-                        .email(userDTO.getEmail())
-                        .phoneNumber(userDTO.getPhoneNumber())
-                        .address(userDTO.getAddress())
-                        .avatar(userDTO.getAvatar())
-                        .gender(userDTO.getGender())
-                        .description(userDTO.getDescription())
-                        .birthday(userDTO.getBirthday())
-                        .build()
-        );
-        return UserDTO.builder().build();
+    public Users createUser(Users user) {
+
+        try {
+            if(existsByEmail(user.getEmail())) throw new RuntimeException("Email already exist");
+            if(existsByPhoneNumber(user.getPhoneNumber())) throw new RuntimeException("Phone number already exist");
+            if(existsByUsername(user.getUsername())) throw new RuntimeException("Username already exist");
+            user = iUserRepository.save(user);
+        } catch (Exception e) {
+            throw new RuntimeException("Create User failed",e);
+        }
+        return Users.builder().build();
     }
-    public UserDTO updateUser(String id, UserDTO userDTO) {
+    public Users updateUser(String id, Users user) {
         getUserById(id);
-        Users updatedUser = iUserRepository.save(
-                Users.builder()
-                        .id(id)
-                        .firstName(userDTO.getFirstName())
-                        .lastName(userDTO.getLastName())
-                        .username(userDTO.getUsername())
-                        .email(userDTO.getEmail())
-                        .phoneNumber(userDTO.getPhoneNumber())
-                        .address(userDTO.getAddress())
-                        .avatar(userDTO.getAvatar())
-                        .gender(userDTO.getGender())
-                        .description(userDTO.getDescription())
-                        .birthday(userDTO.getBirthday())
-                        .build()
-        );
-        return UserDTO.builder().build();
+        user.setId(id);
+        Users updatedUser ;
+        try {
+            updatedUser = iUserRepository.save(user);
+        } catch (Exception e) {
+            throw new RuntimeException("Update User failed",e);
+        }
+        return updatedUser;
     }
 
-    public UserDTO deleteUser(String id) {
-        getUserById(id);
-        iUserRepository.deleteById(id);
-        return UserDTO.builder().build();
+    public Users deleteUser(String id) {
+       Users user= getUserById(id);
+        try {
+            iUserRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Delete User failed",e);
+        }
+        return user;
     }
 //    ____________________________________
     public Users findByUsername(String username) {
-        return iUserRepository.findByUsername(username).orElseThrow(()->new UsernameNotFoundException("User not found with username:{}"+username));
+        Users user;
+        try {
+            user=iUserRepository.findByUsername(username).orElseThrow(()->new UsernameNotFoundException("User not found with username:{}"+username));
+        }
+        catch (Exception e) {
+            throw new RuntimeException("Retrieve User By Username failed",e);
+        }
+        return user;
     }
 
-    public UserDTO findById(String id) {
-        Users user = iUserRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        return UserDTO.builder().build();
+    public Users findById(String id) {
+        Users user ;
+        try {
+            user = iUserRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        } catch (Exception e) {
+            throw new RuntimeException("Retrieve User By ID failed",e);
+        }
+        return user;
     }
-    public UserDTO findByPhoneNumber(String phoneNumber){
-        Users user = iUserRepository.findByPhone(phoneNumber).orElseThrow(()->new RuntimeException("User not found with phoneNumber:{}"+phoneNumber));
-        return UserDTO.builder().build();
+    public Users findByPhoneNumber(String phoneNumber){
+        log.info("Find By Phone Number:{}",phoneNumber);
+        Users user ;
+        try {
+           user = iUserRepository.findByPhoneNumber(phoneNumber).orElseThrow(()->new RuntimeException("User not found with phoneNumber:{}"+phoneNumber));
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Retrieve User By Phone Number failed",e);
+        }
+        return user;
     }
     public boolean existsByPhoneNumber(String phoneNumber) {
-        return findByPhoneNumber(phoneNumber)!=null;
+        return iUserRepository.existsByPhoneNumber(phoneNumber);
     }
-
 
     public boolean existsByUsername(String username) {
         return iUserRepository.existsByUsername(username).orElseThrow(()->new UsernameAlreadyExistException("User not found with username:{}"+username));

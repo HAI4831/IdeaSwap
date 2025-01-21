@@ -6,39 +6,41 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.bson.types.ObjectId;
+import nvh.run.ideaswap.common.validator.IsObjectID;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
-
+//c1
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "comments")
-public class Comments implements  java.io.Serializable , Cloneable {
+public class Comments
+//        implements  java.io.Serializable , Cloneable
+{
 
     @Id
+    @IsObjectID
     private String id;
 
     @NotBlank(message = "Nội dung không được để trống")
     @Size(max = 1000, message = "Nội dung không được quá 1000 ký tự")
     private String content;
 
-    private ObjectId parentCommentID;
+    @IsObjectID
+    private String parentCommentID;
 
-    @Field(name="userID")
     @NotBlank(message = "ID người dùng không được để trống")
     @DBRef
     private Users userID;
 
-    @Field(name = "referenceID")
-    private Object referenceID;
+    @IsObjectID
+    private String referenceID;
 
     @CreatedDate
     private LocalDateTime createdDate;
@@ -46,14 +48,14 @@ public class Comments implements  java.io.Serializable , Cloneable {
     @LastModifiedDate
     private LocalDateTime updatedDate;
 
-    @Override
-    public Comments clone() {
-        try {
-            Comments clone = (Comments) super.clone();
-            // TODO: copy mutable state here, so the clone can't change the internals of the original
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
-    }
+//    @Override
+//    public Comments clone() {
+//        try {
+//            Comments clone = (Comments) super.clone();
+//            // TODO: copy mutable state here, so the clone can't change the internals of the original
+//            return clone;
+//        } catch (CloneNotSupportedException e) {
+//            throw new AssertionError();
+//        }
+//    }
 }

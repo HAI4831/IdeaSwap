@@ -3,7 +3,6 @@ package nvh.run.ideaswap.service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import nvh.run.ideaswap.data.dto.HeartDTO;
 import nvh.run.ideaswap.data.entity.Hearts;
 import nvh.run.ideaswap.data.repository.HeartsRepository;
 import org.springframework.stereotype.Service;
@@ -18,39 +17,63 @@ import java.util.List;
 public class HeartService {
     HeartsRepository heartsRepository;
 
-    public HeartDTO getAllHearts() {
-        List<Hearts> hearts = heartsRepository.findAll();
-        return HeartDTO.builder().build();
+    public List<Hearts> getAllHearts() {
+        List<Hearts> hearts ;
+        try {
+            hearts = heartsRepository.findAll();
+        } catch (Exception e) {
+            throw new RuntimeException("Get all hearts failed",e);
+        }
+        return hearts;
     }
 
-    public HeartDTO getHeartsByUserID(String userID) {
-        List<Hearts> hearts = heartsRepository.findByUserID_Id(userID);
-        return HeartDTO.builder().build();
+    public List<Hearts> getHeartsByUserID(String userID) {
+        List<Hearts> hearts ;
+        try {
+            hearts = heartsRepository.findByUserID_Id(userID);
+        } catch (Exception e) {
+            throw new RuntimeException("Get all hearts failed",e);
+        }
+        return hearts;
     }
 
-    public HeartDTO createHeart(HeartDTO heartDTO) {
-        Hearts heart = heartsRepository.save(
-                Hearts.builder()
-                        .userID(heartDTO.getUserID())
-                        .referenceID(heartDTO.getReferenceID())
-                        .build()
-        );
-        return HeartDTO.builder().build();
+    public Hearts createHeart(Hearts heart) {
+        try {
+            heart = heartsRepository.save(heart);
+        } catch (Exception e) {
+            throw new RuntimeException("Create heart failed",e);
+        }
+        return heart;
     }
 
-    public HeartDTO deleteHeart(String id) {
-        getHeartById(id);
-        heartsRepository.deleteById(id);
-        return HeartDTO.builder().build();
+    public Hearts deleteHeart(String id) {
+         Hearts heart = getHeartById(id);
+        try {
+            heartsRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Delete heart failed",e);
+        }
+        return heart;
     }
 
     public Hearts getHeartById(String id) {
-        return heartsRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Heart not found"));
+        Hearts heart;
+        try {
+            heart = heartsRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Heart not found"));
+        } catch (Exception e) {
+            throw new RuntimeException("Get heart failed",e);
+        }
+        return heart;
     }
 
-    public HeartDTO getHeartsByReferenceID(String referenceID) {
-        List<Hearts> hearts = heartsRepository.findByReferenceID(referenceID);
-        return HeartDTO.builder().build();
+    public List<Hearts> getHeartsByReferenceID(String referenceID) {
+        List<Hearts> hearts ;
+        try {
+           hearts = heartsRepository.findByReferenceID(referenceID);
+        } catch (Exception e) {
+            throw new RuntimeException("Get all hearts failed",e);
+        }
+        return hearts;
     }
 }

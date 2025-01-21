@@ -1,6 +1,6 @@
 package nvh.run.ideaswap.api.controller;
 
-import nvh.run.ideaswap.data.dto.BlogDTO;
+import nvh.run.ideaswap.data.entity.Blogs;
 import nvh.run.ideaswap.service.BlogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,23 +37,23 @@ public class BlogController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createBlog(@RequestBody BlogDTO blogDTO) {
+    public ResponseEntity<Object> createBlog(@RequestBody Blogs blog) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
                         "message", "Create Blog successfully",
-                        "blog", blogService.createBlog(blogDTO)
+                        "blog", blogService.createBlog(blog)
                 )
         );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateBlog(@PathVariable String id, @RequestBody BlogDTO blogDTO) {
+    public ResponseEntity<Object> updateBlog(@PathVariable String id, @RequestBody Blogs blog) {
         return ResponseEntity.status(200).body(
                 Map.of(
                         "success", true,
                         "message", "Update Blog successfully",
-                        "blog",blogService.updateBlog(id, blogDTO)
+                        "blog",blogService.updateBlog(id, blog)
                 )
         );
     }

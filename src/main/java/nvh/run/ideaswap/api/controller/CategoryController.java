@@ -3,8 +3,8 @@ package nvh.run.ideaswap.api.controller;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import nvh.run.ideaswap.data.entity.Categories;
 import nvh.run.ideaswap.service.CategoryService;
-import nvh.run.ideaswap.data.dto.CategoryDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,23 +40,23 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createCategory(@RequestBody CategoryDTO categoryDTO) {
+    public ResponseEntity<Object> createCategory(@RequestBody Categories category) {
         return ResponseEntity.status(201).body(
             Map.of(
                     "success",true,
                     "message","Retrieve Category By ID successfully",
-                    "category",categoryService.createCategory(categoryDTO)
+                    "category",categoryService.createCategory(category)
             )
     );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateCategory(@PathVariable String id, @RequestBody CategoryDTO categoryDTO) {
+    public ResponseEntity<Object> updateCategory(@PathVariable String id, @RequestBody Categories category) {
         return ResponseEntity.status(200).body(
                 Map.of(
                         "success",true,
                         "message","Update Category successfully",
-                        "category",categoryService.updateCategory(id, categoryDTO)
+                        "category",categoryService.updateCategory(id, category)
                 )
         );
     }

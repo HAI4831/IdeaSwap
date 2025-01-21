@@ -3,15 +3,12 @@ package nvh.run.ideaswap.service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import nvh.run.ideaswap.data.dto.CommentsDTO;
 import nvh.run.ideaswap.data.entity.Comments;
 import nvh.run.ideaswap.data.repository.CommentsRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Transactional
@@ -19,42 +16,51 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CommentsService {
     CommentsRepository commentsRepository;
-    public CommentsDTO getAllComments() {
-        List<Comments> comments = commentsRepository.findAll();
-        return CommentsDTO.builder().build();
+    public List<Comments> getAllComments() {
+        List<Comments> comments;
+        try {
+            comments = commentsRepository.findAll();
+        } catch (Exception e) {
+            throw new RuntimeException("Get all comments failed",e);
+        }
+        return comments;
     }
-    public CommentsDTO getCommentById(String id) {
-        Comments comment = commentsRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
-        return CommentsDTO.builder().build();
+    public Comments getCommentById(String id) {
+        Comments comment;
+        try {
+            comment = commentsRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Comment not found"));
+        } catch (Exception e) {
+            throw new RuntimeException("Get comment failed",e);
+        }
+        return comment;
     }
-    public CommentsDTO createComment(CommentsDTO commentsDTO) {
-        Comments comment = commentsRepository.save(
-                Comments.builder()
-                        .content(commentsDTO.getContent())
-                        .parentCommentID(commentsDTO.getParentCommentID())
-                        .userID(commentsDTO.getUserID())
-                        .referenceID(commentsDTO.getReferenceID())
-                        .build()
-        );
-        return CommentsDTO.builder().build();
+    public Comments createComment(Comments comment) {
+        try {
+            comment = commentsRepository.save(comment);
+        } catch (Exception e) {
+            throw new RuntimeException("Create comment failed",e);
+        }
+        return comment;
     }
-    public CommentsDTO updateComment(String id, CommentsDTO commentsDTO) {
+    public Comments updateComment(String id, Comments comment) {
         getCommentById(id);
-        Comments updatedComment = commentsRepository.save(
-                Comments.builder()
-                        .id(id)
-                        .content(commentsDTO.getContent())
-                        .parentCommentID(commentsDTO.getParentCommentID())
-                        .userID(commentsDTO.getUserID())
-                        .referenceID(commentsDTO.getReferenceID())
-                        .build()
-        );
-        return CommentsDTO.builder().build();
+        comment.setId(id);
+        Comments updatedComment;
+        try {
+            updatedComment = commentsRepository.save(comment);
+        } catch (Exception e) {
+            throw new RuntimeException("Update comment failed",e);
+        }
+        return updatedComment;
     }
-    public CommentsDTO deleteComment(String id) {
-        getCommentById(id);
-        commentsRepository.deleteById(id);
-        return CommentsDTO.builder().build();
+    public Comments deleteComment(String id) {
+        Comments comment = getCommentById(id);
+        try {
+            commentsRepository.deleteById(id);
+        }catch (Exception e) {
+            throw new RuntimeException("Delete comment failed",e);
+        }
+        return comment;
     }
 }
