@@ -1,9 +1,10 @@
 package nvh.run.ideaswap.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 public class RawService {
-//    @Autowired
+    @Autowired
     private MongoTemplate mongoTemplate;
 //    public List<Blogs> getBlogsWithLogs() {
 //        Aggregation aggregation = Aggregation.newAggregation(

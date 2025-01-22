@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nvh.run.ideaswap.data.entity.Documents;
 import nvh.run.ideaswap.service.DocumentsService;
-import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +27,7 @@ public class DocumentsController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getDocumentById(@PathVariable ObjectId id) {
+    public ResponseEntity<Object> getDocumentById(@PathVariable String id) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
@@ -50,7 +49,7 @@ public class DocumentsController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateDocument(@PathVariable ObjectId id, @Valid @RequestBody Documents document) {
+    public ResponseEntity<Object> updateDocument(@PathVariable String id, @Valid @RequestBody Documents document) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
@@ -61,7 +60,7 @@ public class DocumentsController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteDocument(@PathVariable ObjectId id) {
+    public ResponseEntity<Object> deleteDocument(@PathVariable String id) {
         return ResponseEntity.ok(Map.of(
                 "success", true,
                 "message", "Document deleted successfully",
@@ -71,7 +70,7 @@ public class DocumentsController {
     }
 
     @PatchMapping("/update/view/{id}")
-    public ResponseEntity<Object> incrementView(@PathVariable ObjectId id) {
+    public ResponseEntity<Object> incrementView(@PathVariable String id) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,

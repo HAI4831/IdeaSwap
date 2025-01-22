@@ -3,7 +3,6 @@ package nvh.run.ideaswap.api.controller;
 import lombok.RequiredArgsConstructor;
 import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.service.UserService;
-import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +26,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getUserById(@PathVariable ObjectId id) {
+    public ResponseEntity<Object> getUserById(@PathVariable String id) {
         return ResponseEntity.status(200).body(
                 Map.of(
                         "success", true,
@@ -49,7 +48,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateUser(@PathVariable ObjectId id, @Validated @RequestBody Users user) {
+    public ResponseEntity<Object> updateUser(@PathVariable String id, @Validated @RequestBody Users user) {
         return ResponseEntity.status(200).body(
                 Map.of(
                         "success", true,
@@ -60,7 +59,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteUser(@PathVariable ObjectId id) {
+    public ResponseEntity<Object> deleteUser(@PathVariable String id) {
         return ResponseEntity.status(200).body(
                 Map.of(
                         "success", true,

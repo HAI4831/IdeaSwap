@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.entity.Reports;
 import nvh.run.ideaswap.data.repository.ReportRepository;
-import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +27,7 @@ public class ReportService {
         return reports;
     }
 
-    public Reports getReportById(ObjectId id) {
+    public Reports getReportById(String id) {
         Reports report ;
         try {
             report = reportRepository.findById(id)
@@ -49,7 +48,7 @@ public class ReportService {
         return savedReport;
     }
 
-    public Reports updateReport(ObjectId id, Reports report) {
+    public Reports updateReport(String id, Reports report) {
         getReportById(id);
         Reports updatedReport ;
         try {
@@ -60,7 +59,7 @@ public class ReportService {
         return updatedReport;
     }
 
-    public Reports deleteReport(ObjectId id) {
+    public Reports deleteReport(String id) {
         Reports report= getReportById(id);
         try {
             reportRepository.deleteById(id);

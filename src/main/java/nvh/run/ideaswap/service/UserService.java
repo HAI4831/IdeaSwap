@@ -6,7 +6,6 @@ import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.common.exceptions.exception.custom.auth.UsernameAlreadyExistException;
 import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.repository.IUserRepository;
-import org.bson.types.ObjectId;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +29,7 @@ public class UserService {
         return users;
     }
 
-    public Users getUserById(ObjectId id) {
+    public Users getUserById(String id) {
         Users user ;
         try {
             user = iUserRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
@@ -51,7 +50,7 @@ public class UserService {
         }
         return Users.builder().build();
     }
-    public Users updateUser(ObjectId id, Users user) {
+    public Users updateUser(String id, Users user) {
         getUserById(id);
         user.setId(id);
         Users updatedUser ;
@@ -63,7 +62,7 @@ public class UserService {
         return updatedUser;
     }
 
-    public Users deleteUser(ObjectId id) {
+    public Users deleteUser(String id) {
        Users user= getUserById(id);
         try {
             iUserRepository.deleteById(id);
@@ -84,7 +83,7 @@ public class UserService {
         return user;
     }
 
-    public Users findById(ObjectId id) {
+    public Users findById(String id) {
         Users user ;
         try {
             user = iUserRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));

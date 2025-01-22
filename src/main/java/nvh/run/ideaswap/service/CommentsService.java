@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.entity.Comments;
 import nvh.run.ideaswap.data.repository.CommentsRepository;
-import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +25,7 @@ public class CommentsService {
         }
         return comments;
     }
-    public Comments getCommentById(ObjectId id) {
+    public Comments getCommentById(String id) {
         Comments comment;
         try {
             comment = commentsRepository.findById(id)
@@ -44,7 +43,7 @@ public class CommentsService {
         }
         return comment;
     }
-    public Comments updateComment(ObjectId id, Comments comment) {
+    public Comments updateComment(String id, Comments comment) {
         getCommentById(id);
         comment.setId(id);
         Comments updatedComment;
@@ -55,7 +54,7 @@ public class CommentsService {
         }
         return updatedComment;
     }
-    public Comments deleteComment(ObjectId id) {
+    public Comments deleteComment(String id) {
         Comments comment = getCommentById(id);
         try {
             commentsRepository.deleteById(id);

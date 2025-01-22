@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.entity.Managers;
 import nvh.run.ideaswap.data.repository.ManagerRepository;
-import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +27,7 @@ public class ManagerService {
         return managers;
     }
 
-    public Managers getManagerById(ObjectId id) {
+    public Managers getManagerById(String id) {
         Managers manager ;
         try {
             manager = managerRepository.findById(id)
@@ -48,7 +47,7 @@ public class ManagerService {
         return manager;
     }
 
-    public Managers updateManager(ObjectId id, Managers manager) {
+    public Managers updateManager(String id, Managers manager) {
         getManagerById(id);
         manager.setId(id);
         try {
@@ -59,7 +58,7 @@ public class ManagerService {
         return manager;
     }
 
-    public Managers deleteManager(ObjectId id) {
+    public Managers deleteManager(String id) {
         Managers manager = getManagerById(id);
         try {
             managerRepository.deleteById(id);

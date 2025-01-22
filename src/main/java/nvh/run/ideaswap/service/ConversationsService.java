@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.entity.Conversations;
 import nvh.run.ideaswap.data.repository.ConversationsRepository;
-import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +27,7 @@ public class ConversationsService {
         return conversations;
     }
 
-    public Conversations getConversationById(ObjectId id) {
+    public Conversations getConversationById(String id) {
         Conversations conversation;
         try {
             conversation = conversationsRepository.findById(id).orElseThrow(() -> new RuntimeException("Conversation not found"));
@@ -47,7 +46,7 @@ public class ConversationsService {
         return conversation;
     }
 
-    public Conversations updateConversation(ObjectId id, Conversations conversation) {
+    public Conversations updateConversation(String id, Conversations conversation) {
         getConversationById(id);
         Conversations updatedConversation;
         try {
@@ -58,7 +57,7 @@ public class ConversationsService {
         return updatedConversation;
     }
 
-    public Conversations deleteConversation(ObjectId id) {
+    public Conversations deleteConversation(String id) {
         Conversations conversation = getConversationById(id);
         try {
             conversationsRepository.deleteById(id);

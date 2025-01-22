@@ -6,10 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.bson.types.ObjectId;
+import nvh.run.ideaswap.common.validator.IsObjectID;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -20,12 +21,16 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @Document(collection = "banners")
 public class Banners
+//        implements java.io.Serializable , Cloneable
 {
+
     @Id
-    private ObjectId id;
+    @IsObjectID
+    private String id;
 
     @NotBlank(message = "manager của banner không thể trống")
-    private ObjectId managerID;
+    @DBRef
+    private Managers managerID;
 
     @NotBlank(message = "Tên banner không được để trống")
     @Size(max = 30, message = "Tên banner không được quá 30 ký tự")
@@ -44,4 +49,16 @@ public class Banners
 
     @LastModifiedDate
     private LocalDateTime updatedDate;
+
+//    @Override
+//    public Banners clone() {
+//        try {
+//            Banners clone = (Banners) super.clone();
+//            // TODO: copy mutable state here, so the clone can't change the internals of the original
+//            return clone;
+//        } catch (CloneNotSupportedException e) {
+//            throw new AssertionError();
+//        }
+//    }
 }
+//    @DocumentReference(lookup = "{'id' : ?#{#target.managerID}}")

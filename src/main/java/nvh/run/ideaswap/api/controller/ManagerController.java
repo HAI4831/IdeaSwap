@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nvh.run.ideaswap.data.entity.Managers;
 import nvh.run.ideaswap.service.ManagerService;
-import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +25,7 @@ public class ManagerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getManagerById(@PathVariable ObjectId id) {
+    public ResponseEntity<Object> getManagerById(@PathVariable String id) {
         return ResponseEntity.ok(Map.of(
                 "success", true,
                 "message", "Retrieve Manager By ID successfully",
@@ -46,7 +45,7 @@ public class ManagerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateManager(@PathVariable ObjectId id, @RequestBody @Valid Managers manager) {
+    public ResponseEntity<Object> updateManager(@PathVariable String id, @RequestBody @Valid Managers manager) {
         return ResponseEntity.ok(Map.of(
                 "success", true,
                 "message", "Manager updated successfully",
@@ -55,7 +54,7 @@ public class ManagerController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteManager(@PathVariable ObjectId id) {
+    public ResponseEntity<Object> deleteManager(@PathVariable String id) {
         return ResponseEntity.ok(Map.of(
                 "success", true,
                 "message", "Manager deleted successfully",

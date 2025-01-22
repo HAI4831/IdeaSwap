@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.entity.Messages;
 import nvh.run.ideaswap.data.repository.MessageRepository;
-import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +27,7 @@ public class MessageService {
         return messages;
     }
 
-    public Messages getMessageById(ObjectId id) {
+    public Messages getMessageById(String id) {
         Messages message ;
         try {
             message = messageRepository.findById(id)
@@ -48,7 +47,7 @@ public class MessageService {
         return message;
     }
 
-    public Messages updateMessage(ObjectId id, Messages message) {
+    public Messages updateMessage(String id, Messages message) {
         getMessageById(id);
         message.setId(id);
         Messages updatedMessage;
@@ -61,7 +60,7 @@ public class MessageService {
         return updatedMessage;
     }
 
-    public Messages deleteMessage(ObjectId id) {
+    public Messages deleteMessage(String id) {
         Messages message = getMessageById(id);
         try {
             messageRepository.deleteById(id);

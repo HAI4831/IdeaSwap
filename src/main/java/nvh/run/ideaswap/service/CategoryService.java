@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.entity.Categories;
 import nvh.run.ideaswap.data.repository.CategoryRepository;
-import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +26,7 @@ public class CategoryService {
         return categoryList;
     }
 
-    public Categories getCategoryById(ObjectId id) {
+    public Categories getCategoryById(String id) {
         Categories category;
         try {
              category= categoryRepository.findById(id)
@@ -50,7 +49,7 @@ public class CategoryService {
         return categorySaved;
     }
 
-    public Categories updateCategory(ObjectId id, Categories category) {
+    public Categories updateCategory(String id, Categories category) {
         getCategoryById(id);
         Categories categoryUpdated;
         category.setId(id);
@@ -62,7 +61,7 @@ public class CategoryService {
        return categoryUpdated;
     }
 
-    public Categories deleteCategory(ObjectId id) {
+    public Categories deleteCategory(String id) {
         Categories categories = getCategoryById(id);
         try {
             categoryRepository.deleteById(id);

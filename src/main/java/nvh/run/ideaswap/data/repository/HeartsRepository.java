@@ -1,12 +1,11 @@
 package nvh.run.ideaswap.data.repository;
 
 import nvh.run.ideaswap.data.entity.Hearts;
-import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 
-public interface HeartsRepository extends MongoRepository<Hearts, ObjectId> {
-    List<Hearts> findByUserID(ObjectId userID);
+public interface HeartsRepository extends MongoRepository<Hearts, String> {
+    List<Hearts> findByUserID_Id(String userID);
 
-    List<Hearts> findByReferenceID(ObjectId referenceID);
+    List<Hearts> findByReferenceID(String referenceID);
 }

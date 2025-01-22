@@ -3,7 +3,6 @@ package nvh.run.ideaswap.api.controller;
 import lombok.RequiredArgsConstructor;
 import nvh.run.ideaswap.data.entity.Reports;
 import nvh.run.ideaswap.service.ReportService;
-import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +27,7 @@ public class ReportController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getReportById(@PathVariable ObjectId id) {
+    public ResponseEntity<Object> getReportById(@PathVariable String id) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
@@ -50,7 +49,7 @@ public class ReportController {
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<Object> updateReport(@PathVariable ObjectId id, @RequestBody Reports report) {
+    public ResponseEntity<Object> updateReport(@PathVariable String id, @RequestBody Reports report) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
@@ -61,7 +60,7 @@ public class ReportController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteReport(@PathVariable ObjectId id) {
+    public ResponseEntity<Object> deleteReport(@PathVariable String id) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,

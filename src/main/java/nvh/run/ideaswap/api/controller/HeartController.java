@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nvh.run.ideaswap.data.entity.Hearts;
 import nvh.run.ideaswap.service.HeartService;
-import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +27,7 @@ public class    HeartController {
     }
 
     @GetMapping("/user/{userID}")
-    public ResponseEntity<Object> getHeartsByUserID(@PathVariable ObjectId userID) {
+    public ResponseEntity<Object> getHeartsByUserID(@PathVariable String userID) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
@@ -39,7 +38,7 @@ public class    HeartController {
     }
 
     @GetMapping("/reference/{referenceID}")
-    public ResponseEntity<Object> getHeartsByReferenceID(@PathVariable ObjectId referenceID) {
+    public ResponseEntity<Object> getHeartsByReferenceID(@PathVariable String referenceID) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
@@ -61,7 +60,7 @@ public class    HeartController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteHeart(@PathVariable ObjectId id) {
+    public ResponseEntity<Object> deleteHeart(@PathVariable String id) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,

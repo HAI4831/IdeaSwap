@@ -11,10 +11,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.bson.types.ObjectId;
+import nvh.run.ideaswap.common.validator.IsObjectID;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -29,7 +30,8 @@ public class Notifications
 //        implements  java.io.Serializable , Cloneable
 {
     @Id
-    private ObjectId id;
+    @IsObjectID
+    private String id;
 
     @NotBlank(message = "Mô tả không được để trống")
     @Size(max = 1000, message = "Mô tả không được vượt quá 1000 ký tự")
@@ -43,10 +45,12 @@ public class Notifications
     private boolean isUnRead=true;
 
     @NotNull(message = "Danh sách người dùng không được để trống")
-    private List<ObjectId> userIDs;
+    @DBRef
+    private List<Users> userIDs;
 
     @NotBlank(message = "ID diễn viên không được để trống")
-    private ObjectId actorID;
+    @IsObjectID
+    private String actorID;
 
     @NotNull(message = "referenceType can not be null ")
     private ReferenceTypeEnum referenceType;
@@ -55,11 +59,23 @@ public class Notifications
     private boolean isModal;
 
     @NotBlank(message = "referenceID tham chiếu không được để trống")
-    private ObjectId referenceID;
+    @IsObjectID
+    private String referenceID;
 
     @CreatedDate
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+//    @Override
+//    public Notifications clone() {
+//        try {
+//            Notifications clone = (Notifications) super.clone();
+//            // TODO: copy mutable state here, so the clone can't change the internals of the original
+//            return clone;
+//        } catch (CloneNotSupportedException e) {
+//            throw new AssertionError();
+//        }
+//    }
 }
