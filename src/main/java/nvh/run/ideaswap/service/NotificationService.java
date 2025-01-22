@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.entity.Notifications;
 import nvh.run.ideaswap.data.repository.NotificationRepository;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,7 @@ public class NotificationService {
         return notifications;
     }
 
-    public Notifications getNotificationById(String id) {
+    public Notifications getNotificationById(ObjectId id) {
         Notifications notification;
         try {
             notification = notificationRepository.findById(id)
@@ -47,7 +48,7 @@ public class NotificationService {
         return notification;
     }
 
-    public Notifications updateNotification(String id, Notifications notification) {
+    public Notifications updateNotification(ObjectId id, Notifications notification) {
         getNotificationById(id);
         notification.setId(id);
         try {
@@ -58,7 +59,7 @@ public class NotificationService {
         return notification;
     }
 
-    public Notifications deleteNotification(String id) {
+    public Notifications deleteNotification(ObjectId id) {
         Notifications notifications = getNotificationById(id);
         try {
             notificationRepository.deleteById(id);

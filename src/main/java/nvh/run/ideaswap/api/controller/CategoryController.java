@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.entity.Categories;
 import nvh.run.ideaswap.service.CategoryService;
+import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +30,7 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getCategoryById(@PathVariable String id) {
+    public ResponseEntity<Object> getCategoryById(@PathVariable ObjectId id) {
         return ResponseEntity.status(200).body(
             Map.of(
                     "success",true,
@@ -51,7 +52,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateCategory(@PathVariable String id, @RequestBody Categories category) {
+    public ResponseEntity<Object> updateCategory(@PathVariable ObjectId id, @RequestBody Categories category) {
         return ResponseEntity.status(200).body(
                 Map.of(
                         "success",true,
@@ -62,7 +63,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteCategory(@PathVariable String id) {
+    public ResponseEntity<Object> deleteCategory(@PathVariable ObjectId id) {
         return ResponseEntity.status(200).body(
                 Map.of(
                         "success", true,

@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nvh.run.ideaswap.data.entity.Censorships;
 import nvh.run.ideaswap.service.CensorshipsService;
+import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +28,7 @@ public class CensorshipsController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getCensorshipById(@PathVariable String id) {
+    public ResponseEntity<Object> getCensorshipById(@PathVariable ObjectId id) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
@@ -49,7 +50,7 @@ public class CensorshipsController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateCensorship(@PathVariable String id, @Valid @RequestBody Censorships censorship) {
+    public ResponseEntity<Object> updateCensorship(@PathVariable ObjectId id, @Valid @RequestBody Censorships censorship) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
@@ -60,7 +61,7 @@ public class CensorshipsController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteCensorship(@PathVariable String id) {
+    public ResponseEntity<Object> deleteCensorship(@PathVariable ObjectId id) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,

@@ -3,6 +3,7 @@ package nvh.run.ideaswap.api.controller;
 import lombok.RequiredArgsConstructor;
 import nvh.run.ideaswap.data.entity.Messages;
 import nvh.run.ideaswap.service.MessageService;
+import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +28,7 @@ public class MessageController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getMessageById(@PathVariable String id) {
+    public ResponseEntity<Object> getMessageById(@PathVariable ObjectId id) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
@@ -48,7 +49,7 @@ public class MessageController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateMessage(@PathVariable String id, @RequestBody Messages message) {
+    public ResponseEntity<Object> updateMessage(@PathVariable ObjectId id, @RequestBody Messages message) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
@@ -59,7 +60,7 @@ public class MessageController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteMessage(@PathVariable String id) {
+    public ResponseEntity<Object> deleteMessage(@PathVariable ObjectId id) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,

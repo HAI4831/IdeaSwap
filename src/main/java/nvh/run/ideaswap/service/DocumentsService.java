@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.entity.Documents;
 import nvh.run.ideaswap.data.repository.DocumentsRepository;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +29,7 @@ public class DocumentsService {
         return documents;
     }
 
-    public Documents getDocumentById(String id) {
+    public Documents getDocumentById(ObjectId id) {
         Documents document ;
         try {
             document = documentsRepository.findById(id)
@@ -48,7 +49,7 @@ public class DocumentsService {
         return document;
     }
 
-    public Documents updateDocument(String id, Documents document) {
+    public Documents updateDocument(ObjectId id, Documents document) {
         getDocumentById(id);
         Documents updatedDocument ;
         try {
@@ -59,7 +60,7 @@ public class DocumentsService {
         return updatedDocument;
     }
 
-    public Documents deleteDocument(String id) {
+    public Documents deleteDocument(ObjectId id) {
         Documents document = getDocumentById(id);
         try {
             documentsRepository.deleteById(id);
@@ -69,7 +70,7 @@ public class DocumentsService {
         return document;
     }
 
-    public Documents incrementDownload(String id) {
+    public Documents incrementDownload(ObjectId id) {
         Documents document = getDocumentById(id);
         document.setCountDownload(document.getCountDownload() + 1);
         try {

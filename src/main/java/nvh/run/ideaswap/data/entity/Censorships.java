@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import nvh.run.ideaswap.common.validator.IsObjectID;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -21,17 +21,13 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @Document(collection = "censorships")
 public class Censorships
-//        implements  java.io.Serializable , Cloneable
 {
 
     @Id
-    @IsObjectID
-    private String id;
+    private ObjectId id;
 
-    @IsObjectID
-    private String contentID;
+    private ObjectId contentID;
 
-//    @NotBlank(message = "Trạng thái không được để trống")
     @NotNull(message = "Status cannot be null")
     private Status status=Status.pending;
 
@@ -45,16 +41,4 @@ public class Censorships
     @LastModifiedDate
     private LocalDateTime updatedDate;
 
-//    @Override
-//    public Censorships clone() {
-//        try {
-//            Censorships clone = (Censorships) super.clone();
-//            // TODO: copy mutable state here, so the clone can't change the internals of the original
-//            return clone;
-//        } catch (CloneNotSupportedException e) {
-//            throw new AssertionError();
-//        }
-//    }
 }
-//    @Enumerated(EnumType.STRING)
-//    @Column(name = "status", nullable = false, columnDefinition = "varchar(10) default 'pending'")// dùng cho jpa

@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.entity.Courses;
 import nvh.run.ideaswap.data.repository.CategoryRepository;
 import nvh.run.ideaswap.data.repository.CoursesRepository;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +30,7 @@ public class CoursesService {
         return courseList;
     }
 
-    public Courses getCourseById(String id) {
+    public Courses getCourseById(ObjectId id) {
         Courses course;
         try {
             course = coursesRepository.findById(id)
@@ -49,7 +50,7 @@ public class CoursesService {
         return Courses.builder().build();
     }
 
-    public Courses updateCourse(String id, Courses course) {
+    public Courses updateCourse(ObjectId id, Courses course) {
         getCourseById(id);
         course.setId(id);
         Courses updatedCourse ;
@@ -61,7 +62,7 @@ public class CoursesService {
         return course;
     }
 
-    public Courses deleteCourse(String id) {
+    public Courses deleteCourse(ObjectId id) {
         Courses courses = getCourseById(id);
         try {
             coursesRepository.deleteById(id);
@@ -71,7 +72,7 @@ public class CoursesService {
         return courses;
     }
 
-    public Courses incrementView(String id) {
+    public Courses incrementView(ObjectId id) {
         Courses course ;
         try {
             course = coursesRepository.findById(id)

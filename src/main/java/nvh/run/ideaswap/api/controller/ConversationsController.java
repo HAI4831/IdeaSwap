@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nvh.run.ideaswap.data.entity.Conversations;
 import nvh.run.ideaswap.service.ConversationsService;
+import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +28,7 @@ public class ConversationsController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getConversationById(@PathVariable String id) {
+    public ResponseEntity<Object> getConversationById(@PathVariable ObjectId id) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
@@ -49,7 +50,7 @@ public class ConversationsController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateConversation(@PathVariable String id, @Valid @RequestBody Conversations conversation) {
+    public ResponseEntity<Object> updateConversation(@PathVariable ObjectId id, @Valid @RequestBody Conversations conversation) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
@@ -60,7 +61,7 @@ public class ConversationsController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteConversation(@PathVariable String id) {
+    public ResponseEntity<Object> deleteConversation(@PathVariable ObjectId id) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,

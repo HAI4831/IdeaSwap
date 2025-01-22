@@ -6,11 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import nvh.run.ideaswap.common.validator.IsObjectID;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -22,16 +21,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class Videos
-//        implements  java.io.Serializable , Cloneable
 {
-
     @Id
-    @IsObjectID
-    private String id;
+    private ObjectId id;
 
     @NotBlank(message = "ID người dùng không được để trống")
-    @DBRef
-    private Users userID;
+    private ObjectId userID;
 
     @Field("title")
     @NotBlank(message = "Tiêu đề không được để trống")
@@ -54,23 +49,11 @@ public class Videos
     private int view;
 
     @NotBlank(message = "courseID không được để trống")
-    @DBRef
-    private Courses courseID;
+    private ObjectId courseID;
 
     @CreatedDate
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
-
-//    @Override
-//    public Videos clone() {
-//        try {
-//            Videos clone = (Videos) super.clone();
-//            // TODO: copy mutable state here, so the clone can't change the internals of the original
-//            return clone;
-//        } catch (CloneNotSupportedException e) {
-//            throw new AssertionError();
-//        }
-//    }
 }

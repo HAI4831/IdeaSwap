@@ -6,11 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import nvh.run.ideaswap.common.validator.IsObjectID;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -25,16 +24,13 @@ public class Courses
 {
 
     @Id
-    @IsObjectID
-    private String id;
+    private ObjectId id;
 
     @NotBlank(message = "Courses tham chiếu tới ID người dùng không được để trống")
-    @DBRef(lazy = true)
-    private Users userID;
+    private ObjectId userID;
 
     @NotBlank(message = "ID danh mục không được để trống")
-    @DBRef
-    private Categories categoryID;
+    private ObjectId categoryID;
 
     @NotBlank(message = "Tiêu đề không được để trống")
     @Size(max = 100, message = "Tiêu đề không được quá 100 ký tự")
@@ -66,17 +62,6 @@ public class Courses
         String uploadedUrl = "https://cloudinary.com/mock_image_url";
         return new UploadResponse(true, "Tải lên thành công", uploadedUrl);
     }
-
-//    @Override
-//    public Courses clone() {
-//        try {
-//            Courses clone = (Courses) super.clone();
-//            // TODO: copy mutable state here, so the clone can't change the internals of the original
-//            return clone;
-//        } catch (CloneNotSupportedException e) {
-//            throw new AssertionError();
-//        }
-//    }
 
     public static class UploadResponse {
         private boolean status;

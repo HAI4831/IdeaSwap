@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.entity.Roles;
 import nvh.run.ideaswap.data.repository.RoleRepository;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,7 @@ public class RoleService {
         return roles;
     }
 
-    public Roles getRoleById(String id) {
+    public Roles getRoleById(ObjectId id) {
         Roles role ;
         try {
             role = roleRepository.findById(id).orElseThrow(() -> new RuntimeException("Role not found"));
@@ -47,7 +48,7 @@ public class RoleService {
         return roleSaved;
     }
 
-    public Roles updateRole(String id, Roles role) {
+    public Roles updateRole(ObjectId id, Roles role) {
         getRoleById(id); // Kiểm tra role tồn tại
         role.setId(id);
         Roles roleUpdated;
@@ -59,7 +60,7 @@ public class RoleService {
         return roleUpdated;
     }
 
-    public Roles deleteRole(String id) {
+    public Roles deleteRole(ObjectId id) {
         Roles role = getRoleById(id);
         try {
             roleRepository.deleteById(id);

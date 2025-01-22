@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nvh.run.ideaswap.data.entity.Comments;
 import nvh.run.ideaswap.service.CommentsService;
+import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +28,7 @@ public class CommentsController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getCommentById(@PathVariable String id) {
+    public ResponseEntity<Object> getCommentById(@PathVariable ObjectId id) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
@@ -49,7 +50,7 @@ public class CommentsController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateComment(@PathVariable String id, @Valid @RequestBody Comments comment) {
+    public ResponseEntity<Object> updateComment(@PathVariable ObjectId id, @Valid @RequestBody Comments comment) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
@@ -60,7 +61,7 @@ public class CommentsController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteComment(@PathVariable String id) {
+    public ResponseEntity<Object> deleteComment(@PathVariable ObjectId id) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,

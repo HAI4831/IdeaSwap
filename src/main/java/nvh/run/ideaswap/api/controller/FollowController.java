@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nvh.run.ideaswap.data.entity.Follows;
 import nvh.run.ideaswap.service.FollowService;
+import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +28,7 @@ public class FollowController {
     }
 
     @GetMapping("/{userID}")
-    public ResponseEntity<Object> getFollowsByUserID(@PathVariable String userID) {
+    public ResponseEntity<Object> getFollowsByUserID(@PathVariable ObjectId userID) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
@@ -49,7 +50,7 @@ public class FollowController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteFollow(@PathVariable String id) {
+    public ResponseEntity<Object> deleteFollow(@PathVariable ObjectId id) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
@@ -60,7 +61,7 @@ public class FollowController {
     }
 
     @GetMapping("/followers/{userID}")
-    public ResponseEntity<Object> getFollowersByUserID(@PathVariable String userID) {
+    public ResponseEntity<Object> getFollowersByUserID(@PathVariable ObjectId userID) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,

@@ -3,14 +3,15 @@ package nvh.run.ideaswap.data.repository;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import nvh.run.ideaswap.data.entity.Users;
+import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
 
-public interface IUserRepository extends MongoRepository<Users, String> {
+public interface IUserRepository extends MongoRepository<Users, ObjectId> {
     Optional<Users> findByUsernameOrEmail(String username, String email);
-    @NotNull Optional<Users> findById(@NotNull String id);
+    @NotNull Optional<Users> findById(@NotNull ObjectId id);
     Optional<Users> findByUsername(String username);
     Optional<Users> findByPhoneNumber(String phone);
 

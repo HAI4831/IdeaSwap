@@ -29,7 +29,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 @Transactional
@@ -55,14 +55,14 @@ public class AuthService {
                         .firstName(registerRequest.getFirstName())
                         .lastName(registerRequest.getLastName())
                         .email(registerRequest.getEmail())
-                        .roleID(role)
+                        .roleID(role.getId())
                         .phoneNumber(registerRequest.getPhoneNumber() == null ? "" : registerRequest.getPhoneNumber() )
                         .rating(0)
                         .address(registerRequest.getAddress() == null ? "Ninh Bình" : registerRequest.getAddress())
                         .gender(registerRequest.getGender() == null ? Gender.other : registerRequest.getGender())
                         .avatar(registerRequest.getAvatar()==null ? "" :registerRequest.getAvatar())
                         .description(registerRequest.getDescription()==null ? "" :registerRequest.getDescription() )
-                        .birthday(LocalDate.now())
+                        .birthday(LocalDateTime.now())
                         .build());
             }catch (Exception e){
                 throw new DatabaseException("Register failed for user ", e);

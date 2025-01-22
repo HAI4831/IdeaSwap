@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.entity.Banners;
 import nvh.run.ideaswap.data.repository.BannerRepository;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,7 +36,7 @@ public class BannerService {
         return banners;
     }
 
-    public Banners getBannerById(String id) {
+    public Banners getBannerById(ObjectId id) {
         Banners banner;
         try {
             banner = bannerRepository.findById(id)
@@ -46,7 +47,7 @@ public class BannerService {
         return banner;
     }
 
-    public Banners updateBanner(String id, Banners banner) {
+    public Banners updateBanner(ObjectId id, Banners banner) {
         banner.setId(id);
         try {
             banner = bannerRepository.save(banner);
@@ -56,7 +57,7 @@ public class BannerService {
         return banner;
     }
 
-    public Banners deleteBanner(String id) {
+    public Banners deleteBanner(ObjectId id) {
         Banners banner = getBannerById(id);
         try {
             bannerRepository.deleteById(id);

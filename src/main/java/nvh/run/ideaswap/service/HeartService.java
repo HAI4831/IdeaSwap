@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.entity.Hearts;
 import nvh.run.ideaswap.data.repository.HeartsRepository;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,10 +28,10 @@ public class HeartService {
         return hearts;
     }
 
-    public List<Hearts> getHeartsByUserID(String userID) {
+    public List<Hearts> getHeartsByUserID(ObjectId userID) {
         List<Hearts> hearts ;
         try {
-            hearts = heartsRepository.findByUserID_Id(userID);
+            hearts = heartsRepository.findByUserID(userID);
         } catch (Exception e) {
             throw new RuntimeException("Get all hearts failed",e);
         }
@@ -46,7 +47,7 @@ public class HeartService {
         return heart;
     }
 
-    public Hearts deleteHeart(String id) {
+    public Hearts deleteHeart(ObjectId id) {
          Hearts heart = getHeartById(id);
         try {
             heartsRepository.deleteById(id);
@@ -56,7 +57,7 @@ public class HeartService {
         return heart;
     }
 
-    public Hearts getHeartById(String id) {
+    public Hearts getHeartById(ObjectId id) {
         Hearts heart;
         try {
             heart = heartsRepository.findById(id)
@@ -67,7 +68,7 @@ public class HeartService {
         return heart;
     }
 
-    public List<Hearts> getHeartsByReferenceID(String referenceID) {
+    public List<Hearts> getHeartsByReferenceID(ObjectId referenceID) {
         List<Hearts> hearts ;
         try {
            hearts = heartsRepository.findByReferenceID(referenceID);

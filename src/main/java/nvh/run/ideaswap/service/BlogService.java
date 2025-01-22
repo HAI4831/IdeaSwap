@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import nvh.run.ideaswap.data.entity.Blogs;
 import nvh.run.ideaswap.data.repository.BlogRepository;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,7 @@ public class BlogService {
         return blogList;
     }
 
-    public Blogs getBlogById(String id) {
+    public Blogs getBlogById(ObjectId id) {
         Blogs blog;
         try {
             blog= blogRepository.findById(id).orElseThrow(() -> new RuntimeException("Blog not found"));
@@ -55,7 +56,7 @@ public class BlogService {
         return savedBlog;
     }
 
-    public Blogs updateBlog(String id, Blogs blog) {
+    public Blogs updateBlog(ObjectId id, Blogs blog) {
         blog.setId(id);
         Blogs updatedBlog;
         try {
@@ -66,7 +67,7 @@ public class BlogService {
         return updatedBlog;
     }
 
-    public Blogs deleteBlog(String id) {
+    public Blogs deleteBlog(ObjectId id) {
         Blogs blog = getBlogById(id);
         try {
             blogRepository.delete(blog);

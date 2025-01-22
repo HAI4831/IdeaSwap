@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.entity.Censorships;
 import nvh.run.ideaswap.data.repository.CensorshipsRepository;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,7 @@ public class CensorshipsService {
         return censorships;
     }
 
-    public Censorships getCensorshipById(String id) {
+    public Censorships getCensorshipById(ObjectId id) {
         Censorships censorship;
         try {
             censorship = censorshipsRepository.findById(id)
@@ -47,7 +48,7 @@ public class CensorshipsService {
         return censorship;
     }
 
-    public Censorships updateCensorship(String id, Censorships censorship) {
+    public Censorships updateCensorship(ObjectId id, Censorships censorship) {
         getCensorshipById(id);
         Censorships updatedCensorship;
         censorship.setId(id);
@@ -59,7 +60,7 @@ public class CensorshipsService {
         return updatedCensorship;
     }
 
-    public Censorships deleteCensorship(String id) {
+    public Censorships deleteCensorship(ObjectId id) {
         Censorships censorships = getCensorshipById(id);
         try {
             censorshipsRepository.deleteById(id);

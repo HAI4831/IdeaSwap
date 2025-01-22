@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.entity.Follows;
 import nvh.run.ideaswap.data.repository.FollowRepository;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,16 +26,16 @@ public class FollowService {
         return follows;
     }
 
-    public List<Follows> getFollowsByUserID(String userID) {
+    public List<Follows> getFollowsByUserID(ObjectId userID) {
         List<Follows> follows ;
         try {
-            follows = followRepository.findByUserID_Id(userID);
+            follows = followRepository.findByUserID(userID);
         } catch (Exception e) {
             throw new RuntimeException("Get follows failed",e);
         }
         return follows;
     }
-    public Follows getFollowById(String id) {
+    public Follows getFollowById(ObjectId id) {
         Follows follow;
         try {
             follow = followRepository.findById(id)
@@ -54,7 +55,7 @@ public class FollowService {
         return follow;
     }
 
-    public Follows deleteFollow(String id) {
+    public Follows deleteFollow(ObjectId id) {
         Follows follow = getFollowById(id);
         try {
             followRepository.deleteById(id);

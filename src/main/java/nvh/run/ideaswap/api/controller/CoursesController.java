@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nvh.run.ideaswap.data.entity.Courses;
 import nvh.run.ideaswap.service.CoursesService;
+import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +28,7 @@ public class CoursesController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getCourseById(@PathVariable String id) {
+    public ResponseEntity<Object> getCourseById(@PathVariable ObjectId id) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
@@ -49,7 +50,7 @@ public class CoursesController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateCourse(@PathVariable String id, @Valid @RequestBody Courses course) {
+    public ResponseEntity<Object> updateCourse(@PathVariable ObjectId id, @Valid @RequestBody Courses course) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
@@ -60,7 +61,7 @@ public class CoursesController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteCourse(@PathVariable String id) {
+    public ResponseEntity<Object> deleteCourse(@PathVariable ObjectId id) {
         return ResponseEntity.ok(Map.of(
                 "success", true,
                 "message", "Course deleted successfully",
@@ -69,7 +70,7 @@ public class CoursesController {
     }
 
     @PatchMapping("/update/view/{id}")
-    public ResponseEntity<Object> incrementView(@PathVariable String id) {
+    public ResponseEntity<Object> incrementView(@PathVariable ObjectId id) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,

@@ -14,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -38,7 +37,7 @@ public class DataInitializer implements CommandLineRunner {
 //        importDataFromFile();
 
         // Thêm dữ liệu mới nếu cần
-//        initializeSampleData();
+        initializeSampleData();
     }
 
     private void exportDataToFile() throws Exception {
@@ -150,8 +149,8 @@ public class DataInitializer implements CommandLineRunner {
                         .phoneNumber("0123456789")
                         .rating(1000000000)
                         .description("I'm a java spring developer")
-                        .roleID(adminRole)
-                        .birthday(LocalDate.parse("01/01/2003", DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                        .roleID(adminRole.getId())
+                        .birthday(LocalDateTime.parse("01/01/2003 00:00", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")))
                         .id(null)
                         .version(2L)
                         .avatar(null)
@@ -167,8 +166,8 @@ public class DataInitializer implements CommandLineRunner {
                         .password(passwordEncoder.encode("abCD@1234"))
                         .gender(Gender.male)
                         .avatar(null)
-                        .roleID(adminRole)
-                        .birthday(LocalDate.parse("01/01/2003",DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                        .roleID(adminRole.getId())
+                        .birthday(LocalDateTime.parse("01/01/2003 00:00", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")))
                         .lastName("nv")
                         .firstName("hai")
                         .id(null)
@@ -179,7 +178,7 @@ public class DataInitializer implements CommandLineRunner {
                 Banners.builder()
                         .site("nvhai227")
                         .id(null)
-                        .managerID(manager)
+                        .managerID(manager.getId())
                         .createdDate(LocalDateTime.now())
                         .updatedDate(LocalDateTime.now())
                         .imageUrl("https://i.ibb.co/933333/nvhai227.png")
@@ -194,20 +193,20 @@ public class DataInitializer implements CommandLineRunner {
                         .createdDate(LocalDateTime.now())
                         .updatedDate(LocalDateTime.now())
                         .codeExpiration(LocalDateTime.now().plusDays(1))
-                        .user(user)
-                        .userEmail(user.getEmail())
+                        .user(user.getId())
+                        .userEmail(user.getId())
                         .build()
         );
         CommentsRepository commentsRepository = applicationContext.getBean(CommentsRepository.class);
         Comments comments = commentsRepository.save(
                 Comments.builder()
-                        .referenceID("referenceID")
+                        .referenceID(user.getId())
                         .content("content for comment")
                         .createdDate(LocalDateTime.now())
                         .updatedDate(LocalDateTime.now())
                         .id(null)
                         .parentCommentID(null)
-                        .userID(user)
+                        .userID(user.getId())
                         .build()
         );
         ConversationsRepository conversationsRepository = applicationContext.getBean(ConversationsRepository.class);
@@ -216,14 +215,14 @@ public class DataInitializer implements CommandLineRunner {
                         .createdDate(LocalDateTime.now())
                         .updatedDate(LocalDateTime.now())
                         .id(null)
-                        .members(List.of(user))
+                        .members(List.of(user.getId()))
                         .wallpaperUrl("https://i.ibb.co/933333/nvhai227.png")
                         .build()
         );
         DocumentsRepository documentsRepository = applicationContext.getBean(DocumentsRepository.class);
         Documents documents = documentsRepository.save(
                 Documents.builder()
-                        .categoryID(categories)
+                        .categoryID(categories.getId())
                         .countDownload(5)
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
@@ -236,37 +235,37 @@ public class DataInitializer implements CommandLineRunner {
         HeartsRepository   heartsRepository = applicationContext.getBean(HeartsRepository.class);
         Hearts hearts = heartsRepository.save(
                 Hearts.builder()
-                        .referenceID("referenceID")
+                        .referenceID(user.getId())
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
                         .id(null)
-                        .userID(user)
+                        .userID(user.getId())
                         .build()
         );
         MessageRepository messageRepository = applicationContext.getBean(MessageRepository.class);
         Messages messages = messageRepository.save(
                 Messages.builder()
                         .content("I'm a java spring developer")
-                        .conversationID(conversations)
+                        .conversationID(conversations.getId())
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
                         .id(null)
                         .fileUrl("https://i.ibb.co/933333/nvhai227.txt")
                         .messageParentID(null)
-                        .conversationID(conversations)
-                        .senderID(user)
+                        .conversationID(conversations.getId())
+                        .senderID(user.getId())
                         .type(null)
                         .build()
         );
         NotificationRepository notificationRepository = applicationContext.getBean(NotificationRepository.class);
         Notifications notifications = notificationRepository.save(
                 Notifications.builder()
-                        .referenceID("referenceID")
+                        .referenceID(user.getId())
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
                         .id(null)
                         .isUnRead(false)
-                        .userIDs(List.of(user))
+                        .userIDs(List.of(user.getId()))
                         .actorID(null)
                         .isModal(false)
                         .description("descript for notification")
@@ -278,8 +277,8 @@ public class DataInitializer implements CommandLineRunner {
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
                         .id(null)
-                        .referenceID("referenceID")
-                        .userID(user)
+                        .referenceID(user.getId())
+                        .userID(user.getId())
                         .build()
         );
         //c2
@@ -289,43 +288,43 @@ public class DataInitializer implements CommandLineRunner {
                 Reports.builder()
                         .type("type for report")
                         .content("content for report")
-                        .referenceID("referenceID")
+                        .referenceID(user.getId())
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
                         .id(null)
-                        .userID(user)
+                        .userID(user.getId())
                         .status(Status.pending)
                         .build()
         );
         FollowRepository followRepository = applicationContext.getBean(FollowRepository.class);
         Follows follows = followRepository.save(
                 Follows.builder()
-                        .followerID(user)
+                        .followerID(user.getId())
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
                         .id(null)
-                        .userID(user)
+                        .userID(user.getId())
                         .build()
         );
         CoursesRepository coursesRepository = applicationContext.getBean(CoursesRepository.class);
         Courses courses = coursesRepository.save(
                 Courses.builder()
                         .title("title for courses")
-                        .categoryID(categories)
+                        .categoryID(categories.getId())
                         .view(45)
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
                         .id(null)
                         .description("desciption for course")
                         .imageUrl("https://i.ibb.co/933333/nvhai227.png")
-                        .userID(user)
+                        .userID(user.getId())
                         .build()
         );
         VideoRepository videoRepository = applicationContext.getBean(VideoRepository.class);
         Videos videos = videoRepository.save(
                 Videos.builder()
                         .title("title for video")
-                        .courseID(courses)
+                        .courseID(courses.getId())
                         .videoUrl("video.mp4")
                         .view(123)
                         .createdAt(LocalDateTime.now())
@@ -333,19 +332,19 @@ public class DataInitializer implements CommandLineRunner {
                         .id(null)
                         .description("desciption for video")
                         .imageUrl("https://i.ibb.co/933333/nvhai227.png")
-                        .userID(user)
+                        .userID(user.getId())
                         .build()
         );
         BlogRepository blogRepository = applicationContext.getBean(BlogRepository.class);
         Blogs blog = blogRepository.save(
                 Blogs.builder()
                         .url("https://nvhai227.github.io/")
-                        .categoryID(categories)
+                        .categoryID(categories.getId())
                         .content("discord fix bug java spring")
                         .id(null)
                         .createdDate(LocalDateTime.now())
                         .updatedDate(LocalDateTime.now())
-                        .userID(user)
+                        .userID(user.getId())
                         .build()
         );
 

@@ -3,6 +3,7 @@ package nvh.run.ideaswap.api.controller;
 import lombok.RequiredArgsConstructor;
 import nvh.run.ideaswap.data.entity.Notifications;
 import nvh.run.ideaswap.service.NotificationService;
+import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +26,7 @@ public class NotificationController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> getNotificationById(@PathVariable String id) {
+    public ResponseEntity<Object> getNotificationById(@PathVariable ObjectId id) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
@@ -36,7 +37,7 @@ public class NotificationController {
     }
 
     @PostMapping
-    public ResponseEntity<Map<String, Object>> createNotification(@RequestBody Notifications notification) {
+    public ResponseEntity<Object> createNotification(@RequestBody Notifications notification) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
@@ -47,7 +48,7 @@ public class NotificationController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateNotification(@PathVariable String id, @RequestBody Notifications notification) {
+    public ResponseEntity<Object> updateNotification(@PathVariable ObjectId id, @RequestBody Notifications notification) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
@@ -58,7 +59,7 @@ public class NotificationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> deleteNotification(@PathVariable String id) {
+    public ResponseEntity<Object> deleteNotification(@PathVariable ObjectId id) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,

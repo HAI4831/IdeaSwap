@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import nvh.run.ideaswap.common.validator.IsObjectID;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -20,12 +20,9 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @Document(collection = "categories")
 public class Categories
-//        implements  java.io.Serializable , Cloneable
 {
-
     @Id
-    @IsObjectID
-    private String id;
+    private ObjectId id;
 
     @NotBlank(message = "Tên danh mục không được để trống")
     @Size(max = 200, message = "Tên danh mục không được quá 200 ký tự")
@@ -41,14 +38,4 @@ public class Categories
     @LastModifiedDate
     private LocalDateTime updatedDate;
 
-//    @Override
-//    public Categories clone() {
-//        try {
-//            Categories clone = (Categories) super.clone();
-//            // TODO: copy mutable state here, so the clone can't change the internals of the original
-//            return clone;
-//        } catch (CloneNotSupportedException e) {
-//            throw new AssertionError();
-//        }
-//    }
 }

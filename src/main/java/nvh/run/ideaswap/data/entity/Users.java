@@ -8,15 +8,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import nvh.run.ideaswap.common.validator.IsObjectID;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 //c1
 @Document(collection = "users")
@@ -25,12 +23,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class Users
-//        implements  java.io.Serializable , Cloneable
 {
 
     @Id
-    @IsObjectID
-    private String id;
+    private ObjectId id;
 
     @NotBlank(message = "Tên không được để trống")
     @Size(max = 100, message = "Tên không được vượt quá 100 ký tự")
@@ -42,17 +38,14 @@ public class Users
 
     @NotBlank(message = "Tên người dùng không được để trống")
     @Size(max = 50, message = "Tên người dùng không được vượt quá 50 ký tự")
-//    @UniqueUsername
     private String username;
 
     @Email(message = "Email không hợp lệ")
     @NotBlank(message = "Email không được để trống")
     @Size(max = 320, message = "Email không được vượt quá 320 ký tự")
-//    @UniqueUsername
     private String email;
 
     @Size(max = 10, message = "Số điện thoại không được vượt quá 10 ký tự")
-//    @UniquePhoneNumber
     private String phoneNumber;
 
     @Size(max = 1000, message = "Địa chỉ không được vượt quá 1000 ký tự")
@@ -69,14 +62,12 @@ public class Users
 
     private int rating;
 
-    @DBRef
-//    private Object roleID;
-    private Roles roleID;
+    private ObjectId roleID;
 
     @Size(max = 5000, message = "Mô tả không được vượt quá 5000 ký tự")
     private String description;
 
-    private LocalDate birthday;
+    private LocalDateTime birthday;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -109,15 +100,4 @@ public class Users
         this.createdAt = other.createdAt;
         this.updatedAt = other.updatedAt;
     }
-
-//    @Override
-//    public Users clone() {
-//        try {
-//            Users clone = (Users) super.clone();
-//            // TODO: copy mutable state here, so the clone can't change the internals of the original
-//            return clone;
-//        } catch (CloneNotSupportedException e) {
-//            throw new AssertionError();
-//        }
-//    }
 }

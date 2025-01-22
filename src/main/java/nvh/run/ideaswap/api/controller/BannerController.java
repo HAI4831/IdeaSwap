@@ -2,6 +2,7 @@ package nvh.run.ideaswap.api.controller;
 
 import nvh.run.ideaswap.data.entity.Banners;
 import nvh.run.ideaswap.service.BannerService;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +41,7 @@ public class BannerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getBannerById(@PathVariable String id) {
+    public ResponseEntity<Object> getBannerById(@PathVariable ObjectId id) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
@@ -51,7 +52,7 @@ public class BannerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateBanner(@PathVariable String id, @RequestBody Banners banner) {
+    public ResponseEntity<Object> updateBanner(@PathVariable ObjectId id, @RequestBody Banners banner) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
@@ -63,7 +64,7 @@ public class BannerController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<Object> deleteBanner(@PathVariable String id) {
+    public ResponseEntity<Object> deleteBanner(@PathVariable ObjectId id) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,

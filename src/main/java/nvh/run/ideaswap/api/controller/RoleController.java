@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.entity.Roles;
 import nvh.run.ideaswap.service.RoleService;
+import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class RoleController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getRoleById(@PathVariable("id") String id) {
+    public ResponseEntity<Object> getRoleById(@PathVariable("id") ObjectId id) {
         return ResponseEntity.status(200).body(
                 Map.of(
                         "success", true,
@@ -53,7 +54,7 @@ public class RoleController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateRole(@PathVariable("id") String id, @Validated @RequestBody Roles role) {
+    public ResponseEntity<Object> updateRole(@PathVariable("id") ObjectId id, @Validated @RequestBody Roles role) {
         return ResponseEntity.status(200).body(
                 Map.of(
                         "success", true,
@@ -64,7 +65,7 @@ public class RoleController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteRole(@PathVariable("id") String id) {
+    public ResponseEntity<Object> deleteRole(@PathVariable("id") ObjectId id) {
         return ResponseEntity.status(200).body(
                 Map.of(
                         "success", true,
