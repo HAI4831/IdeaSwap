@@ -8,14 +8,16 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import nvh.run.ideaswap.common.security.service.UserDetailsExtImpl;
-import nvh.run.ideaswap.common.security.service.UserDetailsServiceImpl;
+import nvh.run.ideaswap.common.security.component.UserDetailsServiceSelector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -27,7 +29,9 @@ import java.io.IOException;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     JwtUtilities jwtUtilities;
-    UserDetailsServiceImpl userDetailsServiceImpl;
+    UserDetailsServiceSelector userDetailsServiceSelector;
+//    private final UserDetailsServiceImpl userDetailsServiceImpl;
+//    private final ManagerDetailsServiceImpl managerDetailsServiceImpl;
     static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     @Override
@@ -38,13 +42,37 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (token != null && jwtUtilities.verifySignedToken(token)) {
             String username = jwtUtilities.extractUsername(token);
-
+            String tokenType = jwtUtilities.extractScope(token);
+            try {
+                if(tokenType.equals("refresh")) {
+                    throw new RuntimeException("Refresh token is forbidden for access this resource");
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Token error!",e);
+            }
+            UserDetailsService userDetailsService = userDetailsServiceSelector.selectUserDetailsService(request);
+//            UserDetailsService userDetailsService= UserDetailsServiceSelector.selectUserDetailsService();
+//
+//            // Chọn UserDetailsService dựa trên endpoint
+//            if (request.getRequestURI().startsWith("/api/v1/admin/auth")) {
+//                userDetailsService = managerDetailsServiceImpl;
+//            } else {
+//                userDetailsService = userDetailsServiceImpl;
+//            }
             //Nạp thông tin người dùng vào authentication context từ uesrname extract của token
-            UserDetailsExtImpl userDetails = (UserDetailsExtImpl) userDetailsServiceImpl.loadUserByUsername(username);
+//            UserDetailsExtImpl userDetails = (UserDetailsExtImpl) userDetailsServiceImpl.loadUserByUsername(username);
+            // Load user details từ UserDetailsService tương ứng
+//            var userDetails = userDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             if (userDetails != null) {
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                log.info("Authenticated user with username : {}", username);
+//                UsernamePasswordAuthenticationToken authentication =
+//                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                Authentication authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities()
+                );
+                log.info("Authenticated user with username : {},have role : {} ", username,userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }

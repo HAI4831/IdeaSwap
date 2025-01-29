@@ -1,7 +1,7 @@
 package nvh.run.ideaswap.api.controller;
 
 import lombok.RequiredArgsConstructor;
-import nvh.run.ideaswap.data.entity.Notifications;
+import nvh.run.ideaswap.data.dto.NotificationRequest;
 import nvh.run.ideaswap.service.NotificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,23 +36,23 @@ public class NotificationController {
     }
 
     @PostMapping
-    public ResponseEntity<Map<String, Object>> createNotification(@RequestBody Notifications notification) {
+    public ResponseEntity<Map<String, Object>> createNotification(@RequestBody NotificationRequest notificationRequest) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
                         "message", "Create notification successfully",
-                        "data", notificationService.createNotification(notification)
+                        "data", notificationService.createNotification(notificationRequest)
                 )
         );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateNotification(@PathVariable String id, @RequestBody Notifications notification) {
+    public ResponseEntity<Object> updateNotification(@PathVariable String id, @RequestBody NotificationRequest notificationRequest) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
                         "message", "Update notification successfully",
-                        "notification", notificationService.updateNotification(id, notification)
+                        "notification", notificationService.updateNotification(id, notificationRequest)
                 )
         );
     }

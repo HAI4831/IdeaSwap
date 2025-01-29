@@ -29,7 +29,7 @@ public class Videos
     @IsObjectID
     private String id;
 
-    @NotBlank(message = "ID người dùng không được để trống")
+//    @NotBlank(message = "ID người dùng không được để trống")
     @DBRef
     private Users userID;
 
@@ -53,7 +53,7 @@ public class Videos
     @NotBlank(message = "view không được để trống")
     private int view;
 
-    @NotBlank(message = "courseID không được để trống")
+//    @NotBlank(message = "courseID không được để trống")
     @DBRef
     private Courses courseID;
 

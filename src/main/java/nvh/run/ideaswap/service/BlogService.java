@@ -4,13 +4,17 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import nvh.run.ideaswap.data.dto.BlogRequest;
 import nvh.run.ideaswap.data.entity.Blogs;
+import nvh.run.ideaswap.data.entity.Categories;
+import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.repository.BlogRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -20,13 +24,26 @@ import java.util.List;
 @Slf4j
 public class BlogService {
     BlogRepository blogRepository;
+    CategoryService categoryService;
+    UserService userService;
 
     private static final Logger logger = LoggerFactory.getLogger(BannerService.class);
 
     public List<Blogs> getAllBlogs() {
         List<Blogs> blogList;
         try {
-            blogList = blogRepository.findAll().stream().map(blog -> Blogs.builder().build()).toList();
+            blogList = blogRepository.findAll()
+                    .stream()
+                    .map(blog ->
+                            Blogs.builder()
+                                    .id(blog.getId())
+                                    .content(blog.getContent())
+                                    .url(blog.getUrl())
+                                    .userID(blog.getUserID())
+                                    .categoryID(blog.getCategoryID())
+                                    .createdDate(blog.getCreatedDate())
+                                    .updatedDate(blog.getUpdatedDate())
+                                    .build()).toList();
         } catch (Exception e) {
             throw new RuntimeException("Retrieve List Blogs failed",e);
         }
@@ -43,24 +60,47 @@ public class BlogService {
         return blog;
     }
 
-    public Blogs createBlog(Blogs blog) {
-
-        Blogs savedBlog ;
+    public Blogs createBlog(BlogRequest blogRequest) {
+        Categories categories = categoryService.getCategoryById(blogRequest.getCategoryID());
+        Users user = userService.getUserById(blogRequest.getUserID());
+        Blogs blog;
         try {
-            savedBlog = blogRepository.save(blog);
+            blog = blogRepository.save(
+                    Blogs.builder()
+                            .id(blogRequest.getId())
+                            .userID(user)
+                            .categoryID(categories)
+                            .content(blogRequest.getContent())
+                            .url(blogRequest.getUrl())
+                            .createdDate(LocalDateTime.now())
+                            .updatedDate(LocalDateTime.now())
+                            .build()
+            );
         }catch (Exception e){
             throw new RuntimeException("Create Blog failed",e);
         }
 
-        return savedBlog;
+        return blog;
     }
 
-    public Blogs updateBlog(String id, Blogs blog) {
-        blog.setId(id);
+    public Blogs updateBlog(String id, BlogRequest blogRequest) {
+        getBlogById(id);
+        Categories categories = categoryService.getCategoryById(blogRequest.getCategoryID());
+        Users user = userService.getUserById(blogRequest.getUserID());
         Blogs updatedBlog;
         try {
-            updatedBlog= blogRepository.save(blog);
-        } catch (Exception e) {
+            updatedBlog = blogRepository.save(
+                    Blogs.builder()
+                            .id(id)
+                            .userID(user)
+                            .categoryID(categories)
+                            .content(blogRequest.getContent())
+                            .url(blogRequest.getUrl())
+                            .createdDate(LocalDateTime.now())
+                            .updatedDate(LocalDateTime.now())
+                            .build()
+            );
+        }catch (Exception e){
             throw new RuntimeException("Update Blog failed",e);
         }
         return updatedBlog;

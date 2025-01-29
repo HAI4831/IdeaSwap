@@ -1,6 +1,6 @@
 package nvh.run.ideaswap.api.controller;
 
-import nvh.run.ideaswap.data.entity.Banners;
+import nvh.run.ideaswap.data.dto.BannerRequest;
 import nvh.run.ideaswap.service.BannerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,18 +15,6 @@ public class BannerController {
 
     @Autowired
     private BannerService bannerService;
-
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Object> createBanner(@RequestBody Banners banner) {
-        return ResponseEntity.status(201).body(
-                Map.of(
-                        "success", true,
-                        "message","Create Banner successfully",
-                        "banner",bannerService.createBanner(banner)
-                )
-        );
-    }
 
     @GetMapping
     public ResponseEntity<Object> getAllBanners() {
@@ -50,13 +38,25 @@ public class BannerController {
         );
     }
 
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Object> createBanner(@RequestBody BannerRequest bannerRequest) {
+        return ResponseEntity.status(201).body(
+                Map.of(
+                        "success", true,
+                        "message","Create Banner successfully",
+                        "banner",bannerService.createBanner(bannerRequest)
+                )
+        );
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateBanner(@PathVariable String id, @RequestBody Banners banner) {
+    public ResponseEntity<Object> updateBanner(@PathVariable String id, @RequestBody BannerRequest bannerRequest) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
                         "message", "Update Banner successfully",
-                        "banner", bannerService.updateBanner(id,banner)
+                        "banner", bannerService.updateBanner(id,bannerRequest)
                 )
         );
     }

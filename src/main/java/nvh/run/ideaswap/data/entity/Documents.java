@@ -33,7 +33,7 @@ public class Documents
     @IsObjectID
     private String id;
 
-    @NotBlank(message = "Documents reference ID người dùng không được để trống")
+//    @NotBlank(message = "Documents reference ID người dùng không được để trống")
     @DBRef(lazy = true)
     private Users userID;
 
@@ -60,7 +60,7 @@ public class Documents
 
     private double score;
 
-    @NotBlank(message = "ID danh mục không được để trống")
+//    @NotBlank(message = "ID danh mục không được để trống")
     @DBRef
     private Categories categoryID;
 

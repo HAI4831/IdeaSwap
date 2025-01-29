@@ -1,6 +1,7 @@
 package nvh.run.ideaswap.api.controller;
 
 import lombok.RequiredArgsConstructor;
+import nvh.run.ideaswap.data.dto.UserRequest;
 import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -37,23 +38,23 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createUser(@Validated @RequestBody Users user) {
+    public ResponseEntity<Object> createUser(@Validated @RequestBody UserRequest userRequest) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
                         "message", "User created successfully",
-                        "user", userService.createUser(user)
+                        "user", userService.createUser(userRequest)
                 )
         );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateUser(@PathVariable String id, @Validated @RequestBody Users user) {
+    public ResponseEntity<Object> updateUser(@PathVariable String id, @Validated @RequestBody UserRequest userRequest) {
         return ResponseEntity.status(200).body(
                 Map.of(
                         "success", true,
                         "message", "User updated successfully",
-                        "user", userService.updateUser(id, user)
+                        "user", userService.updateUser(id, userRequest)
                 )
         );
     }

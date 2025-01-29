@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import lombok.Builder;
 import lombok.Data;
+import nvh.run.ideaswap.data.entity.Managers;
 import nvh.run.ideaswap.data.entity.Users;
 
 @Builder
@@ -15,4 +16,5 @@ import nvh.run.ideaswap.data.entity.Users;
 @Data
 public class RegisterResponse {
     private Users user;
+    private Managers manager;
 }

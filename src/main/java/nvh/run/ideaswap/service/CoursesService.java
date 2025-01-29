@@ -3,12 +3,15 @@ package nvh.run.ideaswap.service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import nvh.run.ideaswap.data.dto.CourseRequest;
+import nvh.run.ideaswap.data.entity.Categories;
 import nvh.run.ideaswap.data.entity.Courses;
-import nvh.run.ideaswap.data.repository.CategoryRepository;
+import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.repository.CoursesRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -17,7 +20,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CoursesService {
     CoursesRepository coursesRepository;
-    CategoryRepository categoryRepository;
+    UserService userService;
+    CategoryService categoryService;
 
     public List<Courses> getAllCourses() {
         List<Courses> courseList;
@@ -40,21 +44,49 @@ public class CoursesService {
         return course;
     }
 
-    public Courses createCourse(Courses course) {
+    public Courses createCourse(CourseRequest courseRequest) {
+        Users user = userService.getUserById(courseRequest.getUserID());
+        Categories category = categoryService.getCategoryById(courseRequest.getCategoryID());
+        Courses course;
         try {
-            course = coursesRepository.save(course);
+            course = coursesRepository.save(
+                    Courses.builder()
+                            .id(courseRequest.getId())
+                            .userID(user)
+                            .categoryID(category)
+                            .title(courseRequest.getTitle())
+                            .description(courseRequest.getDescription())
+                            .imageUrl(courseRequest.getImageUrl())
+                            .view(courseRequest.getView())
+                            .createdAt(courseRequest.getCreatedAt())
+                            .updatedAt(LocalDateTime.now())
+                            .build()
+            );
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while creating the course",e);
         }
-        return Courses.builder().build();
+        return course;
     }
 
-    public Courses updateCourse(String id, Courses course) {
+    public Courses updateCourse(String id, CourseRequest courseRequest) {
         getCourseById(id);
-        course.setId(id);
-        Courses updatedCourse ;
+        Users user = userService.getUserById(courseRequest.getUserID());
+        Categories category = categoryService.getCategoryById(courseRequest.getCategoryID());
+        Courses course;
         try {
-            updatedCourse = coursesRepository.save(course);
+            course = coursesRepository.save(
+                    Courses.builder()
+                            .id(id)
+                            .userID(user)
+                            .categoryID(category)
+                            .title(courseRequest.getTitle())
+                            .description(courseRequest.getDescription())
+                            .imageUrl(courseRequest.getImageUrl())
+                            .view(courseRequest.getView())
+                            .createdAt(courseRequest.getCreatedAt())
+                            .updatedAt(LocalDateTime.now())
+                            .build()
+            );
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while updating the course",e);
         }

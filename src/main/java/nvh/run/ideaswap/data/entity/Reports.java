@@ -37,7 +37,7 @@ public class Reports
 //    @DBRef
     private String referenceID;
 
-    @NotBlank(message = "ID người dùng không được để trống")
+//    @NotBlank(message = "ID người dùng không được để trống")
     @DBRef
     private Users userID;
 
@@ -48,7 +48,7 @@ public class Reports
     @NotNull(message = "Status can not null")
     private Status status;
 
-    @NotBlank(message = "moderatorID không được để trống")
+//    @NotBlank(message = "moderatorID không được để trống")
     @DBRef
     private Managers moderatorID;
 

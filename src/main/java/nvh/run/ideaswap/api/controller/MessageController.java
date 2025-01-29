@@ -1,6 +1,7 @@
 package nvh.run.ideaswap.api.controller;
 
 import lombok.RequiredArgsConstructor;
+import nvh.run.ideaswap.data.dto.MessageRequest;
 import nvh.run.ideaswap.data.entity.Messages;
 import nvh.run.ideaswap.service.MessageService;
 import org.springframework.http.ResponseEntity;
@@ -37,23 +38,23 @@ public class MessageController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createMessage(@RequestBody Messages message) {
+    public ResponseEntity<Object> createMessage(@RequestBody MessageRequest messageRequest) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
                         "message", "Create Message successfully"
-                        , "Message", messageService.createMessage(message)
+                        , "Message", messageService.createMessage(messageRequest)
                 )
         );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateMessage(@PathVariable String id, @RequestBody Messages message) {
+    public ResponseEntity<Object> updateMessage(@PathVariable String id, @RequestBody MessageRequest messageRequest) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
                         "message", "Update Message By ID successfully"
-                        , "Message", messageService.updateMessage(id, message)
+                        , "Message", messageService.updateMessage(id, messageRequest)
                 )
         );
     }

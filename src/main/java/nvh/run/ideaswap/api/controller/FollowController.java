@@ -2,7 +2,7 @@ package nvh.run.ideaswap.api.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import nvh.run.ideaswap.data.entity.Follows;
+import nvh.run.ideaswap.data.dto.FollowRequest;
 import nvh.run.ideaswap.service.FollowService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,12 +38,12 @@ public class FollowController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createFollow(@Valid @RequestBody Follows follow) {
+    public ResponseEntity<Object> createFollow(@Valid @RequestBody FollowRequest followRequest) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
                         "message", "Follow created successfully",
-                        "follow", followService.createFollow(follow)
+                        "follow", followService.createFollow(followRequest)
                 )
         );
     }

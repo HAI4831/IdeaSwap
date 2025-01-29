@@ -38,15 +38,12 @@ public class CategoryService {
     }
 
     public Categories createCategory(Categories category) {
-        Categories categorySaved;
         try {
-            categorySaved=categoryRepository.save(
-                    category
-            );
+            category=categoryRepository.save(category);
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while creating the category", e);
         }
-        return categorySaved;
+        return category;
     }
 
     public Categories updateCategory(String id, Categories category) {

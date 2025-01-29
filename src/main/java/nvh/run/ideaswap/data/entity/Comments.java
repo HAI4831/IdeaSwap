@@ -35,7 +35,7 @@ public class Comments
     @IsObjectID
     private String parentCommentID;
 
-    @NotBlank(message = "ID người dùng không được để trống")
+//    @NotBlank(message = "ID người dùng không được để trống")
     @DBRef
     private Users userID;
 

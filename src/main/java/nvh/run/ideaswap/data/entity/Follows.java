@@ -1,6 +1,5 @@
 package nvh.run.ideaswap.data.entity;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,12 +25,12 @@ public class Follows
     @IsObjectID
     private String id;
 
-    @NotBlank(message = "ID người theo dõi không được để trống")
+//    @NotBlank(message = "ID người theo dõi không được để trống")
     @DBRef
     private Users followerID;
 
     @DBRef
-    @NotBlank(message = "ID người dùng không được để trống")
+//    @NotBlank(message = "ID người dùng không được để trống")
     private Users userID;
 
     @CreatedDate

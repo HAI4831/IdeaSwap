@@ -4,12 +4,15 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.common.exceptions.exception.custom.auth.UsernameAlreadyExistException;
+import nvh.run.ideaswap.data.dto.UserRequest;
+import nvh.run.ideaswap.data.entity.Roles;
 import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.repository.IUserRepository;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -19,6 +22,9 @@ import java.util.List;
 public class UserService {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UserService.class);
     IUserRepository iUserRepository;
+    RoleService roleService;
+    PasswordEncoder passwordEncoder;
+
     public List<Users> getAllUsers() {
         List<Users> users ;
         try {
@@ -38,24 +44,65 @@ public class UserService {
         }
         return user;
     }
-    public Users createUser(Users user) {
-
+    public Users createUser(UserRequest userRequest) {
+        Users user;
         try {
-            if(existsByEmail(user.getEmail())) throw new RuntimeException("Email already exist");
-            if(existsByPhoneNumber(user.getPhoneNumber())) throw new RuntimeException("Phone number already exist");
-            if(existsByUsername(user.getUsername())) throw new RuntimeException("Username already exist");
-            user = iUserRepository.save(user);
+            if(existsByEmail(userRequest.getEmail())) throw new RuntimeException("Email already exist");
+            if(existsByPhoneNumber(userRequest.getPhoneNumber())) throw new RuntimeException("Phone number already exist");
+            if(existsByUsername(userRequest.getUsername())) throw new RuntimeException("Username already exist");
+            Roles role = roleService.getRoleById(userRequest.getRoleID());
+            user = iUserRepository.save(
+                    Users.builder()
+                            .id(userRequest.getId())
+                            .roleID(role)
+                            .email(userRequest.getEmail())
+                            .username(userRequest.getUsername())
+                            .password(passwordEncoder.encode(userRequest.getPassword()))
+                            .firstName(userRequest.getFirstName())
+                            .lastName(userRequest.getLastName())
+                            .phoneNumber(userRequest.getPhoneNumber())
+                            .address(userRequest.getAddress())
+                            .gender(userRequest.getGender())
+                            .avatar(userRequest.getAvatar())
+                            .description(userRequest.getDescription())
+                            .rating(userRequest.getRating())
+                            .version(2L)
+                            .birthday(userRequest.getBirthday())
+                            .createdAt(LocalDateTime.now())
+                            .updatedAt(LocalDateTime.now())
+                            .build()
+            );
         } catch (Exception e) {
             throw new RuntimeException("Create User failed",e);
         }
-        return Users.builder().build();
+        return user;
     }
-    public Users updateUser(String id, Users user) {
+    public Users updateUser(String id, UserRequest userRequest) {
         getUserById(id);
-        user.setId(id);
+        Roles role = roleService.getRoleById(userRequest.getRoleID());
         Users updatedUser ;
         try {
-            updatedUser = iUserRepository.save(user);
+            updatedUser = iUserRepository.save(
+                    Users.builder()
+                            .id(id)
+                            .roleID(role)
+                            .email(userRequest.getEmail())
+                            .username(userRequest.getUsername())
+                            .password(passwordEncoder.encode(userRequest.getPassword()))
+                            .firstName(userRequest.getFirstName())
+                            .lastName(userRequest.getLastName())
+                            .phoneNumber(userRequest.getPhoneNumber())
+                            .address(userRequest.getAddress())
+                            .gender(userRequest.getGender())
+                            .avatar(userRequest.getAvatar())
+                            .description(userRequest.getDescription())
+                            .rating(userRequest.getRating())
+                            .version(2L)
+                            .birthday(userRequest.getBirthday())
+                            .createdAt(LocalDateTime.now())
+                            .updatedAt(LocalDateTime.now())
+                            .build()
+            );
         } catch (Exception e) {
             throw new RuntimeException("Update User failed",e);
         }
@@ -75,7 +122,7 @@ public class UserService {
     public Users findByUsername(String username) {
         Users user;
         try {
-            user=iUserRepository.findByUsername(username).orElseThrow(()->new UsernameNotFoundException("User not found with username:{}"+username));
+            user=iUserRepository.findByUsername(username).orElseThrow(()->new RuntimeException("User not found with username:{}"+username));
         }
         catch (Exception e) {
             throw new RuntimeException("Retrieve User By Username failed",e);

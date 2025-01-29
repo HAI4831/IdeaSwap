@@ -3,11 +3,14 @@ package nvh.run.ideaswap.service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import nvh.run.ideaswap.data.dto.ConversationRequest;
 import nvh.run.ideaswap.data.entity.Conversations;
+import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.repository.ConversationsRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -16,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ConversationsService {
     ConversationsRepository conversationsRepository;
+    UserService userService;
 
     public List<Conversations> getAllConversations() {
         List<Conversations> conversations;
@@ -37,24 +41,43 @@ public class ConversationsService {
         return conversation;
     }
 
-    public Conversations createConversation(Conversations conversation) {
+    public Conversations createConversation(ConversationRequest conversationRequest) {
+        Conversations conversation;
+        List<Users> userList = conversationRequest.getMembers().stream().map(userService::getUserById).toList();
         try {
-            conversation = conversationsRepository.save(conversation);
+            conversation = conversationsRepository.save(
+                    Conversations.builder()
+                            .id(conversationRequest.getId())
+                            .members(userList)
+                            .wallpaperUrl(conversationRequest.getWallpaperUrl())
+                            .createdDate(LocalDateTime.now())
+                            .updatedDate(LocalDateTime.now())
+                            .build()
+            );
         } catch (Exception e) {
             throw new RuntimeException("Create conversation failed",e);
         }
         return conversation;
     }
 
-    public Conversations updateConversation(String id, Conversations conversation) {
+    public Conversations updateConversation(String id, ConversationRequest conversationRequest) {
         getConversationById(id);
-        Conversations updatedConversation;
+        Conversations conversation;
+        List<Users> userList = conversationRequest.getMembers().stream().map(userService::getUserById).toList();
         try {
-            updatedConversation = conversationsRepository.save(conversation);
+            conversation = conversationsRepository.save(
+                    Conversations.builder()
+                            .id(conversationRequest.getId())
+                            .members(userList)
+                            .wallpaperUrl(conversationRequest.getWallpaperUrl())
+                            .createdDate(LocalDateTime.now())
+                            .updatedDate(LocalDateTime.now())
+                            .build()
+            );
         } catch (Exception e) {
             throw new RuntimeException("Update conversation failed",e);
         }
-        return updatedConversation;
+        return conversation;
     }
 
     public Conversations deleteConversation(String id) {

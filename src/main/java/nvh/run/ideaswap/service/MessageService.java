@@ -3,11 +3,15 @@ package nvh.run.ideaswap.service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import nvh.run.ideaswap.data.dto.MessageRequest;
+import nvh.run.ideaswap.data.entity.Conversations;
 import nvh.run.ideaswap.data.entity.Messages;
+import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.repository.MessageRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -16,6 +20,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MessageService {
     MessageRepository messageRepository;
+    ConversationsService conversationsService;
+    UserService userService;
 
     public List<Messages> getAllMessages() {
         List<Messages> messages;
@@ -38,7 +44,20 @@ public class MessageService {
         return message;
     }
 
-    public Messages createMessage(Messages message) {
+    public Messages createMessage(MessageRequest messageRequest) {
+        Conversations conversation = conversationsService.getConversationById(messageRequest.getConversationID());
+        Users user = userService.getUserById(messageRequest.getId());
+        Messages message = Messages.builder()
+                .id(messageRequest.getId())
+                .senderID(user)
+                .conversationID(conversation)
+                .content(messageRequest.getContent())
+                .messageParentID(messageRequest.getMessageParentID())
+                .fileUrl(messageRequest.getFileUrl())
+                .type(messageRequest.getType())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
        try {
             message = messageRepository.save(message);
        } catch (Exception e) {
@@ -47,8 +66,21 @@ public class MessageService {
         return message;
     }
 
-    public Messages updateMessage(String id, Messages message) {
+    public Messages updateMessage(String id, MessageRequest messageRequest) {
         getMessageById(id);
+        Conversations conversation = conversationsService.getConversationById(messageRequest.getConversationID());
+        Users user = userService.getUserById(messageRequest.getId());
+        Messages message = Messages.builder()
+                .id(messageRequest.getId())
+                .senderID(user)
+                .conversationID(conversation)
+                .content(messageRequest.getContent())
+                .messageParentID(messageRequest.getMessageParentID())
+                .fileUrl(messageRequest.getFileUrl())
+                .type(messageRequest.getType())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
         message.setId(id);
         Messages updatedMessage;
         try {

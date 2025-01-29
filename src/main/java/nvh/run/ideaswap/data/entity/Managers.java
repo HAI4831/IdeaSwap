@@ -28,7 +28,27 @@ import java.time.LocalDateTime;
 public class Managers
 //        implements  java.io.Serializable , Cloneable
 {
-
+    public Managers(Managers other) {
+        if (other != null) {
+            copyFromOther(other);
+        }
+    }
+    private void copyFromOther(Managers other) {
+        this.id = other.id;
+        this.firstName = other.firstName;
+        this.lastName = other.lastName;
+        this.username = other.username;
+        this.email = other.email;
+        this.phoneNumber = other.phoneNumber;
+        this.address = other.address;
+        this.password = other.password;
+        this.avatar = other.avatar;
+        this.birthday = other.birthday;
+        this.gender = other.gender;
+        this.roleID = other.roleID;
+        this.createdAt = other.createdAt;
+        this.updatedAt = other.updatedAt;
+    }
     @Id
     @IsObjectID
     private String id;
@@ -67,7 +87,7 @@ public class Managers
     @Size(max = 150, message = "avatar không quá 150 ký tự")
     private String avatar;
 
-    private LocalDate birthday= LocalDate.of(1970,1,1);
+    private LocalDate birthday;
 
     @NotNull(message = "gender can not null")
    private Gender gender;

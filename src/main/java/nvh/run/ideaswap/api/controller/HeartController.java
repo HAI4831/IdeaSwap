@@ -2,7 +2,7 @@ package nvh.run.ideaswap.api.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import nvh.run.ideaswap.data.entity.Hearts;
+import nvh.run.ideaswap.data.dto.HeartRequest;
 import nvh.run.ideaswap.service.HeartService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,12 +49,12 @@ public class    HeartController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createHeart(@Valid @RequestBody Hearts heart) {
+    public ResponseEntity<Object> createHeart(@Valid @RequestBody HeartRequest heartRequest) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
                         "message", "Heart created successfully",
-                        "heart", heartService.createHeart(heart)
+                        "heart", heartService.createHeart(heartRequest)
                 ));
 
     }

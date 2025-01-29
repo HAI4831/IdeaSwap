@@ -2,6 +2,7 @@ package nvh.run.ideaswap.api.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import nvh.run.ideaswap.data.dto.CommentRequest;
 import nvh.run.ideaswap.data.entity.Comments;
 import nvh.run.ideaswap.service.CommentsService;
 import org.springframework.http.ResponseEntity;
@@ -38,23 +39,23 @@ public class CommentsController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createComment(@Valid @RequestBody Comments comment) {
+    public ResponseEntity<Object> createComment(@Valid @RequestBody CommentRequest commentRequest) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
                         "message", "Comment created successfully",
-                        "comment", commentsService.createComment(comment)
+                        "comment", commentsService.createComment(commentRequest)
                 )
         );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateComment(@PathVariable String id, @Valid @RequestBody Comments comment) {
+    public ResponseEntity<Object> updateComment(@PathVariable String id, @Valid @RequestBody CommentRequest commentRequest) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
                         "message", "Comment updated successfully",
-                        "comment", commentsService.updateComment(id, comment)
+                        "comment", commentsService.updateComment(id, commentRequest)
                 )
         );
     }

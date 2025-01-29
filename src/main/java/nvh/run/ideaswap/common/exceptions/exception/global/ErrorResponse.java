@@ -21,6 +21,6 @@ public class ErrorResponse {
 //    private String exceptionDetails;
     private LocalDateTime timestamp;
 //    Throwable error;
-//    StackTraceElement[] stackTrace;
+    StackTraceElement[] stackTrace;
 }
 

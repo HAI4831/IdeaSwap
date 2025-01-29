@@ -215,4 +215,8 @@ public boolean verifySignedToken(String token) {
         {return bearerToken.substring(7); } // The part after "Bearer "
         return null;
     }
+
+    public String extractScope(String token) {
+        return claimsMap.get("tokenType").toString();
+    }
 }

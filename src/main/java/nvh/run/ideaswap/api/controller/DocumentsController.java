@@ -2,7 +2,7 @@ package nvh.run.ideaswap.api.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import nvh.run.ideaswap.data.entity.Documents;
+import nvh.run.ideaswap.data.dto.DocumentRequest;
 import nvh.run.ideaswap.service.DocumentsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,23 +38,23 @@ public class DocumentsController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createDocument(@Valid @RequestBody Documents document) {
+    public ResponseEntity<Object> createDocument(@Valid @RequestBody DocumentRequest documentRequest) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
                         "message", "Document created successfully",
-                        "document", documentsService.createDocument(document)
+                        "document", documentsService.createDocument(documentRequest)
                 )
         );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateDocument(@PathVariable String id, @Valid @RequestBody Documents document) {
+    public ResponseEntity<Object> updateDocument(@PathVariable String id, @Valid @RequestBody DocumentRequest documentRequest) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
                         "message", "Document updated successfully",
-                        "document", documentsService.updateDocument(id, document)
+                        "document", documentsService.updateDocument(id, documentRequest)
                 )
         );
     }

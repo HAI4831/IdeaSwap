@@ -3,11 +3,14 @@ package nvh.run.ideaswap.service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import nvh.run.ideaswap.data.dto.CommentRequest;
 import nvh.run.ideaswap.data.entity.Comments;
+import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.repository.CommentsRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -16,6 +19,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommentsService {
     CommentsRepository commentsRepository;
+    UserService userService;
+
     public List<Comments> getAllComments() {
         List<Comments> comments;
         try {
@@ -35,24 +40,46 @@ public class CommentsService {
         }
         return comment;
     }
-    public Comments createComment(Comments comment) {
+    public Comments createComment(CommentRequest commentRequest) {
+        Users user = userService.getUserById(commentRequest.getUserID()) ;
+        Comments comment;
         try {
-            comment = commentsRepository.save(comment);
+            comment = commentsRepository.save(
+                    Comments.builder()
+                            .id(commentRequest.getId())
+                            .userID(user)
+                            .content(commentRequest.getContent())
+                            .parentCommentID(commentRequest.getParentCommentID())
+                            .referenceID(commentRequest.getReferenceID())
+                            .createdDate(LocalDateTime.now())
+                            .updatedDate(LocalDateTime.now())
+                            .build()
+            );
         } catch (Exception e) {
             throw new RuntimeException("Create comment failed",e);
         }
         return comment;
     }
-    public Comments updateComment(String id, Comments comment) {
+    public Comments updateComment(String id, CommentRequest commentRequest) {
         getCommentById(id);
-        comment.setId(id);
-        Comments updatedComment;
+        Users user = userService.getUserById(commentRequest.getUserID()) ;
+        Comments comment;
         try {
-            updatedComment = commentsRepository.save(comment);
+            comment = commentsRepository.save(
+                    Comments.builder()
+                            .id(id)
+                            .userID(user)
+                            .content(commentRequest.getContent())
+                            .parentCommentID(commentRequest.getParentCommentID())
+                            .referenceID(commentRequest.getReferenceID())
+                            .createdDate(LocalDateTime.now())
+                            .updatedDate(LocalDateTime.now())
+                            .build()
+            );
         } catch (Exception e) {
             throw new RuntimeException("Update comment failed",e);
         }
-        return updatedComment;
+        return comment;
     }
     public Comments deleteComment(String id) {
         Comments comment = getCommentById(id);

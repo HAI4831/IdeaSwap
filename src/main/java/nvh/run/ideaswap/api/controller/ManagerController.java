@@ -2,6 +2,7 @@ package nvh.run.ideaswap.api.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import nvh.run.ideaswap.data.dto.ManagerRequest;
 import nvh.run.ideaswap.data.entity.Managers;
 import nvh.run.ideaswap.service.ManagerService;
 import org.springframework.http.ResponseEntity;
@@ -34,22 +35,22 @@ public class ManagerController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createManager(@RequestBody @Valid Managers manager) {
+    public ResponseEntity<Object> createManager(@RequestBody @Valid ManagerRequest managerRequest) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
                         "message", "Manager created successfully",
-                        "manager", managerService.createManager(manager)
+                        "manager", managerService.createManager(managerRequest)
                 )
         );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateManager(@PathVariable String id, @RequestBody @Valid Managers manager) {
+    public ResponseEntity<Object> updateManager(@PathVariable String id, @RequestBody @Valid ManagerRequest managerRequest) {
         return ResponseEntity.ok(Map.of(
                 "success", true,
                 "message", "Manager updated successfully",
-                "manager", managerService.updateManager(id, manager)
+                "manager", managerService.updateManager(id, managerRequest)
         ));
     }
 

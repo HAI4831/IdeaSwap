@@ -28,7 +28,7 @@ public class Banners
     @IsObjectID
     private String id;
 
-    @NotBlank(message = "manager của banner không thể trống")
+//    @NotBlank(message = "manager của banner không thể trống")
     @DBRef
     private Managers managerID;
 

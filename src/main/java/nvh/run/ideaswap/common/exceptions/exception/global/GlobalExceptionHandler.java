@@ -50,7 +50,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         errorResponse.setError(cause.getMessage());
         errorResponse.setErrorClass(errorClass);
         errorResponse.setPath(request.getRequestURI());
-//        errorResponse.setStackTrace(stackTrace);
+        errorResponse.setStackTrace(stackTrace);
         errorResponse.setTimestamp(LocalDateTime.now());
         return ResponseEntity.status(status).body(errorResponse);
     }

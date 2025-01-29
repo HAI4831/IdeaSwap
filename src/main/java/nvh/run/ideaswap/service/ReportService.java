@@ -3,11 +3,15 @@ package nvh.run.ideaswap.service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import nvh.run.ideaswap.data.dto.ReportRequest;
+import nvh.run.ideaswap.data.entity.Managers;
 import nvh.run.ideaswap.data.entity.Reports;
+import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.repository.ReportRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -16,6 +20,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReportService {
     ReportRepository reportRepository;
+    UserService userService;
+    ManagerService managerService;
 
     public List<Reports> getAllReports() {
         List<Reports> reports;
@@ -38,25 +44,49 @@ public class ReportService {
         return report;
     }
 
-    public Reports createReport(Reports report) {
-        Reports savedReport ;
+    public Reports createReport(ReportRequest reportRequest) {
+        Users user = userService.getUserById(reportRequest.getUserID());
+        Managers manager = managerService.getManagerById(reportRequest.getModeratorID());
+        Reports report = Reports.builder()
+                .id(reportRequest.getId())
+                .userID(user)
+                .moderatorID(manager)
+                .content(reportRequest.getContent())
+                .referenceID(reportRequest.getReferenceID())
+                .type(reportRequest.getType())
+                .status(reportRequest.getStatus())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
         try {
-            savedReport = reportRepository.save(report);
+            report = reportRepository.save(report);
         } catch (Exception e) {
             throw new RuntimeException("Create report failed",e);
         }
-        return savedReport;
+        return report;
     }
 
-    public Reports updateReport(String id, Reports report) {
+    public Reports updateReport(String id, ReportRequest reportRequest) {
         getReportById(id);
-        Reports updatedReport ;
+        Users user = userService.getUserById(reportRequest.getUserID());
+        Managers manager = managerService.getManagerById(reportRequest.getModeratorID());
+        Reports report = Reports.builder()
+                .id(id)
+                .userID(user)
+                .moderatorID(manager)
+                .content(reportRequest.getContent())
+                .referenceID(reportRequest.getReferenceID())
+                .type(reportRequest.getType())
+                .status(reportRequest.getStatus())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
         try {
-            updatedReport = reportRepository.save(report);
+            report = reportRepository.save(report);
         } catch (Exception e) {
             throw new RuntimeException("Update report failed",e);
         }
-        return updatedReport;
+        return report;
     }
 
     public Reports deleteReport(String id) {

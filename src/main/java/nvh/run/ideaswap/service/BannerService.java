@@ -3,10 +3,13 @@ package nvh.run.ideaswap.service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import nvh.run.ideaswap.data.dto.BannerRequest;
 import nvh.run.ideaswap.data.entity.Banners;
+import nvh.run.ideaswap.data.entity.Managers;
 import nvh.run.ideaswap.data.repository.BannerRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -14,15 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BannerService {
     BannerRepository bannerRepository;
-
-    public Banners createBanner(Banners banner) {
-        try {
-             banner = bannerRepository.save(banner);
-        } catch (Exception e) {
-            throw new RuntimeException("Create Banner into db failed",e);
-        }
-        return banner;
-    }
+    ManagerService managerService;
 
     public List<Banners> getAllBanners() {
         List<Banners> banners ;
@@ -46,10 +41,42 @@ public class BannerService {
         return banner;
     }
 
-    public Banners updateBanner(String id, Banners banner) {
-        banner.setId(id);
+    public Banners createBanner(BannerRequest bannerRequest) {
+        Managers manager = managerService.getManagerById(bannerRequest.getManagerID());
+        Banners banner;
         try {
-            banner = bannerRepository.save(banner);
+            banner = bannerRepository.save(
+                    Banners.builder()
+                            .id(bannerRequest.getId())
+                            .managerID(manager)
+                            .name(bannerRequest.getName())
+                            .site(bannerRequest.getSite())
+                            .imageUrl(bannerRequest.getImageUrl())
+                            .createdDate(LocalDateTime.now())
+                            .updatedDate(LocalDateTime.now())
+                            .build()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Create Banner into db failed",e);
+        }
+        return banner;
+    }
+
+    public Banners updateBanner(String id, BannerRequest bannerRequest) {
+        Managers manager = managerService.getManagerById(bannerRequest.getManagerID());
+        Banners banner;
+        try {
+            banner = bannerRepository.save(
+                    Banners.builder()
+                            .id(bannerRequest.getId())
+                            .managerID(manager)
+                            .name(bannerRequest.getName())
+                            .site(bannerRequest.getSite())
+                            .imageUrl(bannerRequest.getImageUrl())
+                            .createdDate(bannerRequest.getCreatedDate())
+                            .updatedDate(LocalDateTime.now())
+                            .build()
+            );
         } catch (Exception e) {
             throw new RuntimeException("Update banner failed",e);
         }

@@ -38,13 +38,12 @@ public class RoleService {
     }
 
     public Roles createRole(Roles role) {
-        Roles roleSaved ;
         try {
-            roleSaved = roleRepository.save(role);
+            role = roleRepository.save(role);
         } catch (Exception e) {
             throw new RuntimeException("Create role failed",e);
         }
-        return roleSaved;
+        return role;
     }
 
     public Roles updateRole(String id, Roles role) {

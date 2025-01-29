@@ -3,11 +3,14 @@ package nvh.run.ideaswap.service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import nvh.run.ideaswap.data.dto.NotificationRequest;
 import nvh.run.ideaswap.data.entity.Notifications;
+import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.repository.NotificationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -16,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationService {
     NotificationRepository notificationRepository;
+    UserService userService;
 
     public List<Notifications> getAllNotifications() {
         List<Notifications> notifications;
@@ -38,7 +42,21 @@ public class NotificationService {
         return notification;
     }
 
-    public Notifications createNotification(Notifications notification) {
+    public Notifications createNotification(NotificationRequest notificationRequest) {
+        List<Users> users = notificationRequest.getUserIDs().stream().map(userService::findById).toList();
+        Notifications notification = Notifications.builder()
+                .id(notificationRequest.getId())
+                .userIDs(users)
+                .description(notificationRequest.getDescription())
+                .imageUrl(notificationRequest.getImageUrl())
+                .isUnRead(notificationRequest.isUnRead())
+                .actorID(notificationRequest.getActorID())
+                .referenceType(notificationRequest.getReferenceType())
+                .isModal(notificationRequest.isModal())
+                .referenceID(notificationRequest.getReferenceID())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
         try {
             notification = notificationRepository.save(notification);
         } catch (Exception e) {
@@ -47,8 +65,21 @@ public class NotificationService {
         return notification;
     }
 
-    public Notifications updateNotification(String id, Notifications notification) {
+    public Notifications updateNotification(String id, NotificationRequest notificationRequest) {
         getNotificationById(id);
+        List<Users> users = notificationRequest.getUserIDs().stream().map(userService::findById).toList();
+        Notifications notification = Notifications.builder()
+                .userIDs(users)
+                .description(notificationRequest.getDescription())
+                .imageUrl(notificationRequest.getImageUrl())
+                .isUnRead(notificationRequest.isUnRead())
+                .actorID(notificationRequest.getActorID())
+                .referenceType(notificationRequest.getReferenceType())
+                .isModal(notificationRequest.isModal())
+                .referenceID(notificationRequest.getReferenceID())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
         notification.setId(id);
         try {
             notification = notificationRepository.save(notification);

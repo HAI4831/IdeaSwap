@@ -47,6 +47,13 @@ public class AuthService {
             Roles role = roleService.findByName("user");
             Users user;
             try {
+                if (iUserRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
+                    throw new RuntimeException("Can't register new user because the user already exists.");
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("An error occurred while checking the user: " + e.getMessage(), e);
+            }
+            try {
                  user= iUserRepository.save(
                          //map
                          Users.builder()
@@ -64,7 +71,8 @@ public class AuthService {
                         .description(registerRequest.getDescription()==null ? "" :registerRequest.getDescription() )
                         .birthday(LocalDate.now())
                         .build());
-            }catch (Exception e){
+            }
+            catch (Exception e){
                 throw new DatabaseException("Register failed for user ", e);
             }
             return RegisterResponse.builder()

@@ -1,6 +1,7 @@
 package nvh.run.ideaswap.api.controller;
 
 import lombok.RequiredArgsConstructor;
+import nvh.run.ideaswap.data.dto.ReportRequest;
 import nvh.run.ideaswap.data.entity.Reports;
 import nvh.run.ideaswap.service.ReportService;
 import org.springframework.http.ResponseEntity;
@@ -38,23 +39,23 @@ public class ReportController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createReport(@RequestBody Reports report) {
+    public ResponseEntity<Object> createReport(@RequestBody ReportRequest reportRequest) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
                         "message", "Retrieve List Reports successfully",
-                        "report", reportService.createReport(report)
+                        "report", reportService.createReport(reportRequest)
                 )
         );
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<Object> updateReport(@PathVariable String id, @RequestBody Reports report) {
+    public ResponseEntity<Object> updateReport(@PathVariable String id, @RequestBody ReportRequest reportRequest) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
                         "message", "Retrieve List Reports successfully",
-                        "report", reportService.updateReport(id,report)
+                        "report", reportService.updateReport(id,reportRequest)
                 )
         );
     }

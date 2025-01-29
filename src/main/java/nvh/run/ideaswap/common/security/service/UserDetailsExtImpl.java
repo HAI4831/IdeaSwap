@@ -29,8 +29,8 @@ public class UserDetailsExtImpl extends Users implements Serializable,UserDetail
 
     public static UserDetailsExtImpl build(Users user) {
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(
-                "user"
-//                user.getRoleID().getName()
+//                "user"
+                user.getRoleID().getName()
         ));
 
         return new UserDetailsExtImpl(user, authorities);

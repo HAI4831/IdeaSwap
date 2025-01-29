@@ -1,7 +1,6 @@
 package nvh.run.ideaswap.data.entity;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,7 +27,7 @@ public class Hearts
     private String id;
 
     @DBRef
-    @NotNull(message = "Người dùng không được để trống")
+//    @NotNull(message = "Người dùng không được để trống")
     private Users userID;
 
     @NotBlank(message = "ID tham chiếu không được để trống")

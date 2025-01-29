@@ -28,11 +28,11 @@ public class Courses
     @IsObjectID
     private String id;
 
-    @NotBlank(message = "Courses tham chiếu tới ID người dùng không được để trống")
+//    @NotBlank(message = "Courses tham chiếu tới ID người dùng không được để trống")
     @DBRef(lazy = true)
     private Users userID;
 
-    @NotBlank(message = "ID danh mục không được để trống")
+//    @NotBlank(message = "ID danh mục không được để trống")
     @DBRef
     private Categories categoryID;
 
