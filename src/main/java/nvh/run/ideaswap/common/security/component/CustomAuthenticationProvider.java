@@ -1,9 +1,9 @@
 package nvh.run.ideaswap.common.security.component;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import nvh.run.ideaswap.common.security.service.ManagerDetailsServiceImpl;
-import nvh.run.ideaswap.common.security.service.UserDetailsServiceImpl;
+import lombok.experimental.FieldDefaults;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,11 +14,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CustomAuthenticationProvider implements AuthenticationProvider {
-    private final HttpServletRequest request;
-    private final UserDetailsServiceImpl userDetailsServiceImpl;
-    private final ManagerDetailsServiceImpl managerDetailsServiceImpl;
-    private final PasswordEncoder passwordEncoder;
+    HttpServletRequest request;
+    UserDetailsServiceSelector userDetailsServiceSelector;
+    PasswordEncoder passwordEncoder;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -26,15 +26,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         String password = authentication.getCredentials().toString();
 
         // Determine the appropriate UserDetailsService based on URL
-        UserDetails userDetails;
-        String requestURI = request.getRequestURI();
-        if (requestURI.startsWith("/api/v1/admin/auth")) {
-            userDetails = managerDetailsServiceImpl.loadUserByUsername(username);
-        } else if (requestURI.startsWith("/api/v1/auth")) {
-            userDetails = userDetailsServiceImpl.loadUserByUsername(username);
-        } else {
-            throw new AuthenticationException("Unsupported authentication path: " + requestURI) {};
-        }
+        UserDetails userDetails = userDetailsServiceSelector.selectUserDetails(request,username) ;
 
         // Validate the password
         if (!passwordEncoder.matches(password, userDetails.getPassword())) {

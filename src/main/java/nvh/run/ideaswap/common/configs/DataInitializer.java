@@ -95,7 +95,7 @@ public class DataInitializer implements CommandLineRunner {
         clearAllData();
         //c0
         RoleRepository roleRepository = applicationContext.getBean(RoleRepository.class);
-        roleRepository.save(
+        Roles userRole =  roleRepository.save(
                 Roles.builder()
                         .id("6799978226692b76e021501c")
                         .name("user")
@@ -148,9 +148,9 @@ public class DataInitializer implements CommandLineRunner {
         Users user = userRepository.save(
                 Users.builder()
                         .id("6799988457bcd648ae78136a")
-                        .username("nvhai227@gmail.com")
+                        .username("nvhai722@gmail.com")
 //                        .username("Nguyễn Văn Hải")
-                        .email("nvhai227@gmail.com")
+                        .email("nvhai722@gmail.com")
                         .password(passwordEncoder.encode("abCD@1234"))
                         .address("Ninh Bình")
                         .firstName("Nguyễn Văn")
@@ -159,7 +159,7 @@ public class DataInitializer implements CommandLineRunner {
                         .phoneNumber("0123456789")
                         .rating(1000000000)
                         .description("I'm a java spring developer")
-                        .roleID(adminRole)
+                        .roleID(userRole)
                         .birthday(LocalDate.parse("01/01/2003", DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                         .version(2L)
                         .avatar(null)

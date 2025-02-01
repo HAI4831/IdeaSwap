@@ -8,8 +8,6 @@ import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.common.security.component.CustomAuthenticationProvider;
 import nvh.run.ideaswap.common.security.jwt.AuthEntryPointJwt;
 import nvh.run.ideaswap.common.security.jwt.JwtAuthenticationFilter;
-import nvh.run.ideaswap.common.security.service.ManagerDetailsServiceImpl;
-import nvh.run.ideaswap.common.security.service.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -31,9 +29,9 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SpringSecurityConfig {
+    HttpServletRequest request;
     JwtAuthenticationFilter jwtAuthenticationFilter;
-    UserDetailsServiceImpl userDetailsServiceImpl;
-    ManagerDetailsServiceImpl adminDetailsServiceImpl;
+//    UserDetailsServiceSelector userDetailsServiceSelector;
     CustomAuthenticationProvider customAuthenticationProvider;
 
     @Bean
@@ -41,6 +39,7 @@ public class SpringSecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .userDetailsService(userDetailsServiceSelector.selectUserDetailsService(request))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
                                 "/ping",
@@ -57,11 +56,11 @@ public class SpringSecurityConfig {
                                 "/api/v1/admin/auth/refresh"
                         ).permitAll()
 
+//                        .requestMatchers("/api/v1/categories/*").hasAuthority("user")
                         .requestMatchers(HttpMethod.GET,"/api/v1/categories/*").hasAuthority("user")
                         .requestMatchers(HttpMethod.POST,"/api/v1/categories/*").hasAuthority("admin")
                         .requestMatchers(HttpMethod.PUT,"/api/v1/categories/*").hasAuthority("admin")
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/categories/*").hasAuthority("admin")
-
 
                         .requestMatchers(HttpMethod.GET,"/api/v1/products/*").hasAuthority("user")
                         .requestMatchers(HttpMethod.POST,"/api/v1/products/*").hasAuthority("admin")
@@ -80,7 +79,7 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.PUT,"/api/v1/censorships/*").hasAuthority("admin")
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/censorships/*").hasAuthority("admin")
                         .requestMatchers("/api/v1/code/*").hasAuthority("user")
-                        .requestMatchers("/api/v1/comment/*").hasAuthority("user")
+//                        .requestMatchers("/api/v1/comment/*").hasAuthority("user")
                         .requestMatchers(HttpMethod.GET,"/api/v1/comment/*").hasAuthority("user")
                         .requestMatchers(HttpMethod.POST,"/api/v1/comment/*").hasAuthority("admin")
                         .requestMatchers(HttpMethod.PUT,"/api/v1/comment/*").hasAuthority("admin")
@@ -105,6 +104,7 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/v1/heart/*").hasAuthority("admin")
                         .requestMatchers(HttpMethod.PUT,"/api/v1/heart/*").hasAuthority("admin")
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/heart/*").hasAuthority("admin")
+                        .requestMatchers("/api/v1/manager/*").hasAuthority("admin")
                         .requestMatchers(HttpMethod.GET,"/api/v1/message/*").hasAuthority("user")//not have
                         .requestMatchers(HttpMethod.POST,"/api/v1/message/*").hasAuthority("admin")//not have
                         .requestMatchers(HttpMethod.PUT,"/api/v1/message/*").hasAuthority("admin")//not have

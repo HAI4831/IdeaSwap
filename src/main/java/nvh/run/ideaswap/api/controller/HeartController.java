@@ -12,7 +12,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/heart")
 @RequiredArgsConstructor
-public class    HeartController {
+public class HeartController {
     private final HeartService heartService;
 
     @GetMapping

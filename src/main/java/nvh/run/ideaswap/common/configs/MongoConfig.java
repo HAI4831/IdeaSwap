@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 @Configuration
 @EnableMongoAuditing
 public class MongoConfig
-//        extends AbstractMongoClientConfiguration
 {
 
     private final Dotenv dotenv = Dotenv.load();
@@ -28,15 +27,4 @@ public class MongoConfig
         return new MongoTemplate(mongoClient, "ideaswap");
     }
 
-//    @Override
-//    public MongoCustomConversions customConversions() {
-//        List<Converter<?, ?>> converters = new ArrayList<>();
-//        converters.add(new ObjectIdToRolesConverter());  // Thêm converter từ ObjectId sang Roles
-//        return new MongoCustomConversions(converters);
-//    }
-//
-//    @Override
-//    protected String getDatabaseName() {
-//        return "ideaswap";  // Đặt tên database của bạn ở đây
-//    }
 }

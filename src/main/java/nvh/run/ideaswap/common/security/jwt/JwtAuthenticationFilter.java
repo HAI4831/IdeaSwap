@@ -30,8 +30,6 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     JwtUtilities jwtUtilities;
     UserDetailsServiceSelector userDetailsServiceSelector;
-//    private final UserDetailsServiceImpl userDetailsServiceImpl;
-//    private final ManagerDetailsServiceImpl managerDetailsServiceImpl;
     static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     @Override
@@ -51,22 +49,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 throw new RuntimeException("Token error!",e);
             }
             UserDetailsService userDetailsService = userDetailsServiceSelector.selectUserDetailsService(request);
-//            UserDetailsService userDetailsService= UserDetailsServiceSelector.selectUserDetailsService();
-//
-//            // Chọn UserDetailsService dựa trên endpoint
-//            if (request.getRequestURI().startsWith("/api/v1/admin/auth")) {
-//                userDetailsService = managerDetailsServiceImpl;
-//            } else {
-//                userDetailsService = userDetailsServiceImpl;
-//            }
-            //Nạp thông tin người dùng vào authentication context từ uesrname extract của token
-//            UserDetailsExtImpl userDetails = (UserDetailsExtImpl) userDetailsServiceImpl.loadUserByUsername(username);
-            // Load user details từ UserDetailsService tương ứng
-//            var userDetails = userDetailsService.loadUserByUsername(username);
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             if (userDetails != null) {
-//                UsernamePasswordAuthenticationToken authentication =
-//                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,

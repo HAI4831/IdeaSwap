@@ -46,7 +46,7 @@ public class MessageService {
 
     public Messages createMessage(MessageRequest messageRequest) {
         Conversations conversation = conversationsService.getConversationById(messageRequest.getConversationID());
-        Users user = userService.getUserById(messageRequest.getId());
+        Users user = userService.getUserById(messageRequest.getSenderID());
         Messages message = Messages.builder()
                 .id(messageRequest.getId())
                 .senderID(user)
@@ -69,7 +69,7 @@ public class MessageService {
     public Messages updateMessage(String id, MessageRequest messageRequest) {
         getMessageById(id);
         Conversations conversation = conversationsService.getConversationById(messageRequest.getConversationID());
-        Users user = userService.getUserById(messageRequest.getId());
+        Users user = userService.getUserById(messageRequest.getSenderID());
         Messages message = Messages.builder()
                 .id(messageRequest.getId())
                 .senderID(user)
