@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CensorshipsRepository extends MongoRepository<Censorships, String> {
+    Censorships findCensorshipsByContentID(String contentID);
 }

@@ -39,7 +39,7 @@ public class CategoryController {
     );
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<Object> createCategory(@RequestBody Categories category) {
         return ResponseEntity.status(201).body(
             Map.of(
@@ -50,7 +50,7 @@ public class CategoryController {
     );
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<Object> updateCategory(@PathVariable String id, @RequestBody Categories category) {
         return ResponseEntity.status(200).body(
                 Map.of(
@@ -61,7 +61,7 @@ public class CategoryController {
         );
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> deleteCategory(@PathVariable String id) {
         return ResponseEntity.status(200).body(
                 Map.of(

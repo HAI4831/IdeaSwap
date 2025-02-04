@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import nvh.run.ideaswap.common.validator.IsObjectID;
 import nvh.run.ideaswap.data.entity.Gender;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,7 +20,7 @@ public class UserRequest {
     private String phoneNumber;
     private String address;
     private String password;
-    private String avatar;
+    private MultipartFile avatar;
     private Gender gender;
     private int rating;
     @IsObjectID

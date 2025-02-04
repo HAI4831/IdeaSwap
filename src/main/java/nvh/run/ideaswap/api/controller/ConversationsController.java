@@ -37,7 +37,7 @@ public class ConversationsController {
         );
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<Object> createConversation(@Valid @RequestBody ConversationRequest conversationRequest) {
         return ResponseEntity.status(201).body(
                 Map.of(
@@ -48,7 +48,7 @@ public class ConversationsController {
         );
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<Object> updateConversation(@PathVariable String id, @Valid @RequestBody ConversationRequest conversationRequest) {
         return ResponseEntity.ok(
                 Map.of(
@@ -59,7 +59,7 @@ public class ConversationsController {
         );
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> deleteConversation(@PathVariable String id) {
         return ResponseEntity.ok(
                 Map.of(

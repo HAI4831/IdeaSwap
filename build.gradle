@@ -24,10 +24,18 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-mail:3.4.2'
+
+    implementation 'com.cloudinary:cloudinary-http5:2.0.0'
+    implementation 'com.cloudinary:cloudinary-taglib:2.0.0'
+    implementation 'io.github.cdimascio:dotenv-java:2.2.4'
+
     implementation 'org.mapstruct:mapstruct:1.6.3'//map
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'//convert
+
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'//swagger
     implementation 'org.springdoc:springdoc-openapi-ui:1.8.0'//swagger
-    implementation 'org.springdoc:springdoc-openapi-ui:1.8.0'//swagger
+
     implementation 'org.bouncycastle:bcpkix-jdk15on:1.68'//decrypt rsa key
     implementation 'io.github.cdimascio:java-dotenv:5.2.2'//load env
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'//jwt

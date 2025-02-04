@@ -37,7 +37,7 @@ public class CoursesController {
         );
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<Object> createCourse(@Valid @RequestBody CourseRequest courseRequest) {
         return ResponseEntity.status(201).body(
                 Map.of(
@@ -48,7 +48,7 @@ public class CoursesController {
         );
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<Object> updateCourse(@PathVariable String id, @Valid @RequestBody CourseRequest courseRequest) {
         return ResponseEntity.ok(
                 Map.of(
@@ -59,7 +59,7 @@ public class CoursesController {
         );
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> deleteCourse(@PathVariable String id) {
         return ResponseEntity.ok(Map.of(
                 "success", true,

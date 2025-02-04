@@ -2,7 +2,6 @@ package nvh.run.ideaswap.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import nvh.run.ideaswap.data.dto.MessageRequest;
-import nvh.run.ideaswap.data.entity.Messages;
 import nvh.run.ideaswap.service.MessageService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +36,7 @@ public class MessageController {
         );
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<Object> createMessage(@RequestBody MessageRequest messageRequest) {
         return ResponseEntity.ok(
                 Map.of(
@@ -48,7 +47,7 @@ public class MessageController {
         );
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<Object> updateMessage(@PathVariable String id, @RequestBody MessageRequest messageRequest) {
         return ResponseEntity.ok(
                 Map.of(
@@ -59,7 +58,7 @@ public class MessageController {
         );
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> deleteMessage(@PathVariable String id) {
         return ResponseEntity.ok(
                 Map.of(

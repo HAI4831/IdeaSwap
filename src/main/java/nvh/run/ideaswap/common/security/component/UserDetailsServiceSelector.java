@@ -21,10 +21,18 @@ public class UserDetailsServiceSelector {
         String requestURI = request.getRequestURI();
         String method = request.getMethod(); // Lấy phương thức HTTP (GET, POST, PUT, DELETE)
 
-        if (requestURI.startsWith("/api/v1/admin/auth")||requestURI.startsWith("/api/v1/user")||requestURI.startsWith("/api/v1/manager")||requestURI.startsWith("/api/v1/role")) {
+        if (
+                requestURI.startsWith("/api/v1/admin/auth")
+                ||requestURI.startsWith("/api/v1/user")
+                ||requestURI.startsWith("/api/v1/manager")
+                ||requestURI.startsWith("/api/v1/role")
+        ) {
             return managerDetailsServiceImpl;
         }
-        if (requestURI.startsWith("/api/v1/auth")) {
+        if (
+                requestURI.startsWith("/api/v1/auth")
+                ||requestURI.startsWith("/api/v1/code")
+        ) {
             return userDetailsServiceImpl;
         }
         if (method.equals("POST") || method.equals("PUT") || method.equals("DELETE")) {

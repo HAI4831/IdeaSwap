@@ -23,5 +23,4 @@ public class NotificationRequest {
     private String referenceID;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
 }

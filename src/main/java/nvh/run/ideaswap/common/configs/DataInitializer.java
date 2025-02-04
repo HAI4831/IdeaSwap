@@ -14,9 +14,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -201,7 +203,7 @@ public class DataInitializer implements CommandLineRunner {
                         .id("679998d657bcd648ae78138a")
                         .createdDate(LocalDateTime.now())
                         .updatedDate(LocalDateTime.now())
-                        .codeExpiration(LocalDateTime.now().plusDays(1))
+                        .codeExpiration(Date.from(Instant.now().plusSeconds(3600)))
                         .user(user)
                         .userEmail(user.getEmail())
                         .build()

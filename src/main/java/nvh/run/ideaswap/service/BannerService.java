@@ -18,6 +18,7 @@ import java.util.List;
 public class BannerService {
     BannerRepository bannerRepository;
     ManagerService managerService;
+    CloudinaryService cloudinaryService;
 
     public List<Banners> getAllBanners() {
         List<Banners> banners ;
@@ -43,15 +44,22 @@ public class BannerService {
 
     public Banners createBanner(BannerRequest bannerRequest) {
         Managers manager = managerService.getManagerById(bannerRequest.getManagerID());
-        Banners banner;
+        Banners banner = getBannerBySite(bannerRequest.getSite());
+        String imageUrl = cloudinaryService.uploadImage(bannerRequest.getImageBase64());
         try {
+            if(imageUrl.isEmpty()) {
+                throw new RuntimeException("Image url upload failed");
+            }
+            if(banner != null) {
+                throw new RuntimeException("Banner already exists");
+            }
             banner = bannerRepository.save(
                     Banners.builder()
                             .id(bannerRequest.getId())
                             .managerID(manager)
                             .name(bannerRequest.getName())
                             .site(bannerRequest.getSite())
-                            .imageUrl(bannerRequest.getImageUrl())
+                            .imageUrl(imageUrl)
                             .createdDate(LocalDateTime.now())
                             .updatedDate(LocalDateTime.now())
                             .build()
@@ -64,15 +72,22 @@ public class BannerService {
 
     public Banners updateBanner(String id, BannerRequest bannerRequest) {
         Managers manager = managerService.getManagerById(bannerRequest.getManagerID());
-        Banners banner;
+        Banners banner = getBannerById(id);
+        String imageUrl = cloudinaryService.uploadImage(bannerRequest.getImageBase64());
         try {
+            if(imageUrl == null){
+                throw new RuntimeException("Banner image upload failed");
+            }
+            if(banner == null) {
+                throw new RuntimeException("Banner cannot be found");
+            }
             banner = bannerRepository.save(
                     Banners.builder()
                             .id(bannerRequest.getId())
                             .managerID(manager)
                             .name(bannerRequest.getName())
                             .site(bannerRequest.getSite())
-                            .imageUrl(bannerRequest.getImageUrl())
+                            .imageUrl(imageUrl)
                             .createdDate(bannerRequest.getCreatedDate())
                             .updatedDate(LocalDateTime.now())
                             .build()
@@ -86,9 +101,23 @@ public class BannerService {
     public Banners deleteBanner(String id) {
         Banners banner = getBannerById(id);
         try {
+            String result = cloudinaryService.deleteImage(banner.getImageUrl(),null);
+            if(result == null) {
+                throw new RuntimeException("Delete image for banner failed");
+            }
             bannerRepository.deleteById(id);
         } catch (Exception e) {
             throw new RuntimeException("Delete banner failed",e);
+        }
+        return banner;
+    }
+
+    public Banners getBannerBySite(String site) {
+        Banners banner;
+        try {
+            banner = bannerRepository.findBannerBySite(site);
+        } catch (Exception e) {
+            throw new RuntimeException("Get banner by site failed",e);
         }
         return banner;
     }

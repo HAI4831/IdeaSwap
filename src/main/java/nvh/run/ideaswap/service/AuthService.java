@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.common.exceptions.exception.custom.auth.DatabaseException;
 import nvh.run.ideaswap.common.security.jwt.JwtUtilities;
 import nvh.run.ideaswap.common.security.service.UserDetailsExtImpl;
+import nvh.run.ideaswap.data.dto.NotificationRequest;
 import nvh.run.ideaswap.data.dto.auth.request.LoginRequest;
 import nvh.run.ideaswap.data.dto.auth.request.LogoutRequest;
 import nvh.run.ideaswap.data.dto.auth.request.RefreshTokenRequest;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @Transactional
@@ -42,6 +44,7 @@ public class AuthService {
     PasswordEncoder passwordEncoder;
     JwtUtilities jwtUtilities;
     AuthenticationManager authenticationManager;
+    NotificationService notificationService;
 
     public RegisterResponse register(RegisterRequest registerRequest) {
             Roles role = roleService.findByName("user");
@@ -75,6 +78,14 @@ public class AuthService {
             catch (Exception e){
                 throw new DatabaseException("Register failed for user ", e);
             }
+            notificationService.createNotification(
+                    NotificationRequest.builder()
+                            .id(null)
+                            .userIDs(List.of(user.getId()))
+                            .description("A new user just registered")
+                            .imageUrl(user.getAvatar())
+                    .build()
+            );
             return RegisterResponse.builder()
                     .user(user)
                     .build();

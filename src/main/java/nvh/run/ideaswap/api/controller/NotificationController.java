@@ -35,7 +35,7 @@ public class NotificationController {
         );
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> createNotification(@RequestBody NotificationRequest notificationRequest) {
         return ResponseEntity.status(201).body(
                 Map.of(
@@ -46,7 +46,7 @@ public class NotificationController {
         );
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<Object> updateNotification(@PathVariable String id, @RequestBody NotificationRequest notificationRequest) {
         return ResponseEntity.ok(
                 Map.of(
@@ -57,7 +57,7 @@ public class NotificationController {
         );
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Map<String, Object>> deleteNotification(@PathVariable String id) {
         return ResponseEntity.ok(
                 Map.of(

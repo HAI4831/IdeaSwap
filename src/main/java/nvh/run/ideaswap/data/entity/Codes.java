@@ -16,6 +16,8 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.Date;
+
 //c1
 @Data
 @NoArgsConstructor
@@ -34,7 +36,8 @@ public class Codes
     private int code=0;
 
     @NotBlank(message = "Code expiration cannot be empty")
-    private LocalDateTime codeExpiration;
+//    private LocalDateTime codeExpiration;
+    private Date codeExpiration;
 
     @Size(max = 255)
     private String userEmail;// tham chiếu tới email của user có kiểu string

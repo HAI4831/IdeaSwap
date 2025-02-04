@@ -49,11 +49,17 @@ public class SpringSecurityConfig {
                                 "/api/products",
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/register",
+                                "/api/v1/auth/register",
                                 "/swagger-ui.html",
+                                "v3/api-docs/*",
                                 "/swagger*/*",
+                                "/webjars/swagger-ui/*",
                                 "/api/v1/admin/auth/register",
                                 "/api/v1/admin/auth/login",
-                                "/api/v1/admin/auth/refresh"
+                                "/api/v1/admin/auth/refresh",
+                                "/api/v1/code/send",
+                                "/api/v1/code/verify"
+
                         ).permitAll()
 
 //                        .requestMatchers("/api/v1/categories/*").hasAuthority("user")
@@ -132,14 +138,15 @@ public class SpringSecurityConfig {
                         .requestMatchers(HttpMethod.PUT,"/api/v1/banner").hasAuthority("admin")
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/banner").hasAuthority("admin")
 
-                        .requestMatchers(HttpMethod.GET,"/api/v1/auth/account").hasAuthority("admin")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/auth/account").hasAuthority("user")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/admin/auth/account").hasAuthority("admin")
 
                         .requestMatchers("/api/v1/admin/*").hasAuthority("admin")
                         .requestMatchers("/admin/*").hasAuthority("ADMIN")
                         .requestMatchers("/superadmin/**").hasAuthority("SUPERADMIN")
                         .anyRequest()
-//                        .permitAll()
-                        .authenticated()
+                        .permitAll()
+//                        .authenticated()
                 );
 //                .exceptionHandling()
 //                .authenticationEntryPoint(spnegoEntryPoint())

@@ -37,7 +37,7 @@ public class FollowController {
         );
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<Object> createFollow(@Valid @RequestBody FollowRequest followRequest) {
         return ResponseEntity.status(201).body(
                 Map.of(
@@ -48,7 +48,7 @@ public class FollowController {
         );
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> deleteFollow(@PathVariable String id) {
         return ResponseEntity.ok(
                 Map.of(

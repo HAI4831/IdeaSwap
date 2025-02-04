@@ -1,7 +1,6 @@
 package nvh.run.ideaswap.api.controller;
 
 import nvh.run.ideaswap.data.dto.BlogRequest;
-import nvh.run.ideaswap.data.entity.Blogs;
 import nvh.run.ideaswap.service.BlogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,8 +36,8 @@ public class BlogController {
         );
     }
 
-    @PostMapping
-    public ResponseEntity<Object> createBlog(@RequestBody BlogRequest blogRequest) {
+    @PostMapping("/add")
+    public ResponseEntity<Object> createBlog(@ModelAttribute BlogRequest blogRequest) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
@@ -48,8 +47,8 @@ public class BlogController {
         );
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> updateBlog(@PathVariable String id, @RequestBody BlogRequest blogRequest) {
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Object> updateBlog(@ModelAttribute String id, @RequestBody BlogRequest blogRequest) {
         return ResponseEntity.status(200).body(
                 Map.of(
                         "success", true,
@@ -59,7 +58,7 @@ public class BlogController {
         );
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> deleteBlog(@PathVariable String id) {
         return ResponseEntity.status(200).body(
                 Map.of(

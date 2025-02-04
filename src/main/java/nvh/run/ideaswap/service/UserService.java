@@ -24,6 +24,7 @@ public class UserService {
     IUserRepository iUserRepository;
     RoleService roleService;
     PasswordEncoder passwordEncoder;
+    private final CloudinaryService cloudinaryService;
 
     public List<Users> getAllUsers() {
         List<Users> users ;
@@ -47,6 +48,10 @@ public class UserService {
     public Users createUser(UserRequest userRequest) {
         Users user;
         try {
+            String imageUrl = cloudinaryService.uploadImage(userRequest.getAvatar());
+            if (imageUrl == null) {
+                throw new RuntimeException("Course image upload failed");
+            }
             if(existsByEmail(userRequest.getEmail())) throw new RuntimeException("Email already exist");
             if(existsByPhoneNumber(userRequest.getPhoneNumber())) throw new RuntimeException("Phone number already exist");
             if(existsByUsername(userRequest.getUsername())) throw new RuntimeException("Username already exist");
@@ -63,7 +68,7 @@ public class UserService {
                             .phoneNumber(userRequest.getPhoneNumber())
                             .address(userRequest.getAddress())
                             .gender(userRequest.getGender())
-                            .avatar(userRequest.getAvatar())
+                            .avatar(imageUrl)
                             .description(userRequest.getDescription())
                             .rating(userRequest.getRating())
                             .version(2L)
@@ -82,6 +87,10 @@ public class UserService {
         Roles role = roleService.getRoleById(userRequest.getRoleID());
         Users updatedUser ;
         try {
+            String imageUrl = cloudinaryService.uploadImage(userRequest.getAvatar());
+            if (imageUrl == null) {
+                throw new RuntimeException("Course image upload failed");
+            }
             updatedUser = iUserRepository.save(
                     Users.builder()
                             .id(id)
@@ -94,7 +103,7 @@ public class UserService {
                             .phoneNumber(userRequest.getPhoneNumber())
                             .address(userRequest.getAddress())
                             .gender(userRequest.getGender())
-                            .avatar(userRequest.getAvatar())
+                            .avatar(imageUrl)
                             .description(userRequest.getDescription())
                             .rating(userRequest.getRating())
                             .version(2L)
@@ -146,6 +155,15 @@ public class UserService {
            user = iUserRepository.findByPhoneNumber(phoneNumber).orElseThrow(()->new RuntimeException("User not found with phoneNumber:{}"+phoneNumber));
         } catch (RuntimeException e) {
             throw new RuntimeException("Retrieve User By Phone Number failed",e);
+        }
+        return user;
+    }
+    public Users findUserByEmail(String email){
+        Users user ;
+        try {
+            user = iUserRepository.findUsersByEmail(email);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Retrieve User By Email failed",e);
         }
         return user;
     }

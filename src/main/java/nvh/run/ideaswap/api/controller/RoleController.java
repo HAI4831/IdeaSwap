@@ -41,7 +41,7 @@ public class RoleController {
         );
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<Object> createRole(@Validated @RequestBody Roles role) {
         return ResponseEntity.status(201).body(
                 Map.of(
@@ -52,7 +52,7 @@ public class RoleController {
         );
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<Object> updateRole(@PathVariable("id") String id, @Validated @RequestBody Roles role) {
         return ResponseEntity.status(200).body(
                 Map.of(
@@ -63,7 +63,7 @@ public class RoleController {
         );
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> deleteRole(@PathVariable("id") String id) {
         return ResponseEntity.status(200).body(
                 Map.of(

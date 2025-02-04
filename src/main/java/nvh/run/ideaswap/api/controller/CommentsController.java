@@ -3,7 +3,6 @@ package nvh.run.ideaswap.api.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nvh.run.ideaswap.data.dto.CommentRequest;
-import nvh.run.ideaswap.data.entity.Comments;
 import nvh.run.ideaswap.service.CommentsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +37,7 @@ public class CommentsController {
         );
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<Object> createComment(@Valid @RequestBody CommentRequest commentRequest) {
         return ResponseEntity.status(201).body(
                 Map.of(
@@ -49,7 +48,7 @@ public class CommentsController {
         );
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<Object> updateComment(@PathVariable String id, @Valid @RequestBody CommentRequest commentRequest) {
         return ResponseEntity.ok(
                 Map.of(
@@ -60,7 +59,7 @@ public class CommentsController {
         );
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> deleteComment(@PathVariable String id) {
         return ResponseEntity.ok(
                 Map.of(

@@ -1,9 +1,15 @@
 package nvh.run.ideaswap.service;
 
+//import com.cloudinary.*;
+//import com.cloudinary.utils.ObjectUtils;
+//import io.github.cdimascio.dotenv.Dotenv;
+//
+//import java.util.Map;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.dto.CourseRequest;
+import nvh.run.ideaswap.data.dto.NotificationRequest;
 import nvh.run.ideaswap.data.entity.Categories;
 import nvh.run.ideaswap.data.entity.Courses;
 import nvh.run.ideaswap.data.entity.Users;
@@ -22,6 +28,8 @@ public class CoursesService {
     CoursesRepository coursesRepository;
     UserService userService;
     CategoryService categoryService;
+    NotificationService notificationService;
+    CloudinaryService cloudinaryService;
 
     public List<Courses> getAllCourses() {
         List<Courses> courseList;
@@ -49,6 +57,10 @@ public class CoursesService {
         Categories category = categoryService.getCategoryById(courseRequest.getCategoryID());
         Courses course;
         try {
+            String imageUrl = cloudinaryService.uploadImage(courseRequest.getImageBase64());
+            if (imageUrl == null) {
+                throw new RuntimeException("Course image upload failed");
+            }
             course = coursesRepository.save(
                     Courses.builder()
                             .id(courseRequest.getId())
@@ -56,7 +68,7 @@ public class CoursesService {
                             .categoryID(category)
                             .title(courseRequest.getTitle())
                             .description(courseRequest.getDescription())
-                            .imageUrl(courseRequest.getImageUrl())
+                            .imageUrl(imageUrl)
                             .view(courseRequest.getView())
                             .createdAt(courseRequest.getCreatedAt())
                             .updatedAt(LocalDateTime.now())
@@ -65,6 +77,13 @@ public class CoursesService {
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while creating the course",e);
         }
+        notificationService.createNotification(
+                NotificationRequest.builder()
+                        .description("A new course has just been created")
+                        .imageUrl(course.getImageUrl())
+                        .userIDs(null)
+                        .build()
+        );
         return course;
     }
 
@@ -74,6 +93,10 @@ public class CoursesService {
         Categories category = categoryService.getCategoryById(courseRequest.getCategoryID());
         Courses course;
         try {
+            String imageUrl = cloudinaryService.uploadImage(courseRequest.getImageBase64());
+            if (imageUrl == null) {
+                throw new RuntimeException("Course image upload failed");
+            }
             course = coursesRepository.save(
                     Courses.builder()
                             .id(id)
@@ -81,7 +104,7 @@ public class CoursesService {
                             .categoryID(category)
                             .title(courseRequest.getTitle())
                             .description(courseRequest.getDescription())
-                            .imageUrl(courseRequest.getImageUrl())
+                            .imageUrl(imageUrl)
                             .view(courseRequest.getView())
                             .createdAt(courseRequest.getCreatedAt())
                             .updatedAt(LocalDateTime.now())

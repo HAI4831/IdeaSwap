@@ -37,7 +37,7 @@ public class DocumentsController {
         );
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<Object> createDocument(@Valid @RequestBody DocumentRequest documentRequest) {
         return ResponseEntity.status(201).body(
                 Map.of(
@@ -48,7 +48,7 @@ public class DocumentsController {
         );
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<Object> updateDocument(@PathVariable String id, @Valid @RequestBody DocumentRequest documentRequest) {
         return ResponseEntity.ok(
                 Map.of(
@@ -59,7 +59,7 @@ public class DocumentsController {
         );
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> deleteDocument(@PathVariable String id) {
         return ResponseEntity.ok(Map.of(
                 "success", true,

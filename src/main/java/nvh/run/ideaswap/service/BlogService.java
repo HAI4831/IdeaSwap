@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import nvh.run.ideaswap.data.dto.BlogRequest;
+import nvh.run.ideaswap.data.dto.NotificationRequest;
 import nvh.run.ideaswap.data.entity.Blogs;
 import nvh.run.ideaswap.data.entity.Categories;
 import nvh.run.ideaswap.data.entity.Users;
@@ -26,6 +27,8 @@ public class BlogService {
     BlogRepository blogRepository;
     CategoryService categoryService;
     UserService userService;
+    NotificationService notificationService;
+    CloudinaryService cloudinaryService;
 
     private static final Logger logger = LoggerFactory.getLogger(BannerService.class);
 
@@ -63,15 +66,19 @@ public class BlogService {
     public Blogs createBlog(BlogRequest blogRequest) {
         Categories categories = categoryService.getCategoryById(blogRequest.getCategoryID());
         Users user = userService.getUserById(blogRequest.getUserID());
+        String imageUrl = cloudinaryService.uploadImage(blogRequest.getImageBase64());
         Blogs blog;
         try {
+            if(imageUrl.isEmpty()){
+                throw new RuntimeException("upload image failed");
+            }
             blog = blogRepository.save(
                     Blogs.builder()
                             .id(blogRequest.getId())
                             .userID(user)
                             .categoryID(categories)
                             .content(blogRequest.getContent())
-                            .url(blogRequest.getUrl())
+                            .url(imageUrl)
                             .createdDate(LocalDateTime.now())
                             .updatedDate(LocalDateTime.now())
                             .build()
@@ -79,7 +86,13 @@ public class BlogService {
         }catch (Exception e){
             throw new RuntimeException("Create Blog failed",e);
         }
-
+        notificationService.createNotification(
+                NotificationRequest.builder()
+                        .userIDs(List.of(blog.getUserID().getId()))
+                        .description("Blog is awaiting approval")
+                        .imageUrl(blog.getUrl())
+                        .build()
+        );
         return blog;
     }
 
@@ -87,15 +100,19 @@ public class BlogService {
         getBlogById(id);
         Categories categories = categoryService.getCategoryById(blogRequest.getCategoryID());
         Users user = userService.getUserById(blogRequest.getUserID());
+        String imageUrl = cloudinaryService.uploadImage(blogRequest.getImageBase64());
         Blogs updatedBlog;
         try {
+            if(imageUrl.isEmpty()){
+                throw new RuntimeException("upload image failed");
+            }
             updatedBlog = blogRepository.save(
                     Blogs.builder()
                             .id(id)
                             .userID(user)
                             .categoryID(categories)
                             .content(blogRequest.getContent())
-                            .url(blogRequest.getUrl())
+                            .url(imageUrl)
                             .createdDate(LocalDateTime.now())
                             .updatedDate(LocalDateTime.now())
                             .build()
@@ -109,6 +126,7 @@ public class BlogService {
     public Blogs deleteBlog(String id) {
         Blogs blog = getBlogById(id);
         try {
+            cloudinaryService.deleteImage(blog.getUrl(),null);
             blogRepository.delete(blog);
         }catch (Exception e){
             throw new RuntimeException("Delete Blog failed",e);

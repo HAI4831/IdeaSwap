@@ -2,6 +2,7 @@ package nvh.run.ideaswap.data.repository;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import nvh.run.ideaswap.data.entity.Users;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -19,4 +20,6 @@ public interface IUserRepository extends MongoRepository<Users, String> {
     boolean existsByEmail(@Email(message = "Email không hợp lệ") String email);
 
     boolean existsByPhoneNumber(String phoneNumber);
+
+    Users findUsersByEmail(@Email(message = "Email không hợp lệ") @NotBlank(message = "Email không được để trống") @Size(max = 320, message = "Email không được vượt quá 320 ký tự") String email);
 }

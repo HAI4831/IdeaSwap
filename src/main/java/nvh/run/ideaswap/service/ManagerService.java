@@ -26,6 +26,7 @@ public class ManagerService {
     PasswordEncoder passwordEncoder;
 
     IManagerRepository managerRepository;
+    private final CloudinaryService cloudinaryService;
 
     public List<Managers> getAllManagers() {
         try {
@@ -46,21 +47,27 @@ public class ManagerService {
 
     public Managers createManager(ManagerRequest managerRequest) {
         Roles role = roleService.getRoleById(managerRequest.getRoleID());
-        Managers manager = Managers.builder()
-                .id(managerRequest.getId())
-                .roleID(role)
-                .firstName(managerRequest.getFirstName())
-                .lastName(managerRequest.getLastName())
-                .email(managerRequest.getEmail())
-                .phoneNumber(managerRequest.getPhoneNumber())
-                .address(managerRequest.getAddress())
-                .password(passwordEncoder.encode(managerRequest.getPassword()))
-                .avatar(managerRequest.getAvatar())
-                .birthday(managerRequest.getBirthday())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+
         try {
+            String imageUrl = cloudinaryService.uploadImage(managerRequest.getAvatar());
+            if (imageUrl == null) {
+                throw new RuntimeException("Course image upload failed");
+            }
+            Managers manager = Managers.builder()
+                    .id(managerRequest.getId())
+                    .roleID(role)
+                    .firstName(managerRequest.getFirstName())
+                    .lastName(managerRequest.getLastName())
+                    .email(managerRequest.getEmail())
+                    .phoneNumber(managerRequest.getPhoneNumber())
+                    .address(managerRequest.getAddress())
+                    .password(passwordEncoder.encode(managerRequest.getPassword()))
+                    .avatar(imageUrl)
+                    .birthday(managerRequest.getBirthday())
+                    .createdAt(LocalDateTime.now())
+                    .updatedAt(LocalDateTime.now())
+                    .build();
+
             if (existsByEmail(manager.getEmail()))
                 throw new RuntimeException("Email already exists");
             if (existsByPhoneNumber(manager.getPhoneNumber()))
@@ -76,22 +83,27 @@ public class ManagerService {
     public Managers updateManager(String id, ManagerRequest managerRequest) {
         getManagerById(id);
         Roles role = roleService.getRoleById(managerRequest.getRoleID());
-        Managers manager = Managers.builder()
-                .id(managerRequest.getId())
-                .roleID(role)
-                .firstName(managerRequest.getFirstName())
-                .lastName(managerRequest.getLastName())
-                .email(managerRequest.getEmail())
-                .phoneNumber(managerRequest.getPhoneNumber())
-                .address(managerRequest.getAddress())
-                .password(passwordEncoder.encode(managerRequest.getPassword()))
-                .avatar(managerRequest.getAvatar())
-                .birthday(managerRequest.getBirthday())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
-        manager.setId(id);
+
         try {
+            String imageUrl = cloudinaryService.uploadImage(managerRequest.getAvatar());
+            if (imageUrl == null) {
+                throw new RuntimeException("Course image upload failed");
+            }
+            Managers manager = Managers.builder()
+                    .id(managerRequest.getId())
+                    .roleID(role)
+                    .firstName(managerRequest.getFirstName())
+                    .lastName(managerRequest.getLastName())
+                    .email(managerRequest.getEmail())
+                    .phoneNumber(managerRequest.getPhoneNumber())
+                    .address(managerRequest.getAddress())
+                    .password(passwordEncoder.encode(managerRequest.getPassword()))
+                    .avatar(imageUrl)
+                    .birthday(managerRequest.getBirthday())
+                    .createdAt(LocalDateTime.now())
+                    .updatedAt(LocalDateTime.now())
+                    .build();
+            manager.setId(id);
             return managerRepository.save(manager);
         } catch (Exception e) {
             throw new RuntimeException("Update Manager failed", e);

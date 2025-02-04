@@ -2,7 +2,6 @@ package nvh.run.ideaswap.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import nvh.run.ideaswap.data.dto.UserRequest;
-import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -37,7 +36,7 @@ public class UserController {
         );
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<Object> createUser(@Validated @RequestBody UserRequest userRequest) {
         return ResponseEntity.status(201).body(
                 Map.of(
@@ -48,7 +47,7 @@ public class UserController {
         );
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<Object> updateUser(@PathVariable String id, @Validated @RequestBody UserRequest userRequest) {
         return ResponseEntity.status(200).body(
                 Map.of(
@@ -59,7 +58,7 @@ public class UserController {
         );
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> deleteUser(@PathVariable String id) {
         return ResponseEntity.status(200).body(
                 Map.of(

@@ -3,7 +3,6 @@ package nvh.run.ideaswap.api.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nvh.run.ideaswap.data.dto.ManagerRequest;
-import nvh.run.ideaswap.data.entity.Managers;
 import nvh.run.ideaswap.service.ManagerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +33,7 @@ public class ManagerController {
         ));
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<Object> createManager(@RequestBody @Valid ManagerRequest managerRequest) {
         return ResponseEntity.status(201).body(
                 Map.of(
@@ -45,7 +44,7 @@ public class ManagerController {
         );
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<Object> updateManager(@PathVariable String id, @RequestBody @Valid ManagerRequest managerRequest) {
         return ResponseEntity.ok(Map.of(
                 "success", true,
@@ -54,7 +53,7 @@ public class ManagerController {
         ));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> deleteManager(@PathVariable String id) {
         return ResponseEntity.ok(Map.of(
                 "success", true,

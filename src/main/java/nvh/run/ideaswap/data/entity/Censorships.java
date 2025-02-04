@@ -29,7 +29,7 @@ public class Censorships
     private String id;
 
     @IsObjectID
-    private String contentID;
+    private String contentID;//blogID
 
 //    @NotBlank(message = "Trạng thái không được để trống")
     @NotNull(message = "Status cannot be null")

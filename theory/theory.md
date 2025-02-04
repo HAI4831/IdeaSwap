@@ -1,0 +1,3 @@
+## order init bean spring
+cần hiểu thứ tự khởi động bean :nó sẽ tạo các bean cơ bản "configuration,service,component" như một instant thông qua contructor (nếu có) sau đó nó thêm các dependency là các phụ thuộc cần inject(Spring sẽ inject các dependencies cho bean bằng cách gọi các setter (nếu có) hoặc thông qua các trường được annotate bằng @Autowired (hoặc @Value đối với các thuộc tính).) , sau đó nó gọi phương thức preprocess xử lí rồi postconstruct rồi sẵn sàng sử dụng
+  

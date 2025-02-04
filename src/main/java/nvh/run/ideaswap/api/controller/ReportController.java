@@ -2,7 +2,6 @@ package nvh.run.ideaswap.api.controller;
 
 import lombok.RequiredArgsConstructor;
 import nvh.run.ideaswap.data.dto.ReportRequest;
-import nvh.run.ideaswap.data.entity.Reports;
 import nvh.run.ideaswap.service.ReportService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +37,7 @@ public class ReportController {
         );
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<Object> createReport(@RequestBody ReportRequest reportRequest) {
         return ResponseEntity.ok(
                 Map.of(
@@ -49,7 +48,7 @@ public class ReportController {
         );
     }
 
-    @PostMapping("/{id}")
+    @PostMapping("/update/{id}")
     public ResponseEntity<Object> updateReport(@PathVariable String id, @RequestBody ReportRequest reportRequest) {
         return ResponseEntity.ok(
                 Map.of(
@@ -60,7 +59,7 @@ public class ReportController {
         );
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> deleteReport(@PathVariable String id) {
         return ResponseEntity.ok(
                 Map.of(

@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.dto.DocumentRequest;
+import nvh.run.ideaswap.data.dto.NotificationRequest;
 import nvh.run.ideaswap.data.entity.Categories;
 import nvh.run.ideaswap.data.entity.Documents;
 import nvh.run.ideaswap.data.entity.Users;
@@ -22,6 +23,8 @@ public class DocumentsService {
     DocumentsRepository documentsRepository;
     CategoryService categoryService;
     UserService userService;
+    private final CloudinaryService cloudinaryService;
+    private final NotificationService notificationService;
 
     public List<Documents> getAllDocuments() {
         List<Documents> documents ;
@@ -49,6 +52,10 @@ public class DocumentsService {
         Categories category = categoryService.getCategoryById(documentRequest.getCategoryID());
         Documents document;
         try {
+            String imageUrl = cloudinaryService.uploadImage(documentRequest.getImageUrl());
+            if(imageUrl == null) {
+                throw new RuntimeException("Document image upload failed");
+            }
             document = documentsRepository.save(
                     Documents.builder()
                             .id(documentRequest.getId())
@@ -58,7 +65,7 @@ public class DocumentsService {
                             .description(documentRequest.getDescription())
                             .fileUrl(documentRequest.getFileUrl())
                             .countDownload(documentRequest.getCountDownload())
-                            .imageUrl(documentRequest.getImageUrl())
+                            .imageUrl(imageUrl)
                             .status(documentRequest.getStatus())
                             .score(documentRequest.getScore())
                             .createdAt(LocalDateTime.now())
@@ -68,6 +75,13 @@ public class DocumentsService {
         } catch (Exception e) {
             throw new RuntimeException("Create document failed",e);
         }
+        notificationService.createNotification(
+                NotificationRequest.builder()
+                        .description("Document is awaiting approval")
+                        .imageUrl(document.getImageUrl())
+                        .userIDs(List.of(document.getUserID().getId()))
+                        .build()
+        );
         return document;
     }
 
@@ -77,6 +91,10 @@ public class DocumentsService {
         Categories category = categoryService.getCategoryById(documentRequest.getCategoryID());
         Documents document;
         try {
+            String imageUrl = cloudinaryService.uploadImage(documentRequest.getImageUrl());
+            if(imageUrl == null) {
+                throw new RuntimeException("Document image upload failed");
+            }
             document = documentsRepository.save(
                     Documents.builder()
                             .id(documentRequest.getId())
@@ -86,7 +104,7 @@ public class DocumentsService {
                             .description(documentRequest.getDescription())
                             .fileUrl(documentRequest.getFileUrl())
                             .countDownload(documentRequest.getCountDownload())
-                            .imageUrl(documentRequest.getImageUrl())
+                            .imageUrl(imageUrl)
                             .status(documentRequest.getStatus())
                             .score(documentRequest.getScore())
                             .createdAt(LocalDateTime.now())

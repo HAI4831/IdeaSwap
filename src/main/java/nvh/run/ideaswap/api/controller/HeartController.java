@@ -48,7 +48,7 @@ public class HeartController {
         );
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<Object> createHeart(@Valid @RequestBody HeartRequest heartRequest) {
         return ResponseEntity.ok(
                 Map.of(
@@ -59,7 +59,7 @@ public class HeartController {
 
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> deleteHeart(@PathVariable String id) {
         return ResponseEntity.ok(
                 Map.of(

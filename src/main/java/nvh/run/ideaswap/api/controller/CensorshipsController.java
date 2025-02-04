@@ -37,7 +37,7 @@ public class CensorshipsController {
         );
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<Object> createCensorship(@Valid @RequestBody Censorships censorship) {
         return ResponseEntity.status(201).body(
                 Map.of(
@@ -48,7 +48,7 @@ public class CensorshipsController {
         );
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<Object> updateCensorship(@PathVariable String id, @Valid @RequestBody Censorships censorship) {
         return ResponseEntity.ok(
                 Map.of(
@@ -58,8 +58,18 @@ public class CensorshipsController {
                 )
         );
     }
+    @PutMapping("/update")
+    public ResponseEntity<Object> updateCensorshipByContentID(@Valid @RequestBody Censorships censorship) {
+        return ResponseEntity.ok(
+                Map.of(
+                        "success", true,
+                        "message", "Censorship updated successfully",
+                        "censorship", censorshipsService.updateCensorshipByContentID(censorship)
+                )
+        );
+    }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> deleteCensorship(@PathVariable String id) {
         return ResponseEntity.ok(
                 Map.of(

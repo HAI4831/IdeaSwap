@@ -38,9 +38,12 @@ public class BannerController {
         );
     }
 
-    @PostMapping
+    @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Object> createBanner(@RequestBody BannerRequest bannerRequest) {
+    public ResponseEntity<Object> createBanner(@ModelAttribute BannerRequest bannerRequest) {
+        if (bannerRequest.getImageBase64() == null || bannerRequest.getImageBase64().isEmpty()) {
+            return ResponseEntity.badRequest().body("Ảnh không được để trống");
+        }
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
@@ -50,8 +53,8 @@ public class BannerController {
         );
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> updateBanner(@PathVariable String id, @RequestBody BannerRequest bannerRequest) {
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Object> updateBanner(@PathVariable String id, @ModelAttribute BannerRequest bannerRequest) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
@@ -61,7 +64,7 @@ public class BannerController {
         );
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Object> deleteBanner(@PathVariable String id) {
         return ResponseEntity.status(201).body(
