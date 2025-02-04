@@ -8,18 +8,23 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
+import java.util.Optional;
 import java.util.Properties;
 
 @Configuration
 public class MailConfig {
-    DotenvConfig dotenvConfig;
+    Optional<DotenvConfig> dotenvConfig;
     private static final Logger logger = LoggerFactory.getLogger(MailConfig.class);
 //cần hiểu thứ tự khởi động bean :nó sẽ tạo các bean cơ bản "configuration,service,component" như một instant thông qua contructor (nếu có) sau đó nó thêm các dependency là các phụ thuộc cần inject(Spring sẽ inject các dependencies cho bean bằng cách gọi các setter (nếu có) hoặc thông qua các trường được annotate bằng @Autowired (hoặc @Value đối với các thuộc tính).) , sau đó nó gọi phương thức preprocess xử lí rồi postconstruct rồi sẵn sàng sử dụng
     @Bean
-    public JavaMailSender javaMailSender(DotenvConfig dotenvConfig,
+    public JavaMailSender javaMailSender(
+            Optional<DotenvConfig> dotenvConfig,// DotenvConfig chỉ cần thiết có mặt khi profile local còn ở product thì tự set enviroment variable và @Value tự lấy chúng
             @Value("${spring.mail.username}") String mailUsername,
             @Value("${spring.mail.password}") String mailPassword
     ) {
+        // Get the active profile
+        String activeProfile = System.getProperty("spring.profiles.active", "local");
+
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);

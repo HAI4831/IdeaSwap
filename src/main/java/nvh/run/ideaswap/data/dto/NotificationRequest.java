@@ -16,6 +16,7 @@ public class NotificationRequest {
     private List<String> userIDs;
     private String description;
     private String imageUrl;
+    @Builder.Default
     private boolean isUnRead=true;
     private String actorID;
     private ReferenceTypeEnum referenceType;

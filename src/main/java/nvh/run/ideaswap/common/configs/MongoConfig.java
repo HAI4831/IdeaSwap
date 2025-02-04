@@ -12,13 +12,20 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 @EnableMongoAuditing
 public class MongoConfig
 {
-
-    private final Dotenv dotenv = Dotenv.load();
-
     @Bean
     public MongoClient mongoClient() {
-        String mongoUri = dotenv.get("MONGO_URI");
-        System.out.println("Mongo URI from dotenv: " + mongoUri);
+        String mongoUri=null;
+        String activeProfile = System.getProperty("spring.profiles.active", "local");
+        if(activeProfile.equals("local")) {
+            Dotenv dotenv = Dotenv.load();
+            mongoUri = dotenv.get("MONGO_URI");
+            System.out.println("Mongo URI from dot_env: " + mongoUri);
+        }
+        else {
+            mongoUri = System.getenv("MONGO_URI");
+            System.out.println("Mongo URI from system_env: " + mongoUri);
+        }
+
         return MongoClients.create(mongoUri);
     }
 

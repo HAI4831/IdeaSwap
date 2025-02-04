@@ -33,6 +33,7 @@ public class Censorships
 
 //    @NotBlank(message = "Trạng thái không được để trống")
     @NotNull(message = "Status cannot be null")
+    @Builder.Default
     private Status status=Status.pending;
 
     @NotBlank(message = "Phản hồi không được để trống")

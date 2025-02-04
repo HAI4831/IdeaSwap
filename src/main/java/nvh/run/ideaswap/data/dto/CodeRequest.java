@@ -11,6 +11,7 @@ public class CodeRequest {
     private String id;
     @IsObjectID
     private String user;
+    @Builder.Default
     private int code=0;
     private LocalDateTime codeExpiration;
     private String userEmail;

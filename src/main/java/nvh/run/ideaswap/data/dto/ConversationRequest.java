@@ -13,6 +13,7 @@ public class ConversationRequest {
     private String id;
     @IsObjectID
     private List<String> members;
+    @Builder.Default
     private String wallpaperUrl="";
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;

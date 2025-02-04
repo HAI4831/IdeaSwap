@@ -12,5 +12,6 @@ import nvh.run.ideaswap.data.entity.Users;
 public class ProfileResponse {
     private Users user;
     private Managers manager;
+    @Builder.Default
     private boolean authenticated=false;
 }

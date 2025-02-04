@@ -49,12 +49,14 @@ public class Documents
     @Size(max = 100, message = "URL tệp không được quá 100 ký tự")
     private String fileUrl;
 
+    @Builder.Default
     private int countDownload=0;
 
     @NotBlank(message = "imageUrl không được để trống")
     @Size(max = 150, message = "URL tệp không được quá 150 ký tự")
     private String imageUrl;
 
+    @Builder.Default
     @NotNull(message = "Status cannot be null")
     private Status status=Status.pending;
 

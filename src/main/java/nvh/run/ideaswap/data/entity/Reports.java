@@ -46,7 +46,8 @@ public class Reports
     private String type;
 
     @NotNull(message = "Status can not null")
-    private Status status;
+    @Builder.Default
+    private Status status=Status.pending;
 
 //    @NotBlank(message = "moderatorID không được để trống")
     @DBRef

@@ -41,6 +41,7 @@ public class Notifications
     @Size(max = 150, message = "imageUrl không được vượt quá 150 ký tự")
     private String imageUrl;
 
+    @Builder.Default
     @NotBlank(message = "isUnRead không được để trống")
     private boolean isUnRead=true;
 

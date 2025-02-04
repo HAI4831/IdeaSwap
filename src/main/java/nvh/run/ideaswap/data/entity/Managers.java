@@ -90,7 +90,8 @@ public class Managers
     private LocalDate birthday;
 
     @NotNull(message = "gender can not null")
-   private Gender gender;
+    @Builder.Default
+   private Gender gender=Gender.male;
 
     @DBRef
     private Roles roleID;

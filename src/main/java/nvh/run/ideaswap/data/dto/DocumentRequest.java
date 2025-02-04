@@ -19,8 +19,10 @@ public class DocumentRequest {
     private String title;
     private String description;
     private String fileUrl;
+    @Builder.Default
     private int countDownload=0;
     private MultipartFile imageUrl;
+    @Builder.Default
     private Status status=Status.pending;
     private double score;
     private LocalDateTime createdAt;

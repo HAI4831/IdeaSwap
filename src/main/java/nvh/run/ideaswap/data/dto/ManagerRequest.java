@@ -23,7 +23,7 @@ public class ManagerRequest {
     private String address;
     private String password;
     private MultipartFile avatar;
-    private LocalDate birthday= LocalDate.of(1970,1,1);
+    private LocalDate birthday;
     private Gender gender;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

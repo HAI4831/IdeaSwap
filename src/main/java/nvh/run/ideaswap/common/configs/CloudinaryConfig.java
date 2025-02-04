@@ -10,8 +10,17 @@ public class CloudinaryConfig {
 
     @Bean
     public Cloudinary cloudinary() {
-        Dotenv dotenv = Dotenv.load(); // Load biến môi trường từ .env
-        String cloudinaryUrl = dotenv.get("CLOUDINARY_URL");
+        String cloudinaryUrl;
+
+        String profile = System.getProperty("spring.profiles.active");
+        if ("local".equals(profile)) {
+            // Chạy môi trường local: đọc từ .env
+            Dotenv dotenv = Dotenv.load();
+            cloudinaryUrl = dotenv.get("CLOUDINARY_URL");
+        } else {
+            // Chạy môi trường production: đọc từ biến môi trường hệ thống
+            cloudinaryUrl = System.getenv("CLOUDINARY_URL");
+        }
 
         Cloudinary cloudinary = new Cloudinary(cloudinaryUrl);
 
@@ -19,21 +28,4 @@ public class CloudinaryConfig {
 
         return cloudinary;
     }
-//    @Value("${cloudinary.cloud-name}")
-//    private String cloudName;
-//
-//    @Value("${cloudinary.api-key}")
-//    private String apiKey;
-//
-//    @Value("${cloudinary.api-secret}")
-//    private String apiSecret;
-//
-//    @Bean
-//    public Cloudinary cloudinary() {
-//        return new Cloudinary(ObjectUtils.asMap(
-//                "cloud_name", cloudName,
-//                "api_key", apiKey,
-//                "api_secret", apiSecret
-//        ));
-//    }
 }

@@ -33,6 +33,7 @@ public class Conversations
     @DBRef
     private List<Users> members;
 
+    @Builder.Default
     private String wallpaperUrl="";
 
     @CreatedDate

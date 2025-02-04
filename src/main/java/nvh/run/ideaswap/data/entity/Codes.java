@@ -33,6 +33,7 @@ public class Codes
     private String id;
 
     @NotBlank(message = "Code cannot be empty")
+    @Builder.Default
     private int code=0;
 
     @NotBlank(message = "Code expiration cannot be empty")

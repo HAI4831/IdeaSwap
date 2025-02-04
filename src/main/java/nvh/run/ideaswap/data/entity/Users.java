@@ -65,7 +65,8 @@ public class Users
     private String avatar;
 
     @NotNull(message = "gender can not null")
-    private Gender gender;
+    @Builder.Default
+    private Gender gender=Gender.male;
 
     private int rating;
 
