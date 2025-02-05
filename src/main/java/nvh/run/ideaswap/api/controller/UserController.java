@@ -38,7 +38,7 @@ public class UserController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Object> createUser(@Validated @RequestBody UserRequest userRequest) {
+    public ResponseEntity<Object> createUser(@Validated @ModelAttribute UserRequest userRequest) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
@@ -49,7 +49,7 @@ public class UserController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Object> updateUser(@PathVariable String id, @Validated @RequestBody UserRequest userRequest) {
+    public ResponseEntity<Object> updateUser(@PathVariable String id, @Validated @ModelAttribute UserRequest userRequest) {
         return ResponseEntity.status(200).body(
                 Map.of(
                         "success", true,

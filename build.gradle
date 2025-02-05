@@ -7,6 +7,7 @@ plugins {
 group = 'nvh.run'
 version = '0.0.1-SNAPSHOT'
 
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
@@ -44,7 +45,7 @@ dependencies {
     implementation 'com.nimbusds:nimbus-jose-jwt:10.0.1'//decrypt
     implementation 'org.bouncycastle:bcprov-jdk18on:1.79'//decrypt
     implementation 'org.springframework.security:spring-security-core:6.4.2'//spring security
-//    developmentOnly 'org.springframework.boot:spring-boot-devtools'//auto restat app when code change
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'//auto restat app when code change
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'//interact mongo
     implementation 'org.springframework.boot:spring-boot-starter-security'//
     implementation 'org.springframework.boot:spring-boot-starter-validation'//validate
@@ -55,6 +56,21 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
+bootJar {
+    mainClass = 'nvh.run.ideaswap.IdeaSwapApplication'
+}
+
+springBoot {
+    mainClass = 'nvh.run.ideaswap.IdeaSwapApplication'
+}
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'nvh.run.ideaswap.IdeaSwapApplication'
+        )
+    }
+}
+
 
 tasks.named('test') {
     useJUnitPlatform()

@@ -10,3 +10,10 @@ setx EMAIL_PASSWORD "vejtkoejstatxska"
 setx MONGO_URI "mongodb+srv://nvhai227:abCD%401234@cluster0.kfltces.mongodb.net/?retryWrites=true&w=majority&appName=crud"
 java -Dspring.profiles.active=production -jar D:\codevs\springboot\ideaSwap\build\libs\IdeaSwap-0.0.1-SNAPSHOT.jar
 ```
+## deploy 
+docker login
+docker build -t popef23/ideaswap:v1.0.1 .
+docker run --rm -it -p 8080:8080 popef23/ideaswap:v1.0.1
+docker push popef23/ideaswap:v1.0.1
+
+

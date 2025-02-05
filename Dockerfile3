@@ -1,0 +1,170 @@
+# Bước 1: Dùng OpenJDK đầy đủ để build ứng dụng
+FROM openjdk:17-jdk-slim AS build
+
+# Cấu hình múi giờ Việt Nam
+RUN ln -snf /usr/share/zoneinfo/Asia/Ho_Chi_Minh /etc/localtime && echo Asia/Ho_Chi_Minh > /etc/timezone
+
+LABEL author="NguyenVanHai"
+
+WORKDIR /app
+
+# Sao chép và cache dependencies để tăng tốc độ build
+COPY build.gradle settings.gradle gradlew /app/
+COPY gradle /app/gradle
+RUN chmod +x ./gradlew
+
+# ✅ Sửa lỗi: Dùng `build --refresh-dependencies` thay vì `dependencies`
+RUN ./gradlew build --no-daemon --refresh-dependencies || true
+
+# Sao chép toàn bộ mã nguồn vào container
+COPY . .
+RUN ./gradlew bootJar --no-daemon
+
+# Bước 2: Dùng JRE nhẹ để chạy ứng dụng
+FROM eclipse-temurin:17-jre-alpine
+
+WORKDIR /app
+
+# Sao chép file JAR từ image build vào image chạy
+COPY --from=build /app/build/libs/*.jar app.jar
+
+# Mở cổng 8080
+EXPOSE 8080
+
+# Chạy ứng dụng
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+
+## Bước 1: Dùng Gradle để build ứng dụng
+#FROM gradle:jdk17-alpine AS build
+## Cấu hình múi giờ Việt Nam
+#RUN ln -snf /usr/share/zoneinfo/Asia/Ho_Chi_Minh /etc/localtime && echo Asia/Ho_Chi_Minh > /etc/timezone
+#
+#LABEL author="NguyenVanHai"
+#
+#WORKDIR /app
+#
+## Sao chép và cache dependencies để tăng tốc độ build
+#COPY build.gradle settings.gradle gradlew /app/
+#COPY gradle /app/gradle
+#RUN chmod +x ./gradlew
+#
+## Tải dependencies trước để tận dụng caching
+#RUN ./gradlew dependencies --no-daemon || true
+#
+## Sao chép toàn bộ mã nguồn và build ứng dụng
+#COPY . .
+#RUN ./gradlew bootJar --no-daemon
+#
+## Bước 2: Dùng JRE nhẹ để chạy ứng dụng
+#FROM eclipse-temurin:17-jre-alpine
+#
+#WORKDIR /app
+#
+## Sao chép file JAR từ image build vào image chạy
+#COPY --from=build /app/build/libs/*.jar app.jar
+#
+## Mở cổng 8080
+#EXPOSE 8080
+#
+## Chạy ứng dụng
+#ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+#___________________________________________________________________
+
+##FROM gradle:jdk17-jammy AS builder
+##COPY . .
+##RUN gradle build
+###COPY --chown=gradle:gradle . /home/gradle/src
+##WORKDIR /home/gradle/src
+##RUN gradle build --no-daemon
+## Bước 1: Xây dựng image từ openjdk:17-jdk-slim
+#FROM openjdk:17-jdk-slim as build
+#
+## Bước 2: Cài đặt múi giờ
+#RUN ln -snf /usr/share/zoneinfo/Asia/Ho_Chi_Minh /etc/localtime && echo Asia/Ho_Chi_Minh > /etc/timezone
+#
+## Bước 3: Chuyển đến thư mục làm việc
+#WORKDIR /app
+#
+## Bước 4: Sao chép build.gradle và settings.gradle vào container
+#COPY build.gradle settings.gradle /app/
+#
+## Bước 5: Sao chép thư mục gradle vào container
+#COPY gradle /app/gradle
+#
+## Bước 6: Sao chép tệp gradlew vào container
+#COPY gradlew /app/gradlew
+#
+## Bước 7: Cấp quyền thực thi cho tệp gradlew
+#RUN chmod +x /app/gradlew
+#
+## Bước 8: Xây dựng ứng dụng
+#RUN ./gradlew --no-daemon build --refresh-dependencies
+#
+## Bước 9: Tạo image chạy ứng dụng
+#FROM openjdk:17-jdk-slim
+#
+## Bước 10: Sao chép tệp JAR từ image build vào image chạy
+#COPY --from=build /app/build/libs/IdeaSwap-0.0.1-SNAPSHOT.jar /app/IdeaSwap.jar
+#
+## Bước 11: Đặt thư mục làm việc trong container
+#WORKDIR /app
+#
+## Bước 12: Mở cổng cho ứng dụng
+#EXPOSE 8080
+## Kiểm tra kết nối mạng từ bên trong container
+#RUN apt-get update && apt-get install -y iputils-ping
+#RUN ping -c 4 google.com
+#
+## Bước 13: Chạy ứng dụng khi container khởi động
+#ENTRYPOINT ["java", "-jar", "IdeaSwap.jar","nvh.run.ideaswap.IdeaSwapApplication"]
+#
+###FROM eclipse-temurin:17-jre-alpine
+###LABEL author="NguyenVanHai"
+###COPY ./target/*.jar ./app.jar
+###ENV TZ=Asia/Ho_Chi_Minh
+###RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+###ENTRYPOINT ["java", "-jar", "./app.jar"]
+#
+##___________________________________________________________________________________
+### Bước 1: Xây dựng image từ openjdk:17-jdk-slim
+##FROM openjdk:17-jdk-slim as build
+##
+### Bước 2: Cài đặt múi giờ
+##RUN ln -snf /usr/share/zoneinfo/Asia/Ho_Chi_Minh /etc/localtime && echo Asia/Ho_Chi_Minh > /etc/timezone
+##
+### Bước 3: Chuyển đến thư mục làm việc
+##WORKDIR /app
+##
+### Bước 4: Sao chép build.gradle và settings.gradle vào container
+##COPY build.gradle settings.gradle /app/
+##
+### Bước 5: Sao chép thư mục gradle vào container
+##COPY gradle /app/gradle
+##
+### Bước 6: Tải các phụ thuộc của Gradle trước khi sao chép mã nguồn
+##RUN ./gradlew --no-daemon dependencies
+##
+### Bước 7: Sao chép mã nguồn vào container
+##COPY . /app/
+##
+### Bước 8: Xây dựng ứng dụng
+##RUN ./gradlew --no-daemon build --refresh-dependencies
+##
+### Bước 9: Tạo image chạy ứng dụng
+##FROM openjdk:17-jdk-slim
+##
+### Bước 10: Sao chép tệp JAR từ image build vào image chạy
+##COPY --from=build /app/build/libs/IdeaSwap-0.0.1-SNAPSHOT.jar /app/IdeaSwap.jar
+##
+### Bước 11: Đặt thư mục làm việc trong container
+##WORKDIR /app
+##
+### Bước 12: Mở cổng cho ứng dụng
+##EXPOSE 8080
+##
+### Kiểm tra kết nối mạng từ bên trong container
+##RUN apt-get update && apt-get install -y iputils-ping
+##RUN ping -c 4 google.com
+##
+### Bước 13: Chạy ứng dụng khi container khởi động
+##ENTRYPOINT ["java", "-jar", "IdeaSwap.jar"]

@@ -35,7 +35,7 @@ public class ManagerController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Object> createManager(@RequestBody @Valid ManagerRequest managerRequest) {
+    public ResponseEntity<Object> createManager(@ModelAttribute @Valid ManagerRequest managerRequest) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
@@ -46,7 +46,7 @@ public class ManagerController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Object> updateManager(@PathVariable String id, @RequestBody @Valid ManagerRequest managerRequest) {
+    public ResponseEntity<Object> updateManager(@PathVariable String id, @ModelAttribute @Valid ManagerRequest managerRequest) {
         return ResponseEntity.ok(Map.of(
                 "success", true,
                 "message", "Manager updated successfully",

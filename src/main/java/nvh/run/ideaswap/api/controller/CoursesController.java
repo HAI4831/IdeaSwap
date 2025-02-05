@@ -39,7 +39,7 @@ public class CoursesController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Object> createCourse(@Valid @RequestBody CourseRequest courseRequest) {
+    public ResponseEntity<Object> createCourse(@Valid @ModelAttribute CourseRequest courseRequest) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
@@ -50,7 +50,7 @@ public class CoursesController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Object> updateCourse(@PathVariable String id, @Valid @RequestBody CourseRequest courseRequest) {
+    public ResponseEntity<Object> updateCourse(@PathVariable String id, @Valid @ModelAttribute CourseRequest courseRequest) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,

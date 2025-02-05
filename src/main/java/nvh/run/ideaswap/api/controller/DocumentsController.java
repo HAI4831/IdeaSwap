@@ -39,7 +39,7 @@ public class DocumentsController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Object> createDocument(@Valid @RequestBody DocumentRequest documentRequest) {
+    public ResponseEntity<Object> createDocument(@Valid @ModelAttribute DocumentRequest documentRequest) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
@@ -50,7 +50,7 @@ public class DocumentsController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Object> updateDocument(@PathVariable String id, @Valid @RequestBody DocumentRequest documentRequest) {
+    public ResponseEntity<Object> updateDocument(@PathVariable String id, @Valid @ModelAttribute DocumentRequest documentRequest) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,

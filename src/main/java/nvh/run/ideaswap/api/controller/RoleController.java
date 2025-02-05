@@ -1,5 +1,6 @@
 package nvh.run.ideaswap.api.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -16,6 +17,7 @@ import java.util.Map;
 @RequestMapping("/api/v1/role")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@SecurityRequirement(name = "bearerAuth")
 public class RoleController {
 
     RoleService roleService;
