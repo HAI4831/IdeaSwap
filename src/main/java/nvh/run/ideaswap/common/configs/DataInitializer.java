@@ -103,24 +103,19 @@ public class DataInitializer implements CommandLineRunner {
                         .name("user")
                         .build()
         );
-        Roles adminRole = roleRepository.save(
-                Roles.builder()
-                        .id("6799977526692b76e0215005")
-                        .name("admin")
-                        .build()
-        );
-        roleRepository.save(
-                Roles.builder()
-                        .id("67999800c73db076c26e65fb")
-                        .name("manager")
-                        .build()
-        );
-        roleRepository.save(
+        Roles creatorRole = roleRepository.save(
                 Roles.builder()
                         .id("6799980fc73db076c26e65fc")
                         .name("creator")
                         .build()
         );
+        Roles managerRole = roleRepository.save(
+                Roles.builder()
+                        .id("67999800c73db076c26e65fb")
+                        .name("manager")
+                        .build()
+        );
+
         CategoryRepository categoryRepository = applicationContext.getBean(CategoryRepository.class);
         Categories categories = categoryRepository.save(
                 Categories.builder()
@@ -150,9 +145,8 @@ public class DataInitializer implements CommandLineRunner {
         Users user = userRepository.save(
                 Users.builder()
                         .id("6799988457bcd648ae78136a")
-                        .username("nvhai722@gmail.com")
-//                        .username("Nguyễn Văn Hải")
-                        .email("nvhai722@gmail.com")
+                        .username("user")
+                        .email("nvhai227@gmail.com")
                         .password(passwordEncoder.encode("abCD@1234"))
                         .address("Ninh Bình")
                         .firstName("Nguyễn Văn")
@@ -164,21 +158,21 @@ public class DataInitializer implements CommandLineRunner {
                         .roleID(userRole)
                         .birthday(LocalDate.parse("01/01/2003", DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                         .version(2L)
-                        .avatar(null)
+                        .avatar("https://antimatter.vn/wp-content/uploads/2022/11/anh-avatar-trang-fb-mac-dinh.jpg")
                         .build()
         );
         ManagerRepository managerRepository = applicationContext.getBean(ManagerRepository.class);
         Managers manager = managerRepository.save(
                 Managers.builder()
                         .id("679998b457bcd648ae781385")
-                        .username("nvhai227@gmail.com")
+                        .username("admin")
                         .address("nb")
                         .phoneNumber("0123456789")
                         .email("nvhai227@gmail.com")
                         .password(passwordEncoder.encode("abCD@1234"))
                         .gender(Gender.male)
-                        .avatar(null)
-                        .roleID(adminRole)
+                        .avatar("https://antimatter.vn/wp-content/uploads/2022/11/anh-avatar-trang-fb-mac-dinh.jpg")
+                        .roleID(managerRole)
                         .birthday(LocalDate.parse("01/01/2003",DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                         .lastName("nv")
                         .firstName("hai")
@@ -336,13 +330,13 @@ public class DataInitializer implements CommandLineRunner {
                 Videos.builder()
                         .title("title for video")
                         .courseID(courses)
-                        .videoUrl("video.mp4")
                         .view(123)
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
                         .id("6799996257bcd648ae781410")
                         .description("desciption for video")
-                        .imageUrl("https://i.ibb.co/933333/nvhai227.png")
+                        .imageUrl("https://yt3.ggpht.com/h7mMk0EIIrXGuMqzNTI9rNRBYuABVuHKOl9NJrdytR4KcUJEnZ2wPwdGppEeqHmB40UAvh8jFRQ=s48-c-k-c0x00ffffff-no-rj")
+                        .videoUrl("https://youtube.com/shorts/Q6dFMcHyY4U?si=Txj0LA9qzdsmX8Lw")
                         .userID(user)
                         .build()
         );

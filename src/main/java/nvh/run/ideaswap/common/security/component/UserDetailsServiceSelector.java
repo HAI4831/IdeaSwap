@@ -23,7 +23,7 @@ public class UserDetailsServiceSelector {
 
         if (
                 requestURI.startsWith("/api/v1/admin/auth")
-                ||requestURI.startsWith("/api/v1/user")
+//                ||requestURI.startsWith("/api/v1/user")
                 ||requestURI.startsWith("/api/v1/manager")
                 ||requestURI.startsWith("/api/v1/role")
         ) {

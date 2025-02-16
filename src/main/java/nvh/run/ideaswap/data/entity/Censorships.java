@@ -1,5 +1,6 @@
 package nvh.run.ideaswap.data.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -26,6 +27,7 @@ public class Censorships
 
     @Id
     @IsObjectID
+    @JsonProperty("_id")
     private String id;
 
     @IsObjectID

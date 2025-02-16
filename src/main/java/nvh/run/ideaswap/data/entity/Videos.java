@@ -1,5 +1,6 @@
 package nvh.run.ideaswap.data.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -27,6 +28,7 @@ public class Videos
 
     @Id
     @IsObjectID
+    @JsonProperty("_id")
     private String id;
 
 //    @NotBlank(message = "ID người dùng không được để trống")

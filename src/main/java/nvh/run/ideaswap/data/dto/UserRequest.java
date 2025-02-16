@@ -12,21 +12,30 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class UserRequest {
+    @IsObjectID
+//    @JsonProperty("_id")
     private String id;
-    private String firstName;
-    private String lastName;
+    @Builder.Default
+    private String firstName="";
+    @Builder.Default
+    private String lastName="";
     private String username;
     private String email;
     private String phoneNumber;
-    private String address;
-    private String password;
+    @Builder.Default
+    private String address="";
+    @Builder.Default
+    private String password="$2a$10$ZD/EROx56XOvcutCg9jHxeXrz.iqMstXUCksTyvBb8gfD8SPPm7uW";
     private MultipartFile avatar;
-    private Gender gender;
-    private int rating;
+    @Builder.Default
+    private Gender gender=Gender.male;
+    @Builder.Default
+    private Integer rating = 0 ;
     @IsObjectID
     private String roleID;
     private String description;
-    private LocalDate birthday;
+    @Builder.Default
+    private LocalDate birthday=LocalDate.of(1970, 1, 1);
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

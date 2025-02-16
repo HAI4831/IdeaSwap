@@ -34,6 +34,21 @@ public class EmailService {
     private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
     JavaMailSender mailSender;
 
+    public void sendSimpleEmail(String to, String subject, String text) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(text, false); // false = text thuần, true = HTML
+
+            mailSender.send(message);
+            System.out.println("Email sent successfully!");
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
     public boolean sendVerificationCode(String email,int code, Users user) {
         try {
             // Prepare the email content

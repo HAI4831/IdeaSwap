@@ -15,6 +15,10 @@ public class LoggerConfig {
 
     @Value("${spring.mail.password}")
     private String mailPassword;
+    @Value("spring.google-cloud.driver.client-id")
+    private String googleClientId;
+    @Value("spring.google-cloud.driver.client-secret")
+    private String googleClientSecret;
 //    public LoggerConfig(
 //            @Value("${spring.mail.username}") String mailUsername,
 //            @Value("${spring.mail.password}") String mailPassword
@@ -29,5 +33,7 @@ public class LoggerConfig {
         logger.info("Mail Password: {}", mailPassword
 //                .replaceAll(".", "*")// Ẩn mật khẩu
         );
+        logger.info("Google Client ID: {}", googleClientId);
+        logger.info("Google Client Secret: {}", googleClientSecret);
     }
 }

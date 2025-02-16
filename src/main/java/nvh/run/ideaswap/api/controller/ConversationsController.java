@@ -27,13 +27,23 @@ public class ConversationsController {
         );
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/get-by-id/{id}")
     public ResponseEntity<Object> getConversationById(@PathVariable String id) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
                         "message", "Retrieve Conversation successfully",
                         "conversation", conversationsService.getConversationById(id)
+                )
+        );
+    }
+    @GetMapping("/{userId}")
+    public ResponseEntity<Object> getConversationByUserId(@PathVariable String userId) {
+        return ResponseEntity.ok(
+                Map.of(
+                        "success", true,
+                        "message", "Retrieve Conversation successfully",
+                        "conversation", conversationsService.getConversationByUserId(userId)
                 )
         );
     }

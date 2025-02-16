@@ -1,5 +1,6 @@
 package nvh.run.ideaswap.data.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,7 @@ public class Roles
 {
     @Id
     @IsObjectID
+    @JsonProperty("_id")
     private String id;
 
     @NotBlank(message = "Tên không được để trống")

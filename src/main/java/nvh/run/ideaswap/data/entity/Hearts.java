@@ -1,5 +1,6 @@
 package nvh.run.ideaswap.data.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,6 +25,7 @@ public class Hearts
 {
     @Id
     @IsObjectID
+    @JsonProperty("_id")
     private String id;
 
     @DBRef

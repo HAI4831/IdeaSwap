@@ -10,7 +10,7 @@ import java.util.Map;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/api/v1/messages")
+@RequestMapping("/api/v1/message")
 @RequiredArgsConstructor
 public class MessageController {
 
@@ -27,7 +27,17 @@ public class MessageController {
         );
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{conversationId}")
+    public ResponseEntity<Object> getMessageByconversationId(@PathVariable String conversationId) {
+        return ResponseEntity.ok(
+                Map.of(
+                        "success", true,
+                        "message", "Retrieve Message By ID successfully"
+                        , "Messages", messageService.getMessageByconversationId(conversationId))
+        );
+    }
+
+    @GetMapping("/get-by-id/{id}")
     public ResponseEntity<Object> getMessageById(@PathVariable String id) {
         return ResponseEntity.ok(
                 Map.of(

@@ -1,5 +1,6 @@
 package nvh.run.ideaswap.data.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +27,7 @@ public class Conversations
 
     @Id
     @IsObjectID
+    @JsonProperty("_id")
     private String id;
 
     @NotEmpty(message = "Members cannot be empty")

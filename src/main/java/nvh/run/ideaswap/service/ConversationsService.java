@@ -89,4 +89,15 @@ public class ConversationsService {
         }
         return conversation;
     }
+
+    public Conversations getConversationByUserId(String userId) {
+        Users user = userService.getUserById(userId);
+        Conversations conversation;
+        try {
+            conversation = conversationsRepository.findByMembersIn(List.of(user)).orElseThrow(() -> new RuntimeException("Conversation not found"));
+        } catch (Exception e) {
+            throw new RuntimeException("Get conversation failed",e);
+        }
+        return conversation;
+    }
 }

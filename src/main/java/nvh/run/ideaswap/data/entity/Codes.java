@@ -2,6 +2,7 @@ package nvh.run.ideaswap.data.entity;
 
 //import jakarta.persistence.Column;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -30,6 +31,7 @@ public class Codes
 
     @Id
     @IsObjectID
+    @JsonProperty("_id")
     private String id;
 
     @NotBlank(message = "Code cannot be empty")

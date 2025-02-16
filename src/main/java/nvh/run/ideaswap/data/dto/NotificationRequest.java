@@ -1,5 +1,6 @@
 package nvh.run.ideaswap.data.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 import nvh.run.ideaswap.common.validator.IsObjectID;
@@ -11,6 +12,8 @@ import java.util.List;
 @Data
 @Builder
 public class NotificationRequest {
+    @IsObjectID
+    @JsonProperty("_id")
     private String id;
     @IsObjectID
     private List<String> userIDs;

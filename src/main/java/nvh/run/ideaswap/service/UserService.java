@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.common.exceptions.exception.custom.auth.UsernameAlreadyExistException;
 import nvh.run.ideaswap.data.dto.UserRequest;
+import nvh.run.ideaswap.data.entity.Gender;
 import nvh.run.ideaswap.data.entity.Roles;
 import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.repository.IUserRepository;
@@ -48,7 +49,10 @@ public class UserService {
     public Users createUser(UserRequest userRequest) {
         Users user;
         try {
-            String imageUrl = cloudinaryService.uploadImage(userRequest.getAvatar());
+            String imageUrl;
+            if(userRequest.getRating()==null) userRequest.setRating(0);
+            if(userRequest.getAvatar()==null) imageUrl= "https://antimatter.vn/wp-content/uploads/2022/11/anh-avatar-trang-fb-mac-dinh.jpg";
+            else imageUrl = cloudinaryService.uploadImage(userRequest.getAvatar());
             if (imageUrl == null) {
                 throw new RuntimeException("Course image upload failed");
             }
@@ -56,21 +60,22 @@ public class UserService {
             if(existsByPhoneNumber(userRequest.getPhoneNumber())) throw new RuntimeException("Phone number already exist");
             if(existsByUsername(userRequest.getUsername())) throw new RuntimeException("Username already exist");
             Roles role = roleService.getRoleById(userRequest.getRoleID());
+            if(userRequest.getPassword()==null) userRequest.setPassword("$2a$10$ZD/EROx56XOvcutCg9jHxeXrz.iqMstXUCksTyvBb8gfD8SPPm7uW");
             user = iUserRepository.save(
                     Users.builder()
                             .id(userRequest.getId())
                             .roleID(role)
                             .email(userRequest.getEmail())
                             .username(userRequest.getUsername())
-                            .password(passwordEncoder.encode(userRequest.getPassword()))
-                            .firstName(userRequest.getFirstName())
-                            .lastName(userRequest.getLastName())
+                            .password(userRequest.getPassword()!=null ? passwordEncoder.encode(userRequest.getPassword()):"$2a$10$ZD/EROx56XOvcutCg9jHxeXrz.iqMstXUCksTyvBb8gfD8SPPm7uW")
+                            .firstName(userRequest.getFirstName()!=null ? userRequest.getFirstName():"")
+                            .lastName(userRequest.getLastName()!=null ? userRequest.getLastName():"")
                             .phoneNumber(userRequest.getPhoneNumber())
-                            .address(userRequest.getAddress())
-                            .gender(userRequest.getGender())
-                            .avatar(imageUrl)
+                            .address(userRequest.getAddress()!=null ? userRequest.getAddress():"")
+                            .gender(userRequest.getGender()!=null ? userRequest.getGender(): Gender.male)
+                            .avatar(imageUrl!=null ? imageUrl:"https://antimatter.vn/wp-content/uploads/2022/11/anh-avatar-trang-fb-mac-dinh.jpg")
                             .description(userRequest.getDescription())
-                            .rating(userRequest.getRating())
+                            .rating(userRequest.getRating()!=null ? userRequest.getRating():0)
                             .version(2L)
                             .birthday(userRequest.getBirthday())
                             .createdAt(LocalDateTime.now())

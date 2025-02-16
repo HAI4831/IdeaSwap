@@ -1,5 +1,6 @@
 package nvh.run.ideaswap.data.entity;
 
+import com.fasterxml.jackson.annotation.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -30,15 +31,31 @@ public class Users
 
     @Id
     @IsObjectID
+//    @Field("_id") // Xác định rõ id trong MongoDB
+    @JsonProperty("_id") // Giữ nguyên tên id khi trả về JSON
+//    @JsonAlias("id")
     private String id;
+//    // Custom getter để trả về trường "_id"
+//    @JsonGetter("_id")
+//    public String get_Id() {
+//        return id;
+//    }
+//
+//    // Custom setter để nhận giá trị cho trường "id"
+//    @JsonSetter("id")
+//    public void setId(String id) {
+//        this.id = id;
+//    }
 
     @NotBlank(message = "Tên không được để trống")
     @Size(max = 100, message = "Tên không được vượt quá 100 ký tự")
-    private String firstName;
+    @Builder.Default
+    private String firstName="";
 
     @NotBlank(message = "Họ không được để trống")
     @Size(max = 100, message = "Họ không được vượt quá 100 ký tự")
-    private String lastName;
+    @Builder.Default
+    private String lastName="";
 
     @NotBlank(message = "Tên người dùng không được để trống")
     @Size(max = 50, message = "Tên người dùng không được vượt quá 50 ký tự")
@@ -56,13 +73,17 @@ public class Users
     private String phoneNumber;
 
     @Size(max = 1000, message = "Địa chỉ không được vượt quá 1000 ký tự")
-    private String address;
+    @Builder.Default
+    private String address="";
 
     @NotBlank(message = "Mật khẩu không được để trống")
     @Size(min = 7, message = "Mật khẩu phải có ít nhất 7 ký tự")
-    private String password;
+    @JsonIgnore // ẩn khi phản hồi json
+    @Builder.Default
+    private String password="$2a$10$ZD/EROx56XOvcutCg9jHxeXrz.iqMstXUCksTyvBb8gfD8SPPm7uW";
 
-    private String avatar;
+    @Builder.Default
+    private String avatar="https://antimatter.vn/wp-content/uploads/2022/11/anh-avatar-trang-fb-mac-dinh.jpg";
 
     @NotNull(message = "gender can not null")
     @Builder.Default
@@ -77,7 +98,8 @@ public class Users
     @Size(max = 5000, message = "Mô tả không được vượt quá 5000 ký tự")
     private String description;
 
-    private LocalDate birthday;
+    @Builder.Default
+    private LocalDate birthday=LocalDate.of(1970, 1, 1);
 
     @CreatedDate
     private LocalDateTime createdAt;

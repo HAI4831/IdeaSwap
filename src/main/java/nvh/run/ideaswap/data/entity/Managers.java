@@ -2,6 +2,7 @@ package nvh.run.ideaswap.data.entity;
 
 //import jakarta.persistence.Column;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -51,6 +52,7 @@ public class Managers
     }
     @Id
     @IsObjectID
+    @JsonProperty("_id")
     private String id;
 
     @NotBlank(message = "Họ không được để trống")

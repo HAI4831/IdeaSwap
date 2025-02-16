@@ -15,6 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.SecurityFilterChain;
@@ -37,7 +38,7 @@ public class SpringSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 //                .userDetailsService(userDetailsServiceSelector.selectUserDetailsService(request))
                 .authorizeHttpRequests(authorize -> authorize
@@ -62,88 +63,118 @@ public class SpringSecurityConfig {
 
                         ).permitAll()
 
-//                        .requestMatchers("/api/v1/categories/*").hasAuthority("user")
-                        .requestMatchers(HttpMethod.GET,"/api/v1/categories/*").hasAuthority("user")
-                        .requestMatchers(HttpMethod.POST,"/api/v1/categories/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/categories/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/categories/*").hasAuthority("admin")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/auth/account").hasAnyAuthority("user","creator")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/auth/admin/account").hasAnyAuthority("manager")
 
-                        .requestMatchers(HttpMethod.GET,"/api/v1/products/*").hasAuthority("user")
-                        .requestMatchers(HttpMethod.POST,"/api/v1/products/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/products/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/products/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.GET,"/api/v1/banner/*").hasAuthority("user")
-                        .requestMatchers(HttpMethod.POST,"/api/v1/banner/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/banner/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/banner/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.GET,"/api/v1/blogs/*").hasAuthority("user")
-                        .requestMatchers(HttpMethod.POST,"/api/v1/blogs/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/blogs/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/blogs/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.GET,"/api/v1/censorships/*").hasAuthority("user")
-                        .requestMatchers(HttpMethod.POST,"/api/v1/censorships/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/censorships/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/censorships/*").hasAuthority("admin")
-                        .requestMatchers("/api/v1/code/*").hasAuthority("user")
-//                        .requestMatchers("/api/v1/comment/*").hasAuthority("user")
-                        .requestMatchers(HttpMethod.GET,"/api/v1/comment/*").hasAuthority("user")
-                        .requestMatchers(HttpMethod.POST,"/api/v1/comment/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/comment/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/comment/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.GET,"/api/v1/conversation/*").hasAuthority("user")
-                        .requestMatchers(HttpMethod.POST,"/api/v1/conversation/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/conversation/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/conversation/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.GET,"/api/v1/course/*").hasAuthority("user")
-                        .requestMatchers(HttpMethod.POST,"/api/v1/course/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/course/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/course/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.GET,"/api/v1/document/*").hasAuthority("user")
-                        .requestMatchers(HttpMethod.POST,"/api/v1/document/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/document/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/document/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.GET,"/api/v1/follow/*").hasAuthority("user")
-                        .requestMatchers(HttpMethod.POST,"/api/v1/follow/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/follow/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/follow/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.GET,"/api/v1/heart/*").hasAuthority("user")
-                        .requestMatchers(HttpMethod.POST,"/api/v1/heart/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/heart/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/heart/*").hasAuthority("admin")
-                        .requestMatchers("/api/v1/manager/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.GET,"/api/v1/message/*").hasAuthority("user")//not have
-                        .requestMatchers(HttpMethod.POST,"/api/v1/message/*").hasAuthority("admin")//not have
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/message/*").hasAuthority("admin")//not have
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/message/*").hasAuthority("admin")//not have
-                        .requestMatchers(HttpMethod.GET,"/api/v1/notification/*").hasAuthority("user")
-                        .requestMatchers(HttpMethod.POST,"/api/v1/notification/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/notification/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/notification/*").hasAuthority("admin")
-                        .requestMatchers("/api/v1/role/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.GET,"/api/v1/share/*").hasAuthority("user")
-                        .requestMatchers(HttpMethod.POST,"/api/v1/share/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/share/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/share/*").hasAuthority("admin")
-                        .requestMatchers("/api/v1/user/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.GET,"/api/v1/video/*").hasAuthority("user")
-                        .requestMatchers(HttpMethod.POST,"/api/v1/video/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/video/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/video/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.GET,"/api/v1/contact/*").hasAuthority("user")
-                        .requestMatchers(HttpMethod.POST,"/api/v1/contact/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/contact/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/contact/*").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.GET,"/api/v1/banner").hasAuthority("user")
-                        .requestMatchers(HttpMethod.POST,"/api/v1/banner").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/banner").hasAuthority("admin")
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/banner").hasAuthority("admin")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/categories/*").hasAnyAuthority("user","manager")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/categories/*").hasAnyAuthority("manager")
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/categories/*").hasAnyAuthority("manager")
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/categories/*").hasAnyAuthority("manager")
 
-                        .requestMatchers(HttpMethod.GET,"/api/v1/auth/account").hasAuthority("user")
-                        .requestMatchers(HttpMethod.POST,"/api/v1/admin/auth/account").hasAuthority("admin")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/products/*").hasAnyAuthority("user")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/products/*").hasAnyAuthority("manager")
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/products/*").hasAnyAuthority("manager")
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/products/*").hasAnyAuthority("manager")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/banner/*").hasAnyAuthority("user")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/banner/*").hasAnyAuthority("manager")
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/banner/*").hasAnyAuthority("manager")
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/banner/*").hasAnyAuthority("manager")
 
-                        .requestMatchers("/api/v1/admin/*").hasAuthority("admin")
-                        .requestMatchers("/admin/*").hasAuthority("ADMIN")
-                        .requestMatchers("/superadmin/**").hasAuthority("SUPERADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/blogs/*").hasAnyAuthority("user","creator")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/blogs/*").hasAnyAuthority("user","creator")
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/blogs/*").hasAnyAuthority("user","creator")
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/blogs/*").hasAnyAuthority("user","creator","manager")
+
+//                        .requestMatchers(HttpMethod.GET,"/api/v1/censorships/*").hasAnyAuthority("user")
+//                        .requestMatchers(HttpMethod.POST,"/api/v1/censorships/*").hasAnyAuthority("manager)
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/censorships/*").hasAnyAuthority("manager")
+//                        .requestMatchers(HttpMethod.DELETE,"/api/v1/censorships/*").hasAnyAuthority("manager)
+                        .requestMatchers("/api/v1/code/*").hasAnyAuthority("user")
+
+//                        .requestMatchers("/api/v1/comment/*").hasAnyAuthority("user")
+//                        .requestMatchers(HttpMethod.GET,"/api/v1/comment/*").hasAnyAuthority("user")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/comment/*").hasAnyAuthority("user","creator")
+//                        .requestMatchers(HttpMethod.PUT,"/api/v1/comment/*").hasAnyAuthority("manager)
+//                        .requestMatchers(HttpMethod.DELETE,"/api/v1/comment/*").hasAnyAuthority("manager)
+
+                        .requestMatchers(HttpMethod.GET,"/api/v1/conversation/*").hasAnyAuthority("manager")
+//                        note: viết thêm endpoint náy
+//                        .requestMatchers(HttpMethod.GET,"/api/v1/conversation/userId/*").hasAnyAuthority("manager")
+//                        .requestMatchers(HttpMethod.GET,"/api/v1/conversation/get-by-id/*").hasAnyAuthority("manager")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/conversation/*").hasAnyAuthority("user","creator")
+//                        .requestMatchers(HttpMethod.PUT,"/api/v1/conversation/*").hasAnyAuthority("manager")
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/conversation/*").hasAnyAuthority("user","creator")
+
+                        .requestMatchers(HttpMethod.GET,"/api/v1/course/*").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/course/*").hasAnyAuthority("creator")
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/course/*").hasAnyAuthority("creator")
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/course/update/view/*").hasAnyAuthority("user","creator")
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/course/*").hasAnyAuthority("creator","manager")
+
+                        .requestMatchers(HttpMethod.GET,"/api/v1/document/*").hasAnyAuthority("user","creator","manager")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/document/*").hasAnyAuthority("creator")
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/document/*").hasAnyAuthority("creator","manager")
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/document/*").hasAnyAuthority("creator","manager")
+
+                        .requestMatchers(HttpMethod.GET,"/api/v1/follow/*").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/follow/*").hasAnyAuthority("user","creator")
+//                        .requestMatchers(HttpMethod.PUT,"/api/v1/follow/*").hasAnyAuthority("manager)
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/follow/*").hasAnyAuthority("user","creator")
+
+                        .requestMatchers(HttpMethod.GET,"/api/v1/heart/*").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/heart/*").hasAnyAuthority("user","creator")
+//                        .requestMatchers(HttpMethod.PUT,"/api/v1/heart/*").hasAnyAuthority("manager)
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/heart/*").hasAnyAuthority("user","creator")
+
+//                        .requestMatchers("/api/v1/manager/*").hasAnyAuthority("manager")
+                        .requestMatchers(HttpMethod.GET,"/api/v1/message/*").hasAnyAuthority("manager")//not have
+//                        note: cần viết endpoint này
+//                        .requestMatchers(HttpMethod.GET,"/api/v1/message/conversationId/*").hasAnyAuthority("user","creator")//not have
+//                        .requestMatchers(HttpMethod.POST,"/api/v1/message/*").hasAnyAuthority("manager")//not have
+//                        .requestMatchers(HttpMethod.PUT,"/api/v1/message/*").hasAnyAuthority("manager")//not have
+//                        .requestMatchers(HttpMethod.DELETE,"/api/v1/message/*").hasAnyAuthority("manager")//not have
+
+                        .requestMatchers(HttpMethod.GET,"/api/v1/notification/*").hasAnyAuthority("manager")
+                                // note: cần viết thêm endpoint này
+//                        .requestMatchers(HttpMethod.GET,"/api/v1/notification/userId/*").hasAnyAuthority("user","creator")
+//                        .requestMatchers(HttpMethod.POST,"/api/v1/notification/*").hasAnyAuthority("manager")
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/notification/*").hasAnyAuthority("user","creator","manager")
+//                        .requestMatchers(HttpMethod.DELETE,"/api/v1/notification/*").hasAnyAuthority("manager")
+
+                        .requestMatchers(HttpMethod.GET,"/api/v1/role/*").hasAnyAuthority("user","creator","manager")
+//                        .requestMatchers("/api/v1/role/*").hasAnyAuthority("manager)
+
+//                        .requestMatchers(HttpMethod.GET,"/api/v1/share/*").hasAnyAuthority("user")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/share/*").hasAnyAuthority("user","creator")
+//                        .requestMatchers(HttpMethod.PUT,"/api/v1/share/*").hasAnyAuthority("manager)
+//                        .requestMatchers(HttpMethod.DELETE,"/api/v1/share/*").hasAnyAuthority("manager)
+
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/user/*").hasAnyAuthority("user","creator","manager")
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/user/*").hasAnyAuthority("manager")
+
+                        .requestMatchers(HttpMethod.GET,"/api/v1/video/*").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/video/*").hasAnyAuthority("creator")
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/video/*").hasAnyAuthority("user","creator","manager")
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/video/update/view/*").hasAnyAuthority("user","creator","manager")
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/video/*").hasAnyAuthority("creator","manager")
+
+                        .requestMatchers(HttpMethod.GET,"/api/v1/contact/*").hasAnyAuthority("user")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/contact/*").hasAnyAuthority("manager")
+                        .requestMatchers(HttpMethod.PUT,"/api/v1/contact/*").hasAnyAuthority("manager")
+                        .requestMatchers(HttpMethod.DELETE,"/api/v1/contact/*").hasAnyAuthority("manager")
+
+                        .requestMatchers(HttpMethod.GET,"/api/v1/banner").permitAll()
+                        .requestMatchers("/api/v1/banner").hasAnyAuthority("manager")
+//                        .requestMatchers(HttpMethod.POST,"/api/v1/banner").hasAnyAuthority("manager")
+//                        .requestMatchers(HttpMethod.PUT,"/api/v1/banner").hasAnyAuthority("manager")
+//                        .requestMatchers(HttpMethod.DELETE,"/api/v1/banner").hasAnyAuthority("manager")
+
+                        .requestMatchers(HttpMethod.GET,"/api/v1/auth/account").hasAnyAuthority("user")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/admin/auth/account").hasAnyAuthority("manager")
+
+                        .requestMatchers("/api/v1/admin/*").hasAnyAuthority("manager")
+                        .requestMatchers("/admin/*").hasAnyAuthority("manager")
+//                        .requestMatchers("/superadmin/**").hasAnyAuthority("SUPERADMIN")
                         .anyRequest()
                         .permitAll()
 //                        .authenticated()

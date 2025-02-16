@@ -21,7 +21,7 @@ public class ManagerDetailsServiceImpl implements UserDetailsService {
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Managers manager = managerRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
+                .orElseThrow(() ->  new UsernameNotFoundException("User Not Found with username: " + username));
 
         return ManagerDetailsExtImpl.build(manager);
     }

@@ -25,13 +25,23 @@ public class NotificationController {
         );
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/get-by-id/{id}")
     public ResponseEntity<Map<String, Object>> getNotificationById(@PathVariable String id) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
                         "message", "Retrieve notification by ID successfully",
                         "notification", notificationService.getNotificationById(id)
+                )
+        );
+    }
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> getNotificationByUserId(@PathVariable String id) {
+        return ResponseEntity.ok(
+                Map.of(
+                        "success", true,
+                        "message", "Retrieve notification by ID successfully",
+                        "notification", notificationService.getNotificationByUserId(id)
                 )
         );
     }

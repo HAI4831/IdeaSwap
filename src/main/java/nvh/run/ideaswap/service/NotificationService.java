@@ -98,4 +98,14 @@ public class NotificationService {
         }
         return notifications;
     }
+
+    public List<Notifications> getNotificationByUserId(String userId) {
+        List<Notifications> notificationsList;
+        try {
+            notificationsList = notificationRepository.findByUserIDsContaining(userId);
+        } catch (Exception e) {
+            throw new RuntimeException("Get notification failed",e);
+        }
+        return notificationsList;
+    }
 }

@@ -1,6 +1,7 @@
 package nvh.run.ideaswap.data.entity;
 //c2
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -26,6 +27,7 @@ public class Blogs
 
     @Id
     @IsObjectID
+    @JsonProperty("_id")
     private String id;
 
     @NotBlank(message = "Nội dung không được để trống")

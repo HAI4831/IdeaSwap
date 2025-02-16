@@ -101,5 +101,15 @@ public class MessageService {
         }
         return message;
     }
+
+    public List<Messages> getMessageByconversationId(String conversationId) {
+        List<Messages> messageList ;
+        try {
+            messageList = messageRepository.findByConversationID(conversationId);
+        } catch (Exception e) {
+            throw new RuntimeException("Get message failed",e);
+        }
+        return messageList;
+    }
 }
 

@@ -1,5 +1,6 @@
 package nvh.run.ideaswap.data.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,6 +24,7 @@ public class Follows
 {
     @Id
     @IsObjectID
+    @JsonProperty("_id")
     private String id;
 
 //    @NotBlank(message = "ID người theo dõi không được để trống")

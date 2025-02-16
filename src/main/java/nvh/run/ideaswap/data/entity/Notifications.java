@@ -4,6 +4,7 @@ package nvh.run.ideaswap.data.entity;
 //import jakarta.persistence.EnumType;
 //import jakarta.persistence.Enumerated;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -31,6 +32,7 @@ public class Notifications
 {
     @Id
     @IsObjectID
+    @JsonProperty("_id")
     private String id;
 
     @NotBlank(message = "Mô tả không được để trống")
