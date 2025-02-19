@@ -12,6 +12,11 @@ import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.repository.BlogRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +37,31 @@ public class BlogService {
 
     private static final Logger logger = LoggerFactory.getLogger(BannerService.class);
 
+    @Cacheable(value = "blogs",key = "'page:' + #page + ':size:' + #size")
+    public List<Blogs> getAllBlogs(int page,int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        List<Blogs> blogList;
+        try {
+            blogList = blogRepository.findAll(pageable)
+                    .stream()
+                    .map(blog ->
+                            Blogs.builder()
+                                    .id(blog.getId())
+                                    .content(blog.getContent())
+                                    .url(blog.getUrl())
+                                    .userID(blog.getUserID())
+                                    .categoryID(blog.getCategoryID())
+                                    .createdDate(blog.getCreatedDate())
+                                    .updatedDate(blog.getUpdatedDate())
+                                    .build()).toList();
+        } catch (Exception e) {
+            throw new RuntimeException("Retrieve List Blogs failed",e);
+        }
+        return blogList;
+    }
+
+    @Cacheable(value = "blogs")
     public List<Blogs> getAllBlogs() {
         List<Blogs> blogList;
         try {
@@ -53,16 +83,20 @@ public class BlogService {
         return blogList;
     }
 
+    @Cacheable(value = "blog",key="#id")
     public Blogs getBlogById(String id) {
         Blogs blog;
         try {
             blog= blogRepository.findById(id).orElseThrow(() -> new RuntimeException("Blog not found"));
         } catch (Exception e) {
-            throw new RuntimeException("Get Blog By ID failed",e);
+            throw new RuntimeException("Get Blog By ID:"+id+" failed",e);
         }
         return blog;
     }
 
+    @CacheEvict(value = "blogs", allEntries = true)
+    @CachePut(value = "blog")
+//    @CachePut(value = "blog",key = "#blogRequest.id", condition = "#blogRequest.id!=null")
     public Blogs createBlog(BlogRequest blogRequest) {
         Categories categories = categoryService.getCategoryById(blogRequest.getCategoryID());
         Users user = userService.getUserById(blogRequest.getUserID());
@@ -75,8 +109,8 @@ public class BlogService {
             blog = blogRepository.save(
                     Blogs.builder()
                             .id(blogRequest.getId())
-                            .userID(user)
-                            .categoryID(categories)
+                            .userID(user.getId())
+                            .categoryID(categories.getId())
                             .content(blogRequest.getContent())
                             .url(imageUrl)
                             .createdDate(LocalDateTime.now())
@@ -88,7 +122,7 @@ public class BlogService {
         }
         notificationService.createNotification(
                 NotificationRequest.builder()
-                        .userIDs(List.of(blog.getUserID().getId()))
+                        .userIDs(List.of(blog.getUserID()))
                         .description("Blog is awaiting approval")
                         .imageUrl(blog.getUrl())
                         .build()
@@ -96,6 +130,7 @@ public class BlogService {
         return blog;
     }
 
+    @CachePut(value = "blog",key = "#id",condition = "#id!=null")
     public Blogs updateBlog(String id, BlogRequest blogRequest) {
         getBlogById(id);
         Categories categories = categoryService.getCategoryById(blogRequest.getCategoryID());
@@ -109,8 +144,8 @@ public class BlogService {
             updatedBlog = blogRepository.save(
                     Blogs.builder()
                             .id(id)
-                            .userID(user)
-                            .categoryID(categories)
+                            .userID(user.getId())
+                            .categoryID(categories.getId())
                             .content(blogRequest.getContent())
                             .url(imageUrl)
                             .createdDate(LocalDateTime.now())
@@ -123,6 +158,7 @@ public class BlogService {
         return updatedBlog;
     }
 
+    @CacheEvict(value = "blog",key = "#id", condition = "#id!=null")
     public Blogs deleteBlog(String id) {
         Blogs blog = getBlogById(id);
         try {

@@ -25,6 +25,17 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+
+    // https://mvnrepository.com/artifact/io.lettuce/lettuce-core
+    implementation 'io.lettuce:lettuce-core:6.6.0.BETA2'
+
+    // https://mvnrepository.com/artifact/org.springframework.data/spring-data-redis
+    implementation 'org.springframework.data:spring-data-redis:4.0.0-M1'
+
+    // https://mvnrepository.com/artifact/it.ozimov/embedded-redis
+    testImplementation 'it.ozimov:embedded-redis:0.7.1'
+
 //    runtimeOnly 'com.google.apis:google-api-services-androidpublisher:v3-rev142-1.25.0'
 
     // for driver

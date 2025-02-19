@@ -5,8 +5,10 @@ import lombok.RequiredArgsConstructor;
 import nvh.run.ideaswap.data.dto.ManagerRequest;
 import nvh.run.ideaswap.service.ManagerService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @CrossOrigin(origins = "*")
@@ -15,6 +17,16 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ManagerController {
     private final ManagerService managerService;
+
+//    @InitBinder
+//    public void initBinder(WebDataBinder binder) {
+//        binder.registerCustomEditor(String.class, "_id", new PropertyEditorSupport() {
+//            @Override
+//            public void setAsText(String text) {
+//                setValue(text);
+//            }
+//        });
+//    }
 
     @GetMapping
     public ResponseEntity<Object> getAllManagers() {
@@ -35,7 +47,7 @@ public class ManagerController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Object> createManager(@ModelAttribute @Valid ManagerRequest managerRequest) {
+    public ResponseEntity<Object> createManager(@ModelAttribute ManagerRequest managerRequest) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
@@ -62,5 +74,28 @@ public class ManagerController {
                 "manager", managerService.deleteManager(id)
         ));
     }
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<Map<String, String>> handleBindException(BindException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                errors.put(error.getField(), error.getDefaultMessage())
+        );
+        return ResponseEntity.badRequest().body(errors);
+    }
+//    @ExceptionHandler(org.springframework.boot.context.properties.bind.BindException.class)
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    public ResponseEntity<?> handleBindException(org.springframework.boot.context.properties.bind.BindException e) {
+//        log.warn("Illegal argument exception occurred: {}", e.getMessage(), e);
+//
+//        return ResponseEntity
+//                .status(HttpStatus.BAD_REQUEST)
+//                .body(createResponseError(
+//                        e.getMessage(),
+//                        e.getClass().getName(),
+//                        e.getCause(),
+//                        e.getStackTrace(),
+//                        HttpStatus.BAD_REQUEST
+//                ));
+//    }
 }
 

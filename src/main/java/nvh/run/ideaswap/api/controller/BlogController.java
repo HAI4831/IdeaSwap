@@ -49,7 +49,7 @@ public class BlogController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Object> updateBlog(@ModelAttribute String id, @RequestBody BlogRequest blogRequest) {
+    public ResponseEntity<Object> updateBlog(@PathVariable String id, @ModelAttribute BlogRequest blogRequest) {
         return ResponseEntity.status(200).body(
                 Map.of(
                         "success", true,

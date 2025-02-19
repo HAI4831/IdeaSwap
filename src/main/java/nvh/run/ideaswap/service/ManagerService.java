@@ -1,5 +1,6 @@
 package nvh.run.ideaswap.service;
 
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -9,6 +10,12 @@ import nvh.run.ideaswap.data.entity.Roles;
 import nvh.run.ideaswap.data.repository.IManagerRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +35,16 @@ public class ManagerService {
     IManagerRepository managerRepository;
     private final CloudinaryService cloudinaryService;
 
+//    @Cacheable(value = "managers",key = "'page:' + #page + ':size:' + #size")
+    public Page<Managers> getAllManagers(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        try {
+            return managerRepository.findAll(pageable);
+        } catch (Exception e) {
+            throw new RuntimeException("Retrieve List of Managers failed", e);
+        }
+    }
+//    @Cacheable(value="managers")
     public List<Managers> getAllManagers() {
         try {
             return managerRepository.findAll();
@@ -36,6 +53,7 @@ public class ManagerService {
         }
     }
 
+    @Cacheable(value="manager",key="#id",condition = "#id!=null")
     public Managers getManagerById(String id) {
         try {
             return managerRepository.findById(id)
@@ -44,8 +62,18 @@ public class ManagerService {
             throw new RuntimeException("Retrieve Manager By ID failed", e);
         }
     }
+    @Cacheable(value="manager",key="#username",condition = "#username!=null")
+    public Managers findManagerByUsername(String username) {
+        try {
+            return managerRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Manager not found"));
+        } catch (Exception e) {
+            throw new RuntimeException("Retrieve Manager By username "+username+" failed", e);
+        }
+    }
 
-    public Managers createManager(ManagerRequest managerRequest) {
+    @CachePut(value="manager",key="#managerRequest._id",condition = "#managerRequest._id!=null")
+    public Managers createManager(@Valid ManagerRequest managerRequest) {
         Roles role = roleService.getRoleById(managerRequest.getRoleID());
 
         try {
@@ -54,8 +82,8 @@ public class ManagerService {
                 throw new RuntimeException("Course image upload failed");
             }
             Managers manager = Managers.builder()
-                    .id(managerRequest.getId())
-                    .roleID(role)
+                    .id(managerRequest.get_id())
+                    .roleID(role.getId())
                     .firstName(managerRequest.getFirstName())
                     .lastName(managerRequest.getLastName())
                     .email(managerRequest.getEmail())
@@ -80,6 +108,7 @@ public class ManagerService {
         }
     }
 
+    @CachePut(value="manager",key="#id")
     public Managers updateManager(String id, ManagerRequest managerRequest) {
         getManagerById(id);
         Roles role = roleService.getRoleById(managerRequest.getRoleID());
@@ -90,8 +119,8 @@ public class ManagerService {
                 throw new RuntimeException("Course image upload failed");
             }
             Managers manager = Managers.builder()
-                    .id(managerRequest.getId())
-                    .roleID(role)
+                    .id(managerRequest.get_id())
+                    .roleID(role.getId())
                     .firstName(managerRequest.getFirstName())
                     .lastName(managerRequest.getLastName())
                     .email(managerRequest.getEmail())
@@ -110,6 +139,7 @@ public class ManagerService {
         }
     }
 
+    @CacheEvict(value="manager",key="#id")
     public Managers deleteManager(String id) {
         Managers manager = getManagerById(id);
         try {

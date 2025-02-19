@@ -10,9 +10,9 @@ import nvh.run.ideaswap.common.validator.IsObjectID;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 //c1
@@ -21,8 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "conversations")
-public class Conversations
-//        implements  java.io.Serializable , Cloneable
+public class Conversations implements Serializable
 {
 
     @Id
@@ -32,8 +31,9 @@ public class Conversations
 
     @NotEmpty(message = "Members cannot be empty")
     @IsObjectID
-    @DBRef
-    private List<Users> members;
+    private List<String> memberIDs;
+//    @DBRef
+//    private List<Users> members;
 
     @Builder.Default
     private String wallpaperUrl="";
@@ -43,15 +43,4 @@ public class Conversations
 
     @LastModifiedDate
     private LocalDateTime updatedDate;
-
-//    @Override
-//    public Conversations clone() {
-//        try {
-//            Conversations clone = (Conversations) super.clone();
-//            // TODO: copy mutable state here, so the clone can't change the internals of the original
-//            return clone;
-//        } catch (CloneNotSupportedException e) {
-//            throw new AssertionError();
-//        }
-//    }
 }

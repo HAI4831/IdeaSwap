@@ -9,6 +9,12 @@ import nvh.run.ideaswap.data.entity.Categories;
 import nvh.run.ideaswap.data.entity.Documents;
 import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.repository.DocumentsRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +32,19 @@ public class DocumentsService {
     private final CloudinaryService cloudinaryService;
     private final NotificationService notificationService;
 
+//    @Cacheable(value = "documents",key = "'page:' + #page + ':size:' + #size")
+    public Page<Documents> getAllDocuments(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Documents> documentsPage ;
+        try {
+            documentsPage = documentsRepository.findAll(pageable);
+        } catch (Exception e) {
+            throw new RuntimeException("Get all documents failed",e);
+        }
+        return documentsPage;
+    }
+
+//    @Cacheable(value="documents")
     public List<Documents> getAllDocuments() {
         List<Documents> documents ;
         try {
@@ -36,6 +55,7 @@ public class DocumentsService {
         return documents;
     }
 
+    @Cacheable(value="document",key="#id",condition = "#id!=null")
     public Documents getDocumentById(String id) {
         Documents document ;
         try {
@@ -47,6 +67,7 @@ public class DocumentsService {
         return document;
     }
 
+    @CachePut(value="document",key="documentRequest.id",condition = "#documentRequest.id!=null")
     public Documents createDocument(DocumentRequest documentRequest) {
         Users user=userService.getUserById(documentRequest.getUserID());
         Categories category = categoryService.getCategoryById(documentRequest.getCategoryID());
@@ -59,7 +80,7 @@ public class DocumentsService {
             document = documentsRepository.save(
                     Documents.builder()
                             .id(documentRequest.getId())
-                            .userID(user)
+                            .userID(user.getId())
                             .categoryID(category)
                             .title(documentRequest.getTitle())
                             .description(documentRequest.getDescription())
@@ -79,12 +100,13 @@ public class DocumentsService {
                 NotificationRequest.builder()
                         .description("Document is awaiting approval")
                         .imageUrl(document.getImageUrl())
-                        .userIDs(List.of(document.getUserID().getId()))
+                        .userIDs(List.of(document.getUserID()))
                         .build()
         );
         return document;
     }
 
+    @Cacheable(value="document",key="#id",condition = "#id!=null")
     public Documents updateDocument(String id, DocumentRequest documentRequest) {
         getDocumentById(id);
         Users user=userService.getUserById(documentRequest.getUserID());
@@ -98,7 +120,7 @@ public class DocumentsService {
             document = documentsRepository.save(
                     Documents.builder()
                             .id(documentRequest.getId())
-                            .userID(user)
+                            .userID(user.getId())
                             .categoryID(category)
                             .title(documentRequest.getTitle())
                             .description(documentRequest.getDescription())
@@ -117,6 +139,7 @@ public class DocumentsService {
         return document;
     }
 
+    @CacheEvict(value="document",key="#id",condition = "#id!=null")
     public Documents deleteDocument(String id) {
         Documents document = getDocumentById(id);
         try {
@@ -127,6 +150,7 @@ public class DocumentsService {
         return document;
     }
 
+    @Cacheable(value="document",key="#id",condition = "#id!=null")
     public Documents incrementDownload(String id) {
         Documents document = getDocumentById(id);
         document.setCountDownload(document.getCountDownload() + 1);
@@ -138,6 +162,7 @@ public class DocumentsService {
         return document;
     }
 
+    @Cacheable(value="document",key="#keyword",condition = "#keyword!=null")
     public List<Documents> searchDocuments(String keyword) {
         List<Documents> documents ;
         try {

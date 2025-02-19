@@ -39,9 +39,9 @@ public class CodeService {
                 .userEmail(email)
                 .build();
         try {
-            codeRepository.save(verificationCode);
             if(!emailService.sendVerificationCode(email, code, user))
                 throw new RuntimeException("Failed to send verification code");
+            codeRepository.save(verificationCode);
         } catch (Exception e) {
             throw new RuntimeException("Failed to save verification code",e);
         }
@@ -58,5 +58,6 @@ public class CodeService {
         }
         return codeEntity;
     }
+
 }
 

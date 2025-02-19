@@ -7,6 +7,11 @@ import nvh.run.ideaswap.data.dto.ConversationRequest;
 import nvh.run.ideaswap.data.entity.Conversations;
 import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.repository.ConversationsRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +26,18 @@ public class ConversationsService {
     ConversationsRepository conversationsRepository;
     UserService userService;
 
+//    @Cacheable(value = "conversations",key = "'page:' + #page + ':size:' + #size")
+    public Page<Conversations> getAllConversations(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Conversations> conversationsPage;
+        try {
+            conversationsPage = conversationsRepository.findAll(pageable);
+        } catch (Exception e) {
+            throw new RuntimeException("Get all conversations failed",e);
+        }
+        return conversationsPage;
+    }
+//    @Cacheable(value="conversations")
     public List<Conversations> getAllConversations() {
         List<Conversations> conversations;
         try {
@@ -31,6 +48,7 @@ public class ConversationsService {
         return conversations;
     }
 
+    @Cacheable(value="conversation",key="#id",condition = "#id!=null")
     public Conversations getConversationById(String id) {
         Conversations conversation;
         try {
@@ -40,7 +58,19 @@ public class ConversationsService {
         }
         return conversation;
     }
+    @Cacheable(value="conversation",key="#userId",condition = "#userId!=null")
+    public List<Conversations> getConversationByUserId(String userId) {
+        Users user = userService.getUserById(userId);
+        List<Conversations> conversationsList;
+        try {
+            conversationsList = conversationsRepository.findByMemberIDsIn(List.of(user.getId())).orElseThrow(() -> new RuntimeException("Conversation not found"));
+        } catch (Exception e) {
+            throw new RuntimeException("Get conversation failed",e);
+        }
+        return conversationsList;
+    }
 
+    @Cacheable(value="conversation",key="#conversationRequest.id",condition = "#conversationRequest.id!=null")
     public Conversations createConversation(ConversationRequest conversationRequest) {
         Conversations conversation;
         List<Users> userList = conversationRequest.getMembers().stream().map(userService::getUserById).toList();
@@ -48,7 +78,7 @@ public class ConversationsService {
             conversation = conversationsRepository.save(
                     Conversations.builder()
                             .id(conversationRequest.getId())
-                            .members(userList)
+                            .memberIDs(userList.stream().map(Users::getId).toList())
                             .wallpaperUrl(conversationRequest.getWallpaperUrl())
                             .createdDate(LocalDateTime.now())
                             .updatedDate(LocalDateTime.now())
@@ -60,6 +90,7 @@ public class ConversationsService {
         return conversation;
     }
 
+    @Cacheable(value="conversation",key="#id",condition = "#id!=null")
     public Conversations updateConversation(String id, ConversationRequest conversationRequest) {
         getConversationById(id);
         Conversations conversation;
@@ -68,7 +99,7 @@ public class ConversationsService {
             conversation = conversationsRepository.save(
                     Conversations.builder()
                             .id(conversationRequest.getId())
-                            .members(userList)
+                            .memberIDs(userList.stream().map(Users::getId).toList())
                             .wallpaperUrl(conversationRequest.getWallpaperUrl())
                             .createdDate(LocalDateTime.now())
                             .updatedDate(LocalDateTime.now())
@@ -80,23 +111,13 @@ public class ConversationsService {
         return conversation;
     }
 
+    @CacheEvict(value="conversation",key="#id",condition = "#id!=null")
     public Conversations deleteConversation(String id) {
         Conversations conversation = getConversationById(id);
         try {
             conversationsRepository.deleteById(id);
         } catch (Exception e) {
             throw new RuntimeException("Delete conversation failed",e);
-        }
-        return conversation;
-    }
-
-    public Conversations getConversationByUserId(String userId) {
-        Users user = userService.getUserById(userId);
-        Conversations conversation;
-        try {
-            conversation = conversationsRepository.findByMembersIn(List.of(user)).orElseThrow(() -> new RuntimeException("Conversation not found"));
-        } catch (Exception e) {
-            throw new RuntimeException("Get conversation failed",e);
         }
         return conversation;
     }

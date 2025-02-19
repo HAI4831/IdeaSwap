@@ -7,7 +7,14 @@ import nvh.run.ideaswap.data.dto.BannerRequest;
 import nvh.run.ideaswap.data.entity.Banners;
 import nvh.run.ideaswap.data.entity.Managers;
 import nvh.run.ideaswap.data.repository.BannerRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,11 +22,22 @@ import java.util.List;
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
+@Transactional
 public class BannerService {
     BannerRepository bannerRepository;
     ManagerService managerService;
     CloudinaryService cloudinaryService;
 
+//    @Cacheable(value = "banners", key = "'page:' + #page + ':size:' + #size", condition = "#page != null && #size!=null")
+    public Page<Banners> getAllBanners(int page, int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            return bannerRepository.findAll(pageable);
+        } catch (Exception e) {
+            throw new RuntimeException("Get all banners failed", e);
+        }
+    }
+//    @Cacheable(value = "banners")
     public List<Banners> getAllBanners() {
         List<Banners> banners ;
         try {
@@ -31,6 +49,7 @@ public class BannerService {
         return banners;
     }
 
+    @Cacheable(value = "banner", key = "#id")
     public Banners getBannerById(String id) {
         Banners banner;
         try {
@@ -41,7 +60,17 @@ public class BannerService {
         }
         return banner;
     }
-
+    @Cacheable(value = "banner", key = "#site")
+    public Banners getBannerBySite(String site) {
+        Banners banner;
+        try {
+            banner = bannerRepository.findBannerBySite(site);
+        } catch (Exception e) {
+            throw new RuntimeException("Get banner by site failed",e);
+        }
+        return banner;
+    }
+    @CachePut(value = "banner", key = "#bannerRequest.id")
     public Banners createBanner(BannerRequest bannerRequest) {
         Managers manager = managerService.getManagerById(bannerRequest.getManagerID());
         Banners banner = getBannerBySite(bannerRequest.getSite());
@@ -56,7 +85,7 @@ public class BannerService {
             banner = bannerRepository.save(
                     Banners.builder()
                             .id(bannerRequest.getId())
-                            .managerID(manager)
+                            .managerID(manager.getId())
                             .name(bannerRequest.getName())
                             .site(bannerRequest.getSite())
                             .imageUrl(imageUrl)
@@ -70,6 +99,7 @@ public class BannerService {
         return banner;
     }
 
+    @CachePut(value = "banner", key = "#id")
     public Banners updateBanner(String id, BannerRequest bannerRequest) {
         Managers manager = managerService.getManagerById(bannerRequest.getManagerID());
         Banners banner = getBannerById(id);
@@ -84,7 +114,7 @@ public class BannerService {
             banner = bannerRepository.save(
                     Banners.builder()
                             .id(bannerRequest.getId())
-                            .managerID(manager)
+                            .managerID(manager.getId())
                             .name(bannerRequest.getName())
                             .site(bannerRequest.getSite())
                             .imageUrl(imageUrl)
@@ -98,6 +128,8 @@ public class BannerService {
         return banner;
     }
 
+    @CacheEvict(value = "banner", key = "#id")
+//    @CacheEvict(value = "banners", allEntries = true)
     public Banners deleteBanner(String id) {
         Banners banner = getBannerById(id);
         try {
@@ -108,16 +140,6 @@ public class BannerService {
             bannerRepository.deleteById(id);
         } catch (Exception e) {
             throw new RuntimeException("Delete banner failed",e);
-        }
-        return banner;
-    }
-
-    public Banners getBannerBySite(String site) {
-        Banners banner;
-        try {
-            banner = bannerRepository.findBannerBySite(site);
-        } catch (Exception e) {
-            throw new RuntimeException("Get banner by site failed",e);
         }
         return banner;
     }

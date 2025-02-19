@@ -7,6 +7,12 @@ import nvh.run.ideaswap.data.dto.HeartRequest;
 import nvh.run.ideaswap.data.entity.Hearts;
 import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.repository.HeartsRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +27,18 @@ public class HeartService {
     HeartsRepository heartsRepository;
     UserService userService;
 
+//    @Cacheable(value = "hearts",key = "'page:' + #page + ':size:' + #size")
+    public Page<Hearts> getAllHearts(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Hearts> hearts;
+        try {
+            hearts = heartsRepository.findAll(pageable);
+        } catch (Exception e) {
+            throw new RuntimeException("Get all hearts failed",e);
+        }
+        return hearts;
+    }
+//    @Cacheable(value="hearts")
     public List<Hearts> getAllHearts() {
         List<Hearts> hearts ;
         try {
@@ -31,16 +49,18 @@ public class HeartService {
         return hearts;
     }
 
+//    @Cacheable(value="hearts",key="#userID",condition = "#userID!=null")
     public List<Hearts> getHeartsByUserID(String userID) {
         List<Hearts> hearts ;
         try {
-            hearts = heartsRepository.findByUserID_Id(userID);
+            hearts = heartsRepository.findByUserID(userID);
         } catch (Exception e) {
             throw new RuntimeException("Get all hearts failed",e);
         }
         return hearts;
     }
 
+    @CachePut(value="heart",key="#heartRequest.id",condition = "#heartRequest.id!=null")
     public Hearts createHeart(HeartRequest heartRequest) {
         Users user = userService.getUserById(heartRequest.getUserID());
         Hearts heart;
@@ -48,7 +68,7 @@ public class HeartService {
             heart = heartsRepository.save(
                     Hearts.builder()
                             .id(heartRequest.getId())
-                            .userID(user)
+                            .userID(user.getId())
                             .referenceID(heartRequest.getReferenceID())
                             .createdAt(LocalDateTime.now())
                             .updatedAt(LocalDateTime.now())
@@ -60,6 +80,7 @@ public class HeartService {
         return heart;
     }
 
+    @CacheEvict(value="heart",key="#id",condition = "#id!=null")
     public Hearts deleteHeart(String id) {
          Hearts heart = getHeartById(id);
         try {
@@ -70,6 +91,7 @@ public class HeartService {
         return heart;
     }
 
+    @Cacheable(value="heart",key="#id",condition = "#id!=null")
     public Hearts getHeartById(String id) {
         Hearts heart;
         try {
@@ -81,6 +103,7 @@ public class HeartService {
         return heart;
     }
 
+    @Cacheable(value="hearts",key="#referenceID",condition = "#referenceID!=null")
     public List<Hearts> getHeartsByReferenceID(String referenceID) {
         List<Hearts> hearts ;
         try {

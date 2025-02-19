@@ -12,6 +12,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 //c0
 @Document(collection = "roles")
@@ -19,9 +20,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class Roles
-//        implements  java.io.Serializable , Cloneable
+public class Roles implements Serializable
 {
+    private static final long serialVersionUID = 1L;
     @Id
     @IsObjectID
     @JsonProperty("_id")
@@ -35,15 +36,4 @@ public class Roles
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
-
-//    @Override
-//    public Roles clone() {
-//        try {
-//            Roles clone = (Roles) super.clone();
-//            // TODO: copy mutable state here, so the clone can't change the internals of the original
-//            return clone;
-//        } catch (CloneNotSupportedException e) {
-//            throw new AssertionError();
-//        }
-//    }
 }

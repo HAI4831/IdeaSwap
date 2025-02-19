@@ -27,24 +27,13 @@ public class CensorshipsController {
         );
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getCensorshipById(@PathVariable String id) {
+    @PutMapping("/update")
+    public ResponseEntity<Object> updateCensorshipByContentID(@Valid @RequestBody Censorships censorship) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
-                        "message", "Retrieve Censorship successfully",
-                        "censorship", censorshipsService.getCensorshipById(id)
-                )
-        );
-    }
-
-    @PostMapping("/add")
-    public ResponseEntity<Object> createCensorship(@Valid @RequestBody Censorships censorship) {
-        return ResponseEntity.status(201).body(
-                Map.of(
-                        "success", true,
-                        "message", "Censorship created successfully",
-                        "censorship", censorshipsService.createCensorship(censorship)
+                        "message", "Censorship updated successfully",
+                        "censorship", censorshipsService.updateCensorshipByContentID(censorship)
                 )
         );
     }
@@ -59,25 +48,36 @@ public class CensorshipsController {
                 )
         );
     }
-    @PutMapping("/update")
-    public ResponseEntity<Object> updateCensorshipByContentID(@Valid @RequestBody Censorships censorship) {
-        return ResponseEntity.ok(
-                Map.of(
-                        "success", true,
-                        "message", "Censorship updated successfully",
-                        "censorship", censorshipsService.updateCensorshipByContentID(censorship)
-                )
-        );
-    }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Object> deleteCensorship(@PathVariable String id) {
-        return ResponseEntity.ok(
-                Map.of(
-                        "success", true,
-                        "message", "Censorship deleted successfully",
-                        "censorship",censorshipsService.deleteCensorship(id)
-                )
-        );
-    }
+//    @GetMapping("/{id}")
+//    public ResponseEntity<Object> getCensorshipById(@PathVariable String id) {
+//        return ResponseEntity.ok(
+//                Map.of(
+//                        "success", true,
+//                        "message", "Retrieve Censorship successfully",
+//                        "censorship", censorshipsService.getCensorshipById(id)
+//                )
+//        );
+//    }
+//    @PostMapping("/add")
+//    public ResponseEntity<Object> createCensorship(@Valid @RequestBody Censorships censorship) {
+//        return ResponseEntity.status(201).body(
+//                Map.of(
+//                        "success", true,
+//                        "message", "Censorship created successfully",
+//                        "censorship", censorshipsService.createCensorship(censorship)
+//                )
+//        );
+//    }
+
+//    @DeleteMapping("/delete/{id}")
+//    public ResponseEntity<Object> deleteCensorship(@PathVariable String id) {
+//        return ResponseEntity.ok(
+//                Map.of(
+//                        "success", true,
+//                        "message", "Censorship deleted successfully",
+//                        "censorship",censorshipsService.deleteCensorship(id)
+//                )
+//        );
+//    }
 }

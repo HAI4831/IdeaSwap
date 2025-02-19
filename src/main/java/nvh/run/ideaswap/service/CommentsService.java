@@ -7,6 +7,11 @@ import nvh.run.ideaswap.data.dto.CommentRequest;
 import nvh.run.ideaswap.data.entity.Comments;
 import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.repository.CommentsRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +26,18 @@ public class CommentsService {
     CommentsRepository commentsRepository;
     UserService userService;
 
+//    @Cacheable(value = "comments",key = "'page:' + #page + ':size:' + #size")
+    public Page<Comments> getAllComments(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Comments> commentsPage;
+        try {
+            commentsPage = commentsRepository.findAll(pageable);
+        } catch (Exception e) {
+            throw new RuntimeException("Get all comments failed",e);
+        }
+        return commentsPage;
+    }
+//    @Cacheable(value = "comments")
     public List<Comments> getAllComments() {
         List<Comments> comments;
         try {
@@ -30,6 +47,7 @@ public class CommentsService {
         }
         return comments;
     }
+    @Cacheable(value="comment", key="#id",condition = "#id!=null")
     public Comments getCommentById(String id) {
         Comments comment;
         try {
@@ -40,6 +58,7 @@ public class CommentsService {
         }
         return comment;
     }
+    @Cacheable(value="comment", key="#commentRequest.id",condition = "#commentRequest.id!=null")
     public Comments createComment(CommentRequest commentRequest) {
         Users user = userService.getUserById(commentRequest.getUserID()) ;
         Comments comment;
@@ -47,7 +66,7 @@ public class CommentsService {
             comment = commentsRepository.save(
                     Comments.builder()
                             .id(commentRequest.getId())
-                            .userID(user)
+                            .userID(user.getId())
                             .content(commentRequest.getContent())
                             .parentCommentID(commentRequest.getParentCommentID())
                             .referenceID(commentRequest.getReferenceID())
@@ -60,6 +79,7 @@ public class CommentsService {
         }
         return comment;
     }
+    @Cacheable(value="comment",key="#id",condition = "#id!=null")
     public Comments updateComment(String id, CommentRequest commentRequest) {
         getCommentById(id);
         Users user = userService.getUserById(commentRequest.getUserID()) ;
@@ -68,7 +88,7 @@ public class CommentsService {
             comment = commentsRepository.save(
                     Comments.builder()
                             .id(id)
-                            .userID(user)
+                            .userID(user.getId())
                             .content(commentRequest.getContent())
                             .parentCommentID(commentRequest.getParentCommentID())
                             .referenceID(commentRequest.getReferenceID())
@@ -81,6 +101,7 @@ public class CommentsService {
         }
         return comment;
     }
+    @CacheEvict(value="comment",key="#id",condition = "#id!=null")
     public Comments deleteComment(String id) {
         Comments comment = getCommentById(id);
         try {

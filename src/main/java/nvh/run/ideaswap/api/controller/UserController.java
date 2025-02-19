@@ -37,16 +37,16 @@ public class UserController {
         );
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<Object> createUser(@Validated @ModelAttribute UserRequest userRequest) {
-        return ResponseEntity.status(201).body(
-                Map.of(
-                        "success", true,
-                        "message", "User created successfully",
-                        "user", userService.createUser(userRequest)
-                )
-        );
-    }
+//    @PostMapping("/add")
+//    public ResponseEntity<Object> createUser(@Validated @ModelAttribute UserRequest userRequest) {
+//        return ResponseEntity.status(201).body(
+//                Map.of(
+//                        "success", true,
+//                        "message", "User created successfully",
+//                        "user", userService.createUser(userRequest)
+//                )
+//        );
+//    }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<Object> updateUser(@PathVariable String id, @Validated @ModelAttribute UserRequest userRequest) {
@@ -66,6 +66,26 @@ public class UserController {
                         "success", true,
                         "message", "User deleted successfully",
                         "user",userService.deleteUser(id)
+                )
+        );
+    }
+    @PostMapping("/forget-password")
+    public ResponseEntity<?> forgetPassword(@RequestParam String email,@RequestParam String username) {
+        return ResponseEntity.status(200).body(
+                Map.of(
+                        "success", true,
+                        "message", "User deleted successfully",
+                        "user",userService.forgetPassword(email,username)
+                )
+        );
+    }
+    @PostMapping("/reset-password/{id}")
+    public ResponseEntity<?> resetPassword(@PathVariable String id, @RequestParam String email, @RequestParam String newPassword, @RequestParam int code) {
+        return ResponseEntity.status(200).body(
+                Map.of(
+                        "success", true,
+                        "message", "User deleted successfully",
+                        "user",userService.resetPassword(id,email,newPassword,code)
                 )
         );
     }

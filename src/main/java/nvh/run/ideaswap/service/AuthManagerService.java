@@ -10,26 +10,26 @@ import nvh.run.ideaswap.data.dto.auth.request.LoginRequest;
 import nvh.run.ideaswap.data.dto.auth.request.LogoutRequest;
 import nvh.run.ideaswap.data.dto.auth.request.RefreshTokenRequest;
 import nvh.run.ideaswap.data.dto.auth.request.RegisterRequest;
-import nvh.run.ideaswap.data.dto.auth.response.LoginResponse;
-import nvh.run.ideaswap.data.dto.auth.response.ProfileResponse;
-import nvh.run.ideaswap.data.dto.auth.response.RefreshTokenResponse;
-import nvh.run.ideaswap.data.dto.auth.response.RegisterResponse;
+import nvh.run.ideaswap.data.dto.auth.response.*;
 import nvh.run.ideaswap.data.entity.Gender;
 import nvh.run.ideaswap.data.entity.Managers;
 import nvh.run.ideaswap.data.entity.Roles;
 import nvh.run.ideaswap.data.repository.ManagerRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Collections;
 
 @Service
 @Transactional
@@ -42,6 +42,7 @@ public class AuthManagerService {
     PasswordEncoder passwordEncoder;
     JwtUtilities jwtUtilities;
     AuthenticationManager authenticationManager;
+    private final ManagerService managerService;
 
     public RegisterResponse register(RegisterRequest registerRequest) {
         Roles role = roleService.findByName("manager");
@@ -58,16 +59,16 @@ public class AuthManagerService {
                     //map
                     Managers.builder()
                             .username(registerRequest.getUsername())
-                            .password(passwordEncoder.encode(registerRequest.getPassword()))  // Encode password
-                            .firstName(registerRequest.getFirstName())
-                            .lastName(registerRequest.getLastName())
+                            .password(registerRequest.getPassword() ==null ? passwordEncoder.encode("abCD@1234") : passwordEncoder.encode(registerRequest.getPassword()))  // Encode password
+                            .firstName(registerRequest.getFirstName()==null ? "":registerRequest.getFirstName())
+                            .lastName(registerRequest.getLastName()==null?"":registerRequest.getLastName())
                             .email(registerRequest.getEmail())
-                            .roleID(role)
+                            .roleID(role.getId())
                             .phoneNumber(registerRequest.getPhoneNumber() == null ? "" : registerRequest.getPhoneNumber() )
                             .address(registerRequest.getAddress() == null ? "Ninh Bình" : registerRequest.getAddress())
-                            .gender(registerRequest.getGender() == null ? Gender.other : registerRequest.getGender())
-                            .avatar(registerRequest.getAvatar()==null ? "" :registerRequest.getAvatar())
-                            .birthday(LocalDate.now())
+                            .gender(registerRequest.getGender() == null ? Gender.male : registerRequest.getGender())
+                            .avatar(registerRequest.getAvatar()==null ? "https://antimatter.vn/wp-content/uploads/2022/11/anh-avatar-trang-fb-mac-dinh.jpg" :registerRequest.getAvatar())
+                            .birthday(registerRequest.getBirthday() == null ? LocalDate.parse("01/01/1970") : LocalDate.from(registerRequest.getBirthday()))
                             .build());
         }catch (Exception e){
             throw new DatabaseException("Register failed for manager ", e);
@@ -97,21 +98,18 @@ public class AuthManagerService {
         }
     }
 
-    public ProfileResponse getUserProfile() {
+    @Cacheable(value = "manager_profile_response")
+    public ManagerProfileResponse getManagerProfile() {
+        log.info("start AuthManagerService.getManagerProfile was called ");
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Managers manager = managerService.findManagerByUsername(authentication.getName());
+            log.info("AuthManagerService.getManagerProfile was called with manager {}", manager);
+            if(manager!=null)return ManagerProfileResponse.builder().manager(manager).authenticated(true).build();
 
-            if (authentication != null && authentication.isAuthenticated()) {
-                ManagerDetailsExtImpl principal = (ManagerDetailsExtImpl)authentication.getPrincipal();
-                log.info("Principal: {}", principal.toString());
-                ManagerDetailsExtImpl manager = (ManagerDetailsExtImpl) principal;
-                return ProfileResponse.builder()
-                        .manager(manager)
-                        .authenticated(true)
-                        .build();
-            }
-            return ProfileResponse.builder()
-                    .user(null)
+
+            return ManagerProfileResponse.builder()
+                    .manager(null)
                     .authenticated(false)
                     .build();
         } catch (Exception e) {
@@ -119,6 +117,15 @@ public class AuthManagerService {
         }
     }
 
+    //            if (authentication != null && authentication.isAuthenticated()) {
+//                ManagerDetailsExtImpl principal = (ManagerDetailsExtImpl)authentication.getPrincipal();
+//                log.info("Principal: {}", principal.toString());
+//                ManagerDetailsExtImpl manager = (ManagerDetailsExtImpl) principal;
+//                return ProfileResponse.builder()
+//                        .manager(manager)
+//                        .authenticated(true)
+//                        .build();
+//            }
     public RefreshTokenResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
         try {
             String token = refreshTokenRequest.getRefreshToken();
@@ -137,8 +144,9 @@ public class AuthManagerService {
             Managers manager = managerRepository.findByUsername(username)
                     .orElseThrow(() -> new DatabaseException("User not found"));
 
+            Roles role = roleService.findByName("manager");
             // Create authentication object
-            ManagerDetailsExtImpl userDetails = ManagerDetailsExtImpl.build(manager);
+            ManagerDetailsExtImpl userDetails = new ManagerDetailsExtImpl(manager, Collections.singleton(new SimpleGrantedAuthority(role.getName())));
             Authentication authentication = new UsernamePasswordAuthenticationToken(
                     userDetails,
                     null,

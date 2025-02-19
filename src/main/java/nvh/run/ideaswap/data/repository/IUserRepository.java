@@ -22,4 +22,6 @@ public interface IUserRepository extends MongoRepository<Users, String> {
     boolean existsByPhoneNumber(String phoneNumber);
 
     Users findUsersByEmail(@Email(message = "Email không hợp lệ") @NotBlank(message = "Email không được để trống") @Size(max = 320, message = "Email không được vượt quá 320 ký tự") String email);
+
+    Users findUsersByEmailOrUsernameContains(@Email(message = "Email không hợp lệ") @NotBlank(message = "Email không được để trống") @Size(max = 320, message = "Email không được vượt quá 320 ký tự") String email, @NotBlank(message = "Tên người dùng không được để trống") @Size(max = 50, message = "Tên người dùng không được vượt quá 50 ký tự") String username);
 }

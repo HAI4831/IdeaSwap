@@ -1,14 +1,14 @@
 package nvh.run.ideaswap.api.controller;
 
 
-import nvh.run.ideaswap.service.AuthService;
 import nvh.run.ideaswap.data.dto.auth.request.LoginRequest;
 import nvh.run.ideaswap.data.dto.auth.request.LogoutRequest;
 import nvh.run.ideaswap.data.dto.auth.request.RefreshTokenRequest;
 import nvh.run.ideaswap.data.dto.auth.request.RegisterRequest;
 import nvh.run.ideaswap.data.dto.auth.response.LoginResponse;
-import nvh.run.ideaswap.data.dto.auth.response.ProfileResponse;
 import nvh.run.ideaswap.data.dto.auth.response.RefreshTokenResponse;
+import nvh.run.ideaswap.data.dto.auth.response.UserProfileResponse;
+import nvh.run.ideaswap.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,7 +51,7 @@ public class AuthController {
     }
     @GetMapping("/account")
     public ResponseEntity<Object> getUserProfile() {
-        ProfileResponse profileResponse = authService.getUserProfile();
+        UserProfileResponse profileResponse = authService.getUserProfile();
         if( !profileResponse.isAuthenticated()){
             return ResponseEntity.status(401).body(
                     Map.of(

@@ -7,12 +7,10 @@ import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.entity.Users;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -25,15 +23,6 @@ public class UserDetailsExtImpl extends Users implements Serializable,UserDetail
         super(user);
 //        BeanUtils.copyProperties(user, this); //tương tự super(user.getAttributes...)
         this.authorities = authorities;
-    }
-
-    public static UserDetailsExtImpl build(Users user) {
-        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(
-//                "user"
-                user.getRoleID().getName()
-        ));
-
-        return new UserDetailsExtImpl(user, authorities);
     }
 
     @Override

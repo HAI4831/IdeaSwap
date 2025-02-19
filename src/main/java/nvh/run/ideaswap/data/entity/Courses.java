@@ -11,9 +11,9 @@ import nvh.run.ideaswap.common.validator.IsObjectID;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 //c2
 @Data
@@ -21,22 +21,26 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "courses")
-public class Courses
-//        implements  java.io.Serializable , Cloneable
+public class Courses implements Serializable
 {
-
     @Id
     @IsObjectID
     @JsonProperty("_id")
     private String id;
+    
+    @NotBlank(message = "Courses tham chiếu tới ID người dùng không được để trống")
+    @IsObjectID
+    private String userID;
 
-//    @NotBlank(message = "Courses tham chiếu tới ID người dùng không được để trống")
-    @DBRef(lazy = true)
-    private Users userID;
+//    @DBRef(lazy = true)
+//    private Users userID;
 
 //    @NotBlank(message = "ID danh mục không được để trống")
-    @DBRef
-    private Categories categoryID;
+
+    @IsObjectID
+    private String categoryID;
+//    @DBRef
+//    private Categories categoryID;
 
     @NotBlank(message = "Tiêu đề không được để trống")
     @Size(max = 100, message = "Tiêu đề không được quá 100 ký tự")
@@ -68,17 +72,6 @@ public class Courses
         String uploadedUrl = "https://cloudinary.com/mock_image_url";
         return new UploadResponse(true, "Tải lên thành công", uploadedUrl);
     }
-
-//    @Override
-//    public Courses clone() {
-//        try {
-//            Courses clone = (Courses) super.clone();
-//            // TODO: copy mutable state here, so the clone can't change the internals of the original
-//            return clone;
-//        } catch (CloneNotSupportedException e) {
-//            throw new AssertionError();
-//        }
-//    }
 
     public static class UploadResponse {
         private boolean status;

@@ -10,9 +10,9 @@ import nvh.run.ideaswap.common.validator.IsObjectID;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 //c1
 @Document(collection = "Shares")
@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class Shares
+public class Shares implements Serializable
 {
     @Id
     @IsObjectID
@@ -28,8 +28,10 @@ public class Shares
     private String id;
 
     @NotBlank(message = "ID người dùng không được để trống")
-    @DBRef
-    private Users userID;
+    @IsObjectID
+    private String userID;
+//    @DBRef
+//    private Users userID;
 
     @NotBlank(message = "ID tham chiếu không được để trống")
     @IsObjectID

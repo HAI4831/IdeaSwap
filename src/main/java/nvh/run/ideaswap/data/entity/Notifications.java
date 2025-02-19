@@ -16,18 +16,19 @@ import nvh.run.ideaswap.common.validator.IsObjectID;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
+
 //c1
 @Document(collection = "Notifications")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class Notifications
+public class Notifications implements Serializable
 //        implements  java.io.Serializable , Cloneable
 {
     @Id
@@ -48,8 +49,10 @@ public class Notifications
     private boolean isUnRead=true;
 
     @NotNull(message = "Danh sách người dùng không được để trống")
-    @DBRef
-    private List<Users> userIDs;
+    @IsObjectID
+    private List<String> userIDs;
+//    @DBRef
+//    private List<Users> userIDs;
 
     @NotBlank(message = "ID diễn viên không được để trống")
     @IsObjectID

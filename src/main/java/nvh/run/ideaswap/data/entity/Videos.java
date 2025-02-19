@@ -11,10 +11,10 @@ import nvh.run.ideaswap.common.validator.IsObjectID;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 //c2
 @Document(collection = "Videos")
@@ -22,8 +22,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class Videos
-//        implements  java.io.Serializable , Cloneable
+public class Videos implements Serializable
 {
 
     @Id
@@ -31,9 +30,11 @@ public class Videos
     @JsonProperty("_id")
     private String id;
 
-//    @NotBlank(message = "ID người dùng không được để trống")
-    @DBRef
-    private Users userID;
+    @NotBlank(message = "ID người dùng không được để trống")
+    @IsObjectID
+    private String userID;
+//    @DBRef
+//    private Users userID;
 
     @Field("title")
     @NotBlank(message = "Tiêu đề không được để trống")
@@ -55,24 +56,15 @@ public class Videos
     @NotBlank(message = "view không được để trống")
     private int view;
 
-//    @NotBlank(message = "courseID không được để trống")
-    @DBRef
-    private Courses courseID;
+    @NotBlank(message = "courseID không được để trống")
+    @IsObjectID
+    private String courseID;
+//    @DBRef
+//    private Courses courseID;
 
     @CreatedDate
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
-
-//    @Override
-//    public Videos clone() {
-//        try {
-//            Videos clone = (Videos) super.clone();
-//            // TODO: copy mutable state here, so the clone can't change the internals of the original
-//            return clone;
-//        } catch (CloneNotSupportedException e) {
-//            throw new AssertionError();
-//        }
-//    }
 }

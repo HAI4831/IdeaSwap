@@ -14,6 +14,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 //c0
 @Data
@@ -21,8 +22,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "censorships")
-public class Censorships
-//        implements  java.io.Serializable , Cloneable
+public class Censorships implements Serializable
 {
 
     @Id
@@ -33,7 +33,6 @@ public class Censorships
     @IsObjectID
     private String contentID;//blogID
 
-//    @NotBlank(message = "Trạng thái không được để trống")
     @NotNull(message = "Status cannot be null")
     @Builder.Default
     private Status status=Status.pending;
@@ -47,17 +46,4 @@ public class Censorships
 
     @LastModifiedDate
     private LocalDateTime updatedDate;
-
-//    @Override
-//    public Censorships clone() {
-//        try {
-//            Censorships clone = (Censorships) super.clone();
-//            // TODO: copy mutable state here, so the clone can't change the internals of the original
-//            return clone;
-//        } catch (CloneNotSupportedException e) {
-//            throw new AssertionError();
-//        }
-//    }
 }
-//    @Enumerated(EnumType.STRING)
-//    @Column(name = "status", nullable = false, columnDefinition = "varchar(10) default 'pending'")// dùng cho jpa

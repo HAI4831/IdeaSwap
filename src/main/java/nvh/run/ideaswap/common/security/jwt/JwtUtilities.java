@@ -16,6 +16,8 @@ import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -25,6 +27,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -218,5 +221,23 @@ public boolean verifySignedToken(String token) {
 
     public String extractScope(String token) {
         return claimsMap.get("tokenType").toString();
+    }
+
+    public UserDetails extractUserDetails(String token) {
+        if (claimsMap == null) verifySignedToken(token);
+
+        String username = (String) claimsMap.get("sub");
+        Object scope = claimsMap.get("scope");
+
+        // Chuyển đổi scope thành danh sách quyền
+        List<SimpleGrantedAuthority> authorities = (scope instanceof List<?> list) ?
+                list.stream().map(Object::toString).map(SimpleGrantedAuthority::new).collect(Collectors.toList()) :
+                Collections.singletonList(new SimpleGrantedAuthority(scope.toString()));
+
+        return new User(username, "", authorities);
+    }
+    public String extractRole(String token) {
+        if(claimsMap==null) verifySignedToken(token);
+        return claimsMap.get("scope").toString();
     }
 }

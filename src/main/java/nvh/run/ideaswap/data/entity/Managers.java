@@ -15,9 +15,9 @@ import nvh.run.ideaswap.common.validator.IsObjectID;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 //c1
@@ -26,8 +26,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class Managers
-//        implements  java.io.Serializable , Cloneable
+public class Managers implements Serializable
 {
     public Managers(Managers other) {
         if (other != null) {
@@ -95,8 +94,10 @@ public class Managers
     @Builder.Default
    private Gender gender=Gender.male;
 
-    @DBRef
-    private Roles roleID;
+    @IsObjectID
+    private String roleID;
+//    @DBRef
+//    private Roles roleID;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -104,19 +105,4 @@ public class Managers
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-//    @Override
-//    public Managers clone() {
-//        try {
-//            Managers clone = (Managers) super.clone();
-//            // TODO: copy mutable state here, so the clone can't change the internals of the original
-//            return clone;
-//        } catch (CloneNotSupportedException e) {
-//            throw new AssertionError();
-//        }
-//    }
 }
-//    @Column(nullable = false, columnDefinition = "VARCHAR(150) DEFAULT 'Male'")
-//    @Column(nullable = false, columnDefinition = "VARCHAR(150) DEFAULT '01/01/1970'")
-//    @Column(nullable = false, columnDefinition = "VARCHAR(150) DEFAULT 'https://antimatter.vn/wp-content/uploads/2022/11/anh-avatar-trang-fb-mac-dinh.jpg'")
-//    @Column(nullable = false, columnDefinition = "VARCHAR(150) DEFAULT '$2a$10$ZD/EROx56XOvcutCg9jHxeXrz.iqMstXUCksTyvBb8gfD8SPPm7uW'")
-

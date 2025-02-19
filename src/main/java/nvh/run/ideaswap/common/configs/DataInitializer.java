@@ -101,18 +101,24 @@ public class DataInitializer implements CommandLineRunner {
                 Roles.builder()
                         .id("6799978226692b76e021501c")
                         .name("user")
+                        .createdAt(LocalDateTime.now())
+                        .updatedAt(LocalDateTime.now())
                         .build()
         );
         Roles creatorRole = roleRepository.save(
                 Roles.builder()
                         .id("6799980fc73db076c26e65fc")
                         .name("creator")
+                        .createdAt(LocalDateTime.now())
+                        .updatedAt(LocalDateTime.now())
                         .build()
         );
         Roles managerRole = roleRepository.save(
                 Roles.builder()
                         .id("67999800c73db076c26e65fb")
                         .name("manager")
+                        .createdAt(LocalDateTime.now())
+                        .updatedAt(LocalDateTime.now())
                         .build()
         );
 
@@ -122,6 +128,8 @@ public class DataInitializer implements CommandLineRunner {
                         .id("67999819c73db076c26e6610")
                         .name("programing")
                         .description("discord fix bug java spring")
+                        .createdDate(LocalDateTime.now())
+                        .updatedDate(LocalDateTime.now())
                         .build()
         );
         categoryRepository.save(
@@ -129,6 +137,8 @@ public class DataInitializer implements CommandLineRunner {
                         .id("6799985d57bcd648ae781355")
                         .name("code web")
                         .description("discord fix bug reactks")
+                        .createdDate(LocalDateTime.now())
+                        .updatedDate(LocalDateTime.now())
                         .build()
         );
         CensorshipsRepository censorshipsRepository = applicationContext.getBean(CensorshipsRepository.class);
@@ -138,6 +148,8 @@ public class DataInitializer implements CommandLineRunner {
                         .contentID(null)
                         .status(Status.pending)
                         .feedback("feedback for censorship")
+                        .createdDate(LocalDateTime.now())
+                        .updatedDate(LocalDateTime.now())
                         .build()
         );
         //c1
@@ -146,6 +158,7 @@ public class DataInitializer implements CommandLineRunner {
                 Users.builder()
                         .id("6799988457bcd648ae78136a")
                         .username("user")
+                        .roleID(userRole.getId())
                         .email("nvhai227@gmail.com")
                         .password(passwordEncoder.encode("abCD@1234"))
                         .address("Ninh Bình")
@@ -155,27 +168,52 @@ public class DataInitializer implements CommandLineRunner {
                         .phoneNumber("0123456789")
                         .rating(1000000000)
                         .description("I'm a java spring developer")
-                        .roleID(userRole)
                         .birthday(LocalDate.parse("01/01/2003", DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                         .version(2L)
                         .avatar("https://antimatter.vn/wp-content/uploads/2022/11/anh-avatar-trang-fb-mac-dinh.jpg")
+                        .createdAt(LocalDateTime.now())
+                        .updatedAt(LocalDateTime.now())
                         .build()
         );
+        Users creator = userRepository.save(
+                Users.builder()
+                        .id("6799988457bcd648ae78132a")
+                        .username("creator")
+                        .roleID(creatorRole.getId())
+                        .email("nvhai227@gmail.com")
+                        .password(passwordEncoder.encode("abCD@1234"))
+                        .address("Ninh Bình")
+                        .firstName("Nguyễn Văn")
+                        .lastName("Hải")
+                        .gender(Gender.male)
+                        .phoneNumber("0123456789")
+                        .rating(1000000000)
+                        .description("I'm a java spring developer")
+                        .birthday(LocalDate.parse("01/01/2003", DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                        .version(2L)
+                        .avatar("https://antimatter.vn/wp-content/uploads/2022/11/anh-avatar-trang-fb-mac-dinh.jpg")
+                        .createdAt(LocalDateTime.now())
+                        .updatedAt(LocalDateTime.now())
+                        .build()
+        );
+
         ManagerRepository managerRepository = applicationContext.getBean(ManagerRepository.class);
         Managers manager = managerRepository.save(
                 Managers.builder()
                         .id("679998b457bcd648ae781385")
-                        .username("admin")
+                        .username("manager")
+                        .roleID(managerRole.getId())
                         .address("nb")
                         .phoneNumber("0123456789")
                         .email("nvhai227@gmail.com")
                         .password(passwordEncoder.encode("abCD@1234"))
                         .gender(Gender.male)
                         .avatar("https://antimatter.vn/wp-content/uploads/2022/11/anh-avatar-trang-fb-mac-dinh.jpg")
-                        .roleID(managerRole)
                         .birthday(LocalDate.parse("01/01/2003",DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                         .lastName("nv")
                         .firstName("hai")
+                        .createdAt(LocalDateTime.now())
+                        .updatedAt(LocalDateTime.now())
                         .build()
         );
         BannerRepository bannerRepository = applicationContext.getBean(BannerRepository.class);
@@ -183,11 +221,13 @@ public class DataInitializer implements CommandLineRunner {
                 Banners.builder()
                         .id("679998c657bcd648ae781386")
                         .site("nvhai227")
-                        .managerID(manager)
+                        .managerID(manager.getId())
                         .createdDate(LocalDateTime.now())
                         .updatedDate(LocalDateTime.now())
                         .imageUrl("https://i.ibb.co/933333/nvhai227.png")
                         .name("nvhai227")
+                        .createdDate(LocalDateTime.now())
+                        .updatedDate(LocalDateTime.now())
                         .build()
         );
         ICodeR iCodeR = applicationContext.getBean(ICodeR.class);
@@ -198,8 +238,10 @@ public class DataInitializer implements CommandLineRunner {
                         .createdDate(LocalDateTime.now())
                         .updatedDate(LocalDateTime.now())
                         .codeExpiration(Date.from(Instant.now().plusSeconds(3600)))
-                        .user(user)
+                        .userID(user.getId())
                         .userEmail(user.getEmail())
+                        .createdDate(LocalDateTime.now())
+                        .updatedDate(LocalDateTime.now())
                         .build()
         );
         CommentsRepository commentsRepository = applicationContext.getBean(CommentsRepository.class);
@@ -211,7 +253,9 @@ public class DataInitializer implements CommandLineRunner {
                         .updatedDate(LocalDateTime.now())
                         .id("679998e757bcd648ae78139d")
                         .parentCommentID(null)
-                        .userID(user)
+                        .userID(user.getId())
+                        .createdDate(LocalDateTime.now())
+                        .updatedDate(LocalDateTime.now())
                         .build()
         );
         ConversationsRepository conversationsRepository = applicationContext.getBean(ConversationsRepository.class);
@@ -220,7 +264,7 @@ public class DataInitializer implements CommandLineRunner {
                         .createdDate(LocalDateTime.now())
                         .updatedDate(LocalDateTime.now())
                         .id("679998f257bcd648ae7813af")
-                        .members(List.of(user))
+                        .memberIDs(List.of(user.getId()))
                         .wallpaperUrl("https://i.ibb.co/933333/nvhai227.png")
                         .build()
         );
@@ -244,21 +288,21 @@ public class DataInitializer implements CommandLineRunner {
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
                         .id("6799990857bcd648ae7813ce")
-                        .userID(user)
+                        .userID(user.getId())
                         .build()
         );
         MessageRepository messageRepository = applicationContext.getBean(MessageRepository.class);
         Messages messages = messageRepository.save(
                 Messages.builder()
                         .content("I'm a java spring developer")
-                        .conversationID(conversations)
+                        .conversationID(conversations.getId())
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
                         .id("6799991357bcd648ae7813dc")
                         .fileUrl("https://i.ibb.co/933333/nvhai227.txt")
                         .messageParentID(null)
-                        .conversationID(conversations)
-                        .senderID(user)
+                        .conversationID(conversations.getId())
+                        .senderID(user.getId())
                         .type(null)
                         .build()
         );
@@ -270,7 +314,7 @@ public class DataInitializer implements CommandLineRunner {
                         .updatedAt(LocalDateTime.now())
                         .id("6799992557bcd648ae7813de")
                         .isUnRead(false)
-                        .userIDs(List.of(user))
+                        .userIDs(List.of(user.getId()))
                         .actorID(null)
                         .isModal(false)
                         .description("descript for notification")
@@ -283,7 +327,7 @@ public class DataInitializer implements CommandLineRunner {
                         .updatedAt(LocalDateTime.now())
                         .id("6799992f57bcd648ae7813e6")
                         .referenceID("referenceID")
-                        .userID(user)
+                        .userID(user.getId())
                         .build()
         );
         //c2
@@ -297,39 +341,39 @@ public class DataInitializer implements CommandLineRunner {
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
                         .id("6799993a57bcd648ae7813f5")
-                        .userID(user)
+                        .userID(user.getId())
                         .status(Status.pending)
                         .build()
         );
         FollowRepository followRepository = applicationContext.getBean(FollowRepository.class);
         Follows follows = followRepository.save(
                 Follows.builder()
-                        .followerID(user)
+                        .followerID(user.getId())
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
                         .id("6799994657bcd648ae7813ff")
-                        .userID(user)
+                        .userID(user.getId())
                         .build()
         );
         CoursesRepository coursesRepository = applicationContext.getBean(CoursesRepository.class);
         Courses courses = coursesRepository.save(
                 Courses.builder()
                         .title("title for courses")
-                        .categoryID(categories)
+                        .categoryID(categories.getId())
                         .view(45)
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
                         .id("6799995757bcd648ae781408")
                         .description("desciption for course")
                         .imageUrl("https://i.ibb.co/933333/nvhai227.png")
-                        .userID(user)
+                        .userID(user.getId())
                         .build()
         );
         VideoRepository videoRepository = applicationContext.getBean(VideoRepository.class);
         Videos videos = videoRepository.save(
                 Videos.builder()
                         .title("title for video")
-                        .courseID(courses)
+                        .courseID(courses.getId())
                         .view(123)
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
@@ -337,19 +381,19 @@ public class DataInitializer implements CommandLineRunner {
                         .description("desciption for video")
                         .imageUrl("https://yt3.ggpht.com/h7mMk0EIIrXGuMqzNTI9rNRBYuABVuHKOl9NJrdytR4KcUJEnZ2wPwdGppEeqHmB40UAvh8jFRQ=s48-c-k-c0x00ffffff-no-rj")
                         .videoUrl("https://youtube.com/shorts/Q6dFMcHyY4U?si=Txj0LA9qzdsmX8Lw")
-                        .userID(user)
+                        .userID(user.getId())
                         .build()
         );
         BlogRepository blogRepository = applicationContext.getBean(BlogRepository.class);
         Blogs blog = blogRepository.save(
                 Blogs.builder()
                         .url("https://nvhai227.github.io/")
-                        .categoryID(categories)
+                        .categoryID(categories.getId())
                         .content("discord fix bug java spring")
                         .id("6799996f57bcd648ae781417")
                         .createdDate(LocalDateTime.now())
                         .updatedDate(LocalDateTime.now())
-                        .userID(user)
+                        .userID(user.getId())
                         .build()
         );
 

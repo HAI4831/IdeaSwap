@@ -5,15 +5,20 @@ package nvh.run.ideaswap.service;
 //import io.github.cdimascio.dotenv.Dotenv;
 //
 //import java.util.Map;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.dto.CourseRequest;
-import nvh.run.ideaswap.data.dto.NotificationRequest;
 import nvh.run.ideaswap.data.entity.Categories;
 import nvh.run.ideaswap.data.entity.Courses;
 import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.repository.CoursesRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +36,18 @@ public class CoursesService {
     NotificationService notificationService;
     CloudinaryService cloudinaryService;
 
+//    @Cacheable(value = "courses",key = "'page:' + #page + ':size:' + #size")
+    public Page<Courses> getAllCourses(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Courses> coursesPage;
+        try {
+            coursesPage = coursesRepository.findAll(pageable);
+        } catch (Exception e) {
+            throw new RuntimeException("Retrieve List Courses failed",e);
+        }
+        return coursesPage;
+    }
+//    @Cacheable(value="courses")
     public List<Courses> getAllCourses() {
         List<Courses> courseList;
         try {
@@ -41,6 +58,7 @@ public class CoursesService {
         return courseList;
     }
 
+    @Cacheable(value="course",key="#id",condition = "#id!=null")
     public Courses getCourseById(String id) {
         Courses course;
         try {
@@ -52,6 +70,7 @@ public class CoursesService {
         return course;
     }
 
+    @Cacheable(value="course",key="#courseRequest.id",condition = "#courseRequest.id!=null")
     public Courses createCourse(CourseRequest courseRequest) {
         Users user = userService.getUserById(courseRequest.getUserID());
         Categories category = categoryService.getCategoryById(courseRequest.getCategoryID());
@@ -64,8 +83,8 @@ public class CoursesService {
             course = coursesRepository.save(
                     Courses.builder()
                             .id(courseRequest.getId())
-                            .userID(user)
-                            .categoryID(category)
+                            .userID(user.getId())
+                            .categoryID(category.getId())
                             .title(courseRequest.getTitle())
                             .description(courseRequest.getDescription())
                             .imageUrl(imageUrl)
@@ -77,16 +96,17 @@ public class CoursesService {
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while creating the course",e);
         }
-        notificationService.createNotification(
-                NotificationRequest.builder()
-                        .description("A new course has just been created")
-                        .imageUrl(course.getImageUrl())
-                        .userIDs(null)
-                        .build()
-        );
+//        notificationService.createNotification(
+//                NotificationRequest.builder()
+//                        .description("A new course has just been created")
+//                        .imageUrl(course.getImageUrl())
+//                        .userIDs(null)
+//                        .build()
+//        );
         return course;
     }
 
+    @Cacheable(value="course",key="#id",condition = "#id!=null")
     public Courses updateCourse(String id, CourseRequest courseRequest) {
         getCourseById(id);
         Users user = userService.getUserById(courseRequest.getUserID());
@@ -100,8 +120,8 @@ public class CoursesService {
             course = coursesRepository.save(
                     Courses.builder()
                             .id(id)
-                            .userID(user)
-                            .categoryID(category)
+                            .userID(user.getId())
+                            .categoryID(category.getId())
                             .title(courseRequest.getTitle())
                             .description(courseRequest.getDescription())
                             .imageUrl(imageUrl)
@@ -116,6 +136,7 @@ public class CoursesService {
         return course;
     }
 
+    @CacheEvict(value="course",key="#id",condition = "#id!=null")
     public Courses deleteCourse(String id) {
         Courses courses = getCourseById(id);
         try {
@@ -126,6 +147,7 @@ public class CoursesService {
         return courses;
     }
 
+    @Cacheable(value="course",key="#id",condition = "#id!=null")
     public Courses incrementView(String id) {
         Courses course ;
         try {
@@ -139,6 +161,7 @@ public class CoursesService {
         return course;
     }
 
+    @Cacheable(value="course",key="#keyword",condition = "#keyword=null")
     public List<Courses> searchCourses(String keyword) {
         List<Courses> courses ;
         try {

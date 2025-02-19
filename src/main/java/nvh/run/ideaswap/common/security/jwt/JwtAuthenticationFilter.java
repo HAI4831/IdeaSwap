@@ -17,7 +17,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -39,8 +38,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = jwtUtilities.getToken(request);
 
         if (token != null && jwtUtilities.verifySignedToken(token)) {
-            String username = jwtUtilities.extractUsername(token);
+//            String username = jwtUtilities.extractUsername(token);
             String tokenType = jwtUtilities.extractScope(token);
+//            String role = jwtUtilities.extractRole(token);
             try {
                 if(tokenType.equals("refresh")) {
                     throw new RuntimeException("Refresh token is forbidden for access this resource");
@@ -48,15 +48,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             } catch (Exception e) {
                 throw new RuntimeException("Token error!",e);
             }
-            UserDetailsService userDetailsService = userDetailsServiceSelector.selectUserDetailsService(request);
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = jwtUtilities.extractUserDetails(token);
+//            bỏ việc tìm user chỉ cần biết token hợp lệ và có quyền gì
+//            UserDetailsService userDetailsService = userDetailsServiceSelector.selectUserDetailsService(request);
+//            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             if (userDetails != null) {
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
                         userDetails.getAuthorities()
                 );
-                log.info("Authenticated user with username : {},have role : {} ", username,userDetails.getAuthorities());
+                log.info("Authenticated user with username : {},have role : {} ", userDetails.getUsername(),userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }

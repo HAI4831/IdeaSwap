@@ -28,15 +28,6 @@ public class ManagerDetailsExtImpl extends Managers implements Serializable, Use
         this.authorities = authorities;
     }
 
-    public static ManagerDetailsExtImpl build(Managers manager) {
-        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(
-//                "manager"
-                manager.getRoleID().getName()
-        ));
-
-        return new ManagerDetailsExtImpl(manager, authorities);
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;

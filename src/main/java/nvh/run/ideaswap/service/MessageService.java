@@ -8,6 +8,12 @@ import nvh.run.ideaswap.data.entity.Conversations;
 import nvh.run.ideaswap.data.entity.Messages;
 import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.repository.MessageRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +29,18 @@ public class MessageService {
     ConversationsService conversationsService;
     UserService userService;
 
+//    @Cacheable(value = "messages",key = "'page:' + #page + ':size:' + #size")
+    public Page<Messages> getAllMessages(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Messages> messages;
+        try {
+            messages = messageRepository.findAll(pageable);
+        } catch (Exception e) {
+            throw new RuntimeException("Get all messages failed",e);
+        }
+        return messages;
+    }
+//    @Cacheable(value="messages")
     public List<Messages> getAllMessages() {
         List<Messages> messages;
         try {
@@ -33,6 +51,7 @@ public class MessageService {
         return messages;
     }
 
+    @Cacheable(value="message",key="#id",condition = "#id!=null")
     public Messages getMessageById(String id) {
         Messages message ;
         try {
@@ -44,13 +63,14 @@ public class MessageService {
         return message;
     }
 
+    @CachePut(value="message",key="#messageRequest.id",condition = "#messageRequest.id!=null")
     public Messages createMessage(MessageRequest messageRequest) {
         Conversations conversation = conversationsService.getConversationById(messageRequest.getConversationID());
         Users user = userService.getUserById(messageRequest.getSenderID());
         Messages message = Messages.builder()
                 .id(messageRequest.getId())
-                .senderID(user)
-                .conversationID(conversation)
+                .senderID(user.getId())
+                .conversationID(conversation.getId())
                 .content(messageRequest.getContent())
                 .messageParentID(messageRequest.getMessageParentID())
                 .fileUrl(messageRequest.getFileUrl())
@@ -66,14 +86,15 @@ public class MessageService {
         return message;
     }
 
+    @CachePut(value="message",key="#id",condition = "#id!=null")
     public Messages updateMessage(String id, MessageRequest messageRequest) {
         getMessageById(id);
         Conversations conversation = conversationsService.getConversationById(messageRequest.getConversationID());
         Users user = userService.getUserById(messageRequest.getSenderID());
         Messages message = Messages.builder()
                 .id(messageRequest.getId())
-                .senderID(user)
-                .conversationID(conversation)
+                .senderID(user.getId())
+                .conversationID(conversation.getId())
                 .content(messageRequest.getContent())
                 .messageParentID(messageRequest.getMessageParentID())
                 .fileUrl(messageRequest.getFileUrl())
@@ -92,6 +113,7 @@ public class MessageService {
         return updatedMessage;
     }
 
+    @CacheEvict(value="message",key="#id",condition = "#id!=null")
     public Messages deleteMessage(String id) {
         Messages message = getMessageById(id);
         try {
@@ -102,6 +124,7 @@ public class MessageService {
         return message;
     }
 
+    @Cacheable(value="message",key="#conversationId",condition = "#conversationId!=null")
     public List<Messages> getMessageByconversationId(String conversationId) {
         List<Messages> messageList ;
         try {

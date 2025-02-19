@@ -7,6 +7,12 @@ import nvh.run.ideaswap.data.dto.NotificationRequest;
 import nvh.run.ideaswap.data.entity.Notifications;
 import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.repository.NotificationRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +27,18 @@ public class NotificationService {
     NotificationRepository notificationRepository;
     UserService userService;
 
+//    @Cacheable(value = "messages",key = "'page:' + #page + ':size:' + #size")
+    public Page<Notifications> getAllNotifications(int page, int size) {
+        Page<Notifications> notifications;
+        Pageable pageable = PageRequest.of(page, size);
+        try {
+            notifications = notificationRepository.findAll(pageable);
+        } catch (Exception e) {
+            throw new RuntimeException("Get all notifications failed",e);
+        }
+        return notifications;
+    }
+//    @Cacheable(value="notifications")
     public List<Notifications> getAllNotifications() {
         List<Notifications> notifications;
         try {
@@ -31,6 +49,7 @@ public class NotificationService {
         return notifications;
     }
 
+    @Cacheable(value="notification",key="#id",condition = "#id!=null")
     public Notifications getNotificationById(String id) {
         Notifications notification;
         try {
@@ -42,11 +61,12 @@ public class NotificationService {
         return notification;
     }
 
+    @CachePut(value="notification",key="notificationRequest.id",condition = "#notificationRequest.id!=null")
     public Notifications createNotification(NotificationRequest notificationRequest) {
         List<Users> users = notificationRequest.getUserIDs().stream().map(userService::findById).toList();
         Notifications notification = Notifications.builder()
                 .id(notificationRequest.getId())
-                .userIDs(users)
+                .userIDs(users.stream().map(Users::getId).toList())
                 .description(notificationRequest.getDescription())
                 .imageUrl(notificationRequest.getImageUrl())
                 .isUnRead(notificationRequest.isUnRead())
@@ -65,11 +85,12 @@ public class NotificationService {
         return notification;
     }
 
+    @CachePut(value="notification",key="#id",condition = "#id!=null")
     public Notifications updateNotification(String id, NotificationRequest notificationRequest) {
         getNotificationById(id);
         List<Users> users = notificationRequest.getUserIDs().stream().map(userService::findById).toList();
         Notifications notification = Notifications.builder()
-                .userIDs(users)
+                .userIDs(users.stream().map(Users::getId).toList())
                 .description(notificationRequest.getDescription())
                 .imageUrl(notificationRequest.getImageUrl())
                 .isUnRead(notificationRequest.isUnRead())
@@ -89,6 +110,7 @@ public class NotificationService {
         return notification;
     }
 
+    @CacheEvict(value="notification",key="#id",condition = "#id!=null")
     public Notifications deleteNotification(String id) {
         Notifications notifications = getNotificationById(id);
         try {
@@ -99,6 +121,7 @@ public class NotificationService {
         return notifications;
     }
 
+    @Cacheable(value="notification",key="#userId",condition = "#id!=null")
     public List<Notifications> getNotificationByUserId(String userId) {
         List<Notifications> notificationsList;
         try {

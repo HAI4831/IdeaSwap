@@ -1,6 +1,7 @@
 package nvh.run.ideaswap.data.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,9 +10,9 @@ import nvh.run.ideaswap.common.validator.IsObjectID;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 //c2
 @Data
@@ -19,36 +20,27 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "follows")
-public class Follows
-//        implements  java.io.Serializable , Cloneable
+public class Follows implements Serializable
 {
     @Id
     @IsObjectID
     @JsonProperty("_id")
     private String id;
 
-//    @NotBlank(message = "ID người theo dõi không được để trống")
-    @DBRef
-    private Users followerID;
+    @NotBlank(message = "ID người theo dõi không được để trống")
+    private String followerID;
+//    @DBRef
+//    private Users followerID;
 
-    @DBRef
-//    @NotBlank(message = "ID người dùng không được để trống")
-    private Users userID;
+    @NotBlank(message = "ID người dùng không được để trống")
+    @IsObjectID
+    private String userID;
+//    @DBRef
+//    private Users userID;
 
     @CreatedDate
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
-
-//    @Override
-//    public Follows clone() {
-//        try {
-//            Follows clone = (Follows) super.clone();
-//            // TODO: copy mutable state here, so the clone can't change the internals of the original
-//            return clone;
-//        } catch (CloneNotSupportedException e) {
-//            throw new AssertionError();
-//        }
-//    }
 }

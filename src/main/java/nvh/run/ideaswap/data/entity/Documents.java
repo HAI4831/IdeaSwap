@@ -19,6 +19,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 //c1
 @Data
@@ -26,8 +27,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "documents")
-public class Documents
-//        implements  java.io.Serializable , Cloneable
+public class Documents implements Serializable
 {
 
     @Id
@@ -35,9 +35,10 @@ public class Documents
     @JsonProperty("_id")
     private String id;
 
-//    @NotBlank(message = "Documents reference ID người dùng không được để trống")
-    @DBRef(lazy = true)
-    private Users userID;
+    @NotBlank(message = "Documents reference ID người dùng không được để trống")
+    private String userID;
+//    @DBRef(lazy = true)
+//    private Users userID;
 
     @NotBlank(message = "Tiêu đề không được để trống")
     @Size(max = 100, message = "Tiêu đề không được quá 100 ký tự")
@@ -83,16 +84,6 @@ public class Documents
         return new UploadResponse(true, "Tải lên thành công", uploadedUrl);
     }
 
-//    @Override
-//    public Documents clone() {
-//        try {
-//            Documents clone = (Documents) super.clone();
-//            // TODO: copy mutable state here, so the clone can't change the internals of the original
-//            return clone;
-//        } catch (CloneNotSupportedException e) {
-//            throw new AssertionError();
-//        }
-//    }
     public static class UploadResponse {
         private boolean status;
         private String message;
@@ -105,5 +96,3 @@ public class Documents
         }
     }
 }
-//    @Enumerated(EnumType.STRING)//dùng cho jpa
-//    @Column(nullable = false) // dùng cho jpa

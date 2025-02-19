@@ -1,0 +1,4 @@
+Tại sao không sử dụng @Cacheable cho getAllRoles()?
+Việc sử dụng @Cacheable cho getAllRoles() hoàn toàn hợp lý nếu bạn muốn cache toàn bộ danh sách các roles. Tuy nhiên, có thể có lý do tại sao trong một số ví dụ bạn đã xem trên web không sử dụng @Cacheable cho phương thức này:
+Dữ liệu thay đổi thường xuyên: Nếu danh sách roles thay đổi thường xuyên (ví dụ: thêm mới, cập nhật, xóa), việc cache tất cả roles có thể không tối ưu vì dữ liệu sẽ luôn bị thay đổi và cache có thể không phản ánh dữ liệu mới nhất.
+Kích thước dữ liệu lớn: Nếu danh sách roles quá lớn, việc lưu trữ toàn bộ dữ liệu trong cache có thể gây tốn bộ nhớ và làm giảm hiệu suất. Trong trường hợp này, có thể chỉ sử dụng cache cho các yêu cầu riêng biệt (ví dụ: tìm kiếm theo ID hoặc tên).

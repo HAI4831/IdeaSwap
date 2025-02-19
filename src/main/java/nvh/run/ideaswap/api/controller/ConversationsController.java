@@ -38,7 +38,7 @@ public class ConversationsController {
         );
     }
     @GetMapping("/{userId}")
-    public ResponseEntity<Object> getConversationByUserId(@PathVariable String userId) {
+    public ResponseEntity<?> getConversationByUserId(@PathVariable String userId) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,

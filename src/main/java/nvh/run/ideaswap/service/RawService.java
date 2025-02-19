@@ -1,11 +1,8 @@
 package nvh.run.ideaswap.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-
 public class RawService {
-    @Autowired
-    private MongoTemplate mongoTemplate;
+//    @Autowired
+//    private MongoTemplate mongoTemplate;
 //    public List<Blogs> getBlogsWithLogs() {
 //        Aggregation aggregation = Aggregation.newAggregation(
 //                Aggregation.match(Criteria.where("userID").exists(true))

@@ -11,9 +11,9 @@ import nvh.run.ideaswap.common.validator.IsObjectID;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 //c1
 @Data
@@ -21,8 +21,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Document(collection = "comments")
-public class Comments
-//        implements  java.io.Serializable , Cloneable
+public class Comments implements Serializable
 {
 
     @Id
@@ -37,9 +36,11 @@ public class Comments
     @IsObjectID
     private String parentCommentID;
 
-//    @NotBlank(message = "ID người dùng không được để trống")
-    @DBRef
-    private Users userID;
+    @NotBlank(message = "ID người dùng không được để trống")
+    @IsObjectID
+    private String userID;
+//    @DBRef
+//    private Users userID;
 
     @IsObjectID
     private String referenceID;
@@ -49,15 +50,4 @@ public class Comments
 
     @LastModifiedDate
     private LocalDateTime updatedDate;
-
-//    @Override
-//    public Comments clone() {
-//        try {
-//            Comments clone = (Comments) super.clone();
-//            // TODO: copy mutable state here, so the clone can't change the internals of the original
-//            return clone;
-//        } catch (CloneNotSupportedException e) {
-//            throw new AssertionError();
-//        }
-//    }
 }

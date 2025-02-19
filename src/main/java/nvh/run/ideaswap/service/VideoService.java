@@ -9,6 +9,12 @@ import nvh.run.ideaswap.data.entity.Courses;
 import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.entity.Videos;
 import nvh.run.ideaswap.data.repository.VideoRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +32,18 @@ public class VideoService {
     private final CloudinaryService cloudinaryService;
     private final NotificationService notificationService;
 
+//    @Cacheable(value = "users",key = "'page:' + #page + ':size:' + #size")
+    public Page<Videos> getAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Videos> videosList;
+        try {
+            videosList = videoRepository.findAll(pageable);
+        } catch (Exception e) {
+            throw new RuntimeException("find all video failed",e);
+        }
+        return videosList;
+    }
+//    @Cacheable(value="videos")
     public List<Videos> getAll() {
         List<Videos> videosList;
         try {
@@ -35,6 +53,7 @@ public class VideoService {
         }
         return videosList;
     }
+    @Cacheable(value="video",key="#id",condition = "#id!=null")
     public Videos getById(String id) {
         Videos video;
         try {
@@ -44,6 +63,7 @@ public class VideoService {
         }
         return video;
     }
+    @Cacheable(value="video",key="#videoRequest.id",condition = "#videoRequest.id!=null")
     public Videos save(VideoRequest videoRequest) {
         Videos video;
         Users user = userService.getUserById(videoRequest.getUserID());
@@ -55,8 +75,8 @@ public class VideoService {
             }
             video = videoRepository.save(
                     Videos.builder()
-                            .userID(user)
-                            .courseID(course)
+                            .userID(user.getId())
+                            .courseID(course.getId())
                             .title(videoRequest.getTitle())
                             .description(videoRequest.getDescription())
                             .view(videoRequest.getView())
@@ -64,7 +84,7 @@ public class VideoService {
                             .imageUrl(imageUrl)
                             .updatedAt(LocalDateTime.now())
                             .createdAt(LocalDateTime.now())
-                            .id(null)
+                            .id(videoRequest.getId())
                             .build()
             );
         } catch (Exception e) {
@@ -79,6 +99,7 @@ public class VideoService {
         );
         return video;
     }
+    @CachePut(value="video",key="#videoRequest.id",condition = "#videoRequest.id!=null")
     public Videos update(String id ,VideoRequest videoRequest) {
         Videos updatedVideo;
         Users user = userService.getUserById(videoRequest.getUserID());
@@ -91,8 +112,8 @@ public class VideoService {
             }
             updatedVideo = videoRepository.save(
                     Videos.builder()
-                            .userID(user)
-                            .courseID(course)
+                            .userID(user.getId())
+                            .courseID(course.getId())
                             .title(videoRequest.getTitle())
                             .description(videoRequest.getDescription())
                             .view(videoRequest.getView())
@@ -100,7 +121,7 @@ public class VideoService {
                             .imageUrl(imageUrl)
                             .updatedAt(LocalDateTime.now())
                             .createdAt(LocalDateTime.now())
-                            .id(null)
+                            .id(id)
                             .build()
             );
         } catch (Exception e) {
@@ -108,6 +129,7 @@ public class VideoService {
         }
         return updatedVideo;
     }
+    @CacheEvict(value="video",key="#id",condition = "#id!=null")
     public Videos delete(String id) {
         Videos video = getById(id);
         try {
@@ -117,6 +139,7 @@ public class VideoService {
         }
         return video;
     }
+    @CachePut(value="video",key="#id",condition = "#id!=null")
     public Videos updateView(String id,VideoRequest videoRequest) {
         Videos video = getById(id);
         Users user = userService.getUserById(videoRequest.getUserID());
@@ -124,8 +147,8 @@ public class VideoService {
         try {
             video = videoRepository.save(
                     Videos.builder()
-                            .userID(user)
-                            .courseID(course)
+                            .userID(user.getId())
+                            .courseID(course.getId())
                             .title(videoRequest.getTitle())
                             .description(videoRequest.getDescription())
                             .view(videoRequest.getView())
