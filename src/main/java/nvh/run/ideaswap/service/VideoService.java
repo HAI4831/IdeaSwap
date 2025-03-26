@@ -69,10 +69,10 @@ public class VideoService {
         Users user = userService.getUserById(videoRequest.getUserID());
         Courses course = coursesService.getCourseById(videoRequest.getCourseID());
         try {
-            String imageUrl = cloudinaryService.uploadImage(videoRequest.getImageUrl());
-            if (imageUrl == null) {
-                throw new RuntimeException("Course image upload failed");
-            }
+            String imageUrl = cloudinaryService.uploadImage(videoRequest.getImageUrl(),null);
+//            if (imageUrl == null) {
+//                throw new RuntimeException("Course image upload failed");
+//            }
             video = videoRepository.save(
                     Videos.builder()
                             .userID(user.getId())
@@ -106,10 +106,10 @@ public class VideoService {
         Courses course = coursesService.getCourseById(videoRequest.getCourseID());
         Videos video = getById(id);
         try {
-            String imageUrl = cloudinaryService.uploadImage(videoRequest.getImageUrl());
-            if (imageUrl == null) {
-                throw new RuntimeException("Course image upload failed");
-            }
+            String imageUrl = cloudinaryService.uploadImage(videoRequest.getImageUrl(),null);
+//            if (imageUrl == null) {
+//                throw new RuntimeException("Course image upload failed");
+//            }
             updatedVideo = videoRepository.save(
                     Videos.builder()
                             .userID(user.getId())

@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import nvh.run.ideaswap.common.validator.IsObjectID;
 import nvh.run.ideaswap.data.entity.Gender;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,7 +26,8 @@ public class UserRequest {
     private String address="";
     @Builder.Default
     private String password="$2a$10$ZD/EROx56XOvcutCg9jHxeXrz.iqMstXUCksTyvBb8gfD8SPPm7uW";
-    private MultipartFile avatar;
+    private String avatar;//base64
+//    private MultipartFile avatar;
     @Builder.Default
     private Gender gender=Gender.male;
     @Builder.Default

@@ -71,7 +71,7 @@ public class AuthService {
                         .rating(0)
                         .address(registerRequest.getAddress() == null ? "Ninh Bình" : registerRequest.getAddress())
                         .gender(registerRequest.getGender() == null ? Gender.male : registerRequest.getGender())
-                        .avatar(registerRequest.getAvatar()==null ? "https://antimatter.vn/wp-content/uploads/2022/11/anh-avatar-trang-fb-mac-dinh.jpg" :registerRequest.getAvatar())
+                        .avatar("https://antimatter.vn/wp-content/uploads/2022/11/anh-avatar-trang-fb-mac-dinh.jpg")
                         .description(registerRequest.getDescription()==null ? "" :registerRequest.getDescription() )
                         .birthday(registerRequest.getBirthday() == null ? LocalDate.parse("01/01/1970") : LocalDate.from(registerRequest.getBirthday()))
                         .build());

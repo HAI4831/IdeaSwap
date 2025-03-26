@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import java.beans.PropertyEditorSupport;
 import java.util.Map;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/v1/banner")
 public class BannerController {
@@ -58,7 +57,7 @@ public class BannerController {
 
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Object> createBanner(@ModelAttribute BannerRequest bannerRequest) {
+    public ResponseEntity<Object> createBanner(@RequestBody BannerRequest bannerRequest) {
         if (bannerRequest.getImageBase64() == null || bannerRequest.getImageBase64().isEmpty()) {
             return ResponseEntity.badRequest().body("Ảnh không được để trống");
         }

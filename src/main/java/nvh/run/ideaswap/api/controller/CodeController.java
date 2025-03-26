@@ -1,24 +1,27 @@
 package nvh.run.ideaswap.api.controller;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.dto.SendCodeRequest;
 import nvh.run.ideaswap.data.dto.VerifyCodeRequest;
 import nvh.run.ideaswap.data.entity.Codes;
 import nvh.run.ideaswap.service.CodeService;
+import nvh.run.ideaswap.service.VerificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/v1/code")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CodeController {
-
-    private final CodeService codeService;
+    VerificationService verificationService;
+    CodeService codeService;
 
     @PostMapping("/send")
     public ResponseEntity<?> sendCode(@RequestBody SendCodeRequest request) {
-        Codes code = codeService.sendVerificationCode(request.getEmail());
+        Codes code = verificationService.sendVerificationCode(request.getEmail());
         boolean success = code!=null;
         return success
                 ? ResponseEntity.ok(new ResponseMessage(true,"An email has been sent. success sent with verification code",code))

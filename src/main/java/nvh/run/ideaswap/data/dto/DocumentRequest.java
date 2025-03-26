@@ -10,7 +10,6 @@ import lombok.Builder;
 import lombok.Data;
 import nvh.run.ideaswap.common.validator.IsObjectID;
 import nvh.run.ideaswap.data.entity.Status;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -30,7 +29,8 @@ public class DocumentRequest {
     private String fileUrl;
     @Builder.Default
     private int countDownload=0;
-    private MultipartFile imageUrl;
+    private String imageUrl;
+//    private MultipartFile imageUrl;
     @Builder.Default
     private Status status=Status.pending;
     @Builder.Default

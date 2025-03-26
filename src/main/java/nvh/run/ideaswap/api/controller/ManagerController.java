@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/v1/manager")
 @RequiredArgsConstructor
@@ -47,7 +46,7 @@ public class ManagerController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Object> createManager(@ModelAttribute ManagerRequest managerRequest) {
+    public ResponseEntity<Object> createManager(@RequestBody ManagerRequest managerRequest) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
@@ -58,7 +57,7 @@ public class ManagerController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Object> updateManager(@PathVariable String id, @ModelAttribute @Valid ManagerRequest managerRequest) {
+    public ResponseEntity<Object> updateManager(@PathVariable String id, @RequestBody @Valid ManagerRequest managerRequest) {
         return ResponseEntity.ok(Map.of(
                 "success", true,
                 "message", "Manager updated successfully",

@@ -42,7 +42,6 @@ public class RegisterRequest {
 
     private String phoneNumber;
     private String address;
-    private String avatar;
     @Builder.Default
     private Gender gender=Gender.male;
     private int rating;

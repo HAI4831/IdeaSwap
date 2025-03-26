@@ -77,10 +77,10 @@ public class ManagerService {
         Roles role = roleService.getRoleById(managerRequest.getRoleID());
 
         try {
-            String imageUrl = cloudinaryService.uploadImage(managerRequest.getAvatar());
-            if (imageUrl == null) {
-                throw new RuntimeException("Course image upload failed");
-            }
+            String imageUrl = cloudinaryService.uploadImage(managerRequest.getAvatar(),null);
+//            if (imageUrl == null) {
+//                throw new RuntimeException("Course image upload failed");
+//            }
             Managers manager = Managers.builder()
                     .id(managerRequest.get_id())
                     .roleID(role.getId())
@@ -114,7 +114,7 @@ public class ManagerService {
         Roles role = roleService.getRoleById(managerRequest.getRoleID());
 
         try {
-            String imageUrl = cloudinaryService.uploadImage(managerRequest.getAvatar());
+            String imageUrl = cloudinaryService.uploadImage(managerRequest.getAvatar(),null);
             if (imageUrl == null) {
                 throw new RuntimeException("Course image upload failed");
             }

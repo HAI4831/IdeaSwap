@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import nvh.run.ideaswap.data.dto.BlogRequest;
 import nvh.run.ideaswap.data.dto.NotificationRequest;
 import nvh.run.ideaswap.data.entity.Blogs;
-import nvh.run.ideaswap.data.entity.Categories;
 import nvh.run.ideaswap.data.entity.Users;
 import nvh.run.ideaswap.data.repository.BlogRepository;
 import org.slf4j.Logger;
@@ -98,21 +97,21 @@ public class BlogService {
     @CachePut(value = "blog")
 //    @CachePut(value = "blog",key = "#blogRequest.id", condition = "#blogRequest.id!=null")
     public Blogs createBlog(BlogRequest blogRequest) {
-        Categories categories = categoryService.getCategoryById(blogRequest.getCategoryID());
+//        Categories categories = categoryService.getCategoryById(blogRequest.getCategoryID());
         Users user = userService.getUserById(blogRequest.getUserID());
-        String imageUrl = cloudinaryService.uploadImage(blogRequest.getImageBase64());
+        String imageUrl = cloudinaryService.uploadImage(blogRequest.getImageBase64(),null);
         Blogs blog;
         try {
-            if(imageUrl.isEmpty()){
-                throw new RuntimeException("upload image failed");
-            }
+//            if(imageUrl.isEmpty()){
+//                throw new RuntimeException("upload image failed");
+//            }
             blog = blogRepository.save(
                     Blogs.builder()
                             .id(blogRequest.getId())
                             .userID(user.getId())
-                            .categoryID(categories.getId())
+//                            .categoryID(categories.getId())
                             .content(blogRequest.getContent())
-                            .url(imageUrl)
+                            .url(imageUrl==null||imageUrl.isEmpty()?null:imageUrl)
                             .createdDate(LocalDateTime.now())
                             .updatedDate(LocalDateTime.now())
                             .build()
@@ -133,9 +132,9 @@ public class BlogService {
     @CachePut(value = "blog",key = "#id",condition = "#id!=null")
     public Blogs updateBlog(String id, BlogRequest blogRequest) {
         getBlogById(id);
-        Categories categories = categoryService.getCategoryById(blogRequest.getCategoryID());
+//        Categories categories = categoryService.getCategoryById(blogRequest.getCategoryID());
         Users user = userService.getUserById(blogRequest.getUserID());
-        String imageUrl = cloudinaryService.uploadImage(blogRequest.getImageBase64());
+        String imageUrl = cloudinaryService.uploadImage(blogRequest.getImageBase64(),null);
         Blogs updatedBlog;
         try {
             if(imageUrl.isEmpty()){
@@ -145,7 +144,7 @@ public class BlogService {
                     Blogs.builder()
                             .id(id)
                             .userID(user.getId())
-                            .categoryID(categories.getId())
+//                            .categoryID(categories.getId())
                             .content(blogRequest.getContent())
                             .url(imageUrl)
                             .createdDate(LocalDateTime.now())

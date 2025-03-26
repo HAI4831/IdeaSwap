@@ -8,9 +8,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/api/v1/blogs")
+@RequestMapping("/api/v1/blog")
 public class BlogController {
     @Autowired
     private BlogService blogService;
@@ -38,7 +37,7 @@ public class BlogController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Object> createBlog(@ModelAttribute BlogRequest blogRequest) {
+    public ResponseEntity<Object> createBlog(@RequestBody BlogRequest blogRequest) {
         return ResponseEntity.status(201).body(
                 Map.of(
                         "success", true,
@@ -49,7 +48,7 @@ public class BlogController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Object> updateBlog(@PathVariable String id, @ModelAttribute BlogRequest blogRequest) {
+    public ResponseEntity<Object> updateBlog(@PathVariable String id, @RequestBody BlogRequest blogRequest) {
         return ResponseEntity.status(200).body(
                 Map.of(
                         "success", true,

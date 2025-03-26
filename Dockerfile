@@ -34,8 +34,8 @@ COPY --from=build /app/build/libs/*.jar app.jar
 # ✅ Định nghĩa biến môi trường đúng cách
 ENV SPRING_PROFILES_ACTIVE=production \
     CLOUDINARY_URL="cloudinary://345593341212817:ip50kMhMixVv-F6qOjwyKoN5rLk@divcnthxr" \
-    EMAIL="ideaswapsp@gmail.com" \
-    EMAIL_PASSWORD="vejtkoejstatxska" \
+    EMAIL="nvhai227@gmail.com" \
+    EMAIL_PASSWORD="cwahltnnqmzmbulm" \
     MONGO_URI="mongodb+srv://nvhai227:abCD%401234@cluster0.kfltces.mongodb.net/?retryWrites=true&w=majority&appName=crud"
 
 # Mở cổng 8080

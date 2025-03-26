@@ -76,10 +76,10 @@ public class CoursesService {
         Categories category = categoryService.getCategoryById(courseRequest.getCategoryID());
         Courses course;
         try {
-            String imageUrl = cloudinaryService.uploadImage(courseRequest.getImageBase64());
-            if (imageUrl == null) {
-                throw new RuntimeException("Course image upload failed");
-            }
+            String imageUrl = cloudinaryService.uploadImage(courseRequest.getImageBase64(),null);
+//            if (imageUrl == null) {
+//                throw new RuntimeException("Course image upload failed");
+//            }
             course = coursesRepository.save(
                     Courses.builder()
                             .id(courseRequest.getId())
@@ -113,7 +113,7 @@ public class CoursesService {
         Categories category = categoryService.getCategoryById(courseRequest.getCategoryID());
         Courses course;
         try {
-            String imageUrl = cloudinaryService.uploadImage(courseRequest.getImageBase64());
+            String imageUrl = cloudinaryService.uploadImage(courseRequest.getImageBase64(),null);
             if (imageUrl == null) {
                 throw new RuntimeException("Course image upload failed");
             }

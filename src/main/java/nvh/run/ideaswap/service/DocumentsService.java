@@ -73,10 +73,10 @@ public class DocumentsService {
         Categories category = categoryService.getCategoryById(documentRequest.getCategoryID());
         Documents document;
         try {
-            String imageUrl = cloudinaryService.uploadImage(documentRequest.getImageUrl());
-            if(imageUrl == null) {
-                throw new RuntimeException("Document image upload failed");
-            }
+            String imageUrl = cloudinaryService.uploadImage(documentRequest.getImageUrl(),null);
+//            if(imageUrl == null) {
+//                throw new RuntimeException("Document image upload failed");
+//            }
             document = documentsRepository.save(
                     Documents.builder()
                             .id(documentRequest.getId())
@@ -113,10 +113,10 @@ public class DocumentsService {
         Categories category = categoryService.getCategoryById(documentRequest.getCategoryID());
         Documents document;
         try {
-            String imageUrl = cloudinaryService.uploadImage(documentRequest.getImageUrl());
-            if(imageUrl == null) {
-                throw new RuntimeException("Document image upload failed");
-            }
+            String imageUrl = cloudinaryService.uploadImage(documentRequest.getImageUrl(),null);
+//            if(imageUrl == null) {
+//                throw new RuntimeException("Document image upload failed");
+//            }
             document = documentsRepository.save(
                     Documents.builder()
                             .id(documentRequest.getId())

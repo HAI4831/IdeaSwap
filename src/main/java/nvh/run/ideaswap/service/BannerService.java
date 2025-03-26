@@ -74,7 +74,7 @@ public class BannerService {
     public Banners createBanner(BannerRequest bannerRequest) {
         Managers manager = managerService.getManagerById(bannerRequest.getManagerID());
         Banners banner = getBannerBySite(bannerRequest.getSite());
-        String imageUrl = cloudinaryService.uploadImage(bannerRequest.getImageBase64());
+        String imageUrl = cloudinaryService.uploadImage(bannerRequest.getImageBase64(),null);
         try {
             if(imageUrl.isEmpty()) {
                 throw new RuntimeException("Image url upload failed");
@@ -103,7 +103,7 @@ public class BannerService {
     public Banners updateBanner(String id, BannerRequest bannerRequest) {
         Managers manager = managerService.getManagerById(bannerRequest.getManagerID());
         Banners banner = getBannerById(id);
-        String imageUrl = cloudinaryService.uploadImage(bannerRequest.getImageBase64());
+        String imageUrl = cloudinaryService.uploadImage(bannerRequest.getImageBase64(),null);
         try {
             if(imageUrl == null){
                 throw new RuntimeException("Banner image upload failed");

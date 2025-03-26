@@ -116,10 +116,10 @@ public class UserService {
         Roles role = roleService.getRoleById(userRequest.getRoleID());
         Users updatedUser ;
         try {
-            String imageUrl = cloudinaryService.uploadImage(userRequest.getAvatar());
-            if (imageUrl == null) {
-                throw new RuntimeException("Course image upload failed");
-            }
+            String imageUrl = cloudinaryService.uploadImage(userRequest.getAvatar(),null);
+//            if (imageUrl == null) {
+//                throw new RuntimeException("Course image upload failed");
+//            }
             updatedUser = iUserRepository.save(
                     Users.builder()
                             .id(id)

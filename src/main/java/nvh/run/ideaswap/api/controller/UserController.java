@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
@@ -49,7 +48,7 @@ public class UserController {
 //    }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Object> updateUser(@PathVariable String id, @Validated @ModelAttribute UserRequest userRequest) {
+    public ResponseEntity<Object> updateUser(@PathVariable String id, @Validated @RequestBody UserRequest userRequest) {
         return ResponseEntity.status(200).body(
                 Map.of(
                         "success", true,

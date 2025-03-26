@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/v1/document")
 @RequiredArgsConstructor
@@ -75,7 +74,7 @@ public class DocumentsController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Object> updateDocument(@PathVariable String id, @Valid @ModelAttribute DocumentRequest documentRequest) {
+    public ResponseEntity<Object> updateDocument(@PathVariable String id, @Valid @RequestBody DocumentRequest documentRequest) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,

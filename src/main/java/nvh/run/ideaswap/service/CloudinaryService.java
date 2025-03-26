@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Map;
 
 @Service
@@ -16,15 +17,22 @@ public class CloudinaryService {
     @Autowired
     private Cloudinary cloudinary;
 
-    public String uploadImage(MultipartFile file) {
-        Map uploadResult;
+    public String uploadImage(String imageBase64,MultipartFile file) {
+
+        Map uploadResult=null;
         try {
-            uploadResult = cloudinary.uploader().upload(file.getBytes(),
-                    ObjectUtils.asMap("resource_type", "image")); // Chỉ định loại file là ảnh
-        } catch (IOException e) {
-            throw new RuntimeException("upload image failed",e);
+            if(imageBase64!=null && !imageBase64.isEmpty()){
+                uploadResult = cloudinary.uploader().upload(base64ToByte(imageBase64),
+                        ObjectUtils.asMap("resource_type", "image"));
+            } else if(file!=null && !file.isEmpty()) {
+                uploadResult = cloudinary.uploader().upload(file.getBytes(),
+                        ObjectUtils.asMap("resource_type", "image")); // Chỉ định loại file là ảnh
+            }
+            return uploadResult.get("secure_url").toString(); // Trả về URL bảo mật của hình ảnh
+        } catch (Exception e) {
+            return null;
+//            throw new RuntimeException("upload image failed",e);
         }
-        return uploadResult.get("secure_url").toString(); // Trả về URL bảo mật của hình ảnh
     }
 
     public String deleteImage(String url , String publicId) {
@@ -36,5 +44,11 @@ public class CloudinaryService {
             throw new RuntimeException("delete image failed",e);
         }
         return result.get("result").toString(); // Trả về "ok" nếu xóa thành công
+    }
+    String byteToBase64(byte[] bytes) {
+        return Base64.getEncoder().encodeToString(bytes);
+    }
+    byte[] base64ToByte(String base64) {
+        return Base64.getDecoder().decode(base64);
     }
 }
