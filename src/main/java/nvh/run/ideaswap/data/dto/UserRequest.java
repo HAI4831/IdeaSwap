@@ -3,7 +3,7 @@ package nvh.run.ideaswap.data.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
-import nvh.run.ideaswap.common.validator.IsObjectID;
+import nvh.run.ideaswap.validator.IsObjectID;
 import nvh.run.ideaswap.data.entity.Gender;
 
 import java.time.LocalDate;
@@ -26,10 +26,11 @@ public class UserRequest {
     private String address="";
     @Builder.Default
     private String password="$2a$10$ZD/EROx56XOvcutCg9jHxeXrz.iqMstXUCksTyvBb8gfD8SPPm7uW";
-    private String avatar;//base64
+    private String imageBase64;//base64
+    private String avatar;
 //    private MultipartFile avatar;
     @Builder.Default
-    private Gender gender=Gender.male;
+    private Gender gender=Gender.Male;
     @Builder.Default
     private Integer rating = 0 ;
     @IsObjectID

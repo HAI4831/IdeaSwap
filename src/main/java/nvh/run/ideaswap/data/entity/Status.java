@@ -1,7 +1,7 @@
 package nvh.run.ideaswap.data.entity;
 
 public enum Status {
-   approve("approve"),
+   approved("approved"),
    pending("pending"),
    reject("reject");
 

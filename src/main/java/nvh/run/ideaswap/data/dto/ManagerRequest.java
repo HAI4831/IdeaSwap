@@ -2,7 +2,7 @@ package nvh.run.ideaswap.data.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import nvh.run.ideaswap.common.validator.IsObjectID;
+import nvh.run.ideaswap.validator.IsObjectID;
 import nvh.run.ideaswap.data.entity.Gender;
 import org.springframework.format.annotation.DateTimeFormat;
 

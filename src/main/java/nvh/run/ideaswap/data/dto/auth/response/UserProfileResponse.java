@@ -3,8 +3,7 @@ package nvh.run.ideaswap.data.dto.auth.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
-import nvh.run.ideaswap.data.entity.Managers;
-import nvh.run.ideaswap.data.entity.Users;
+import nvh.run.ideaswap.data.entity.User;
 
 import java.io.Serializable;
 
@@ -12,7 +11,7 @@ import java.io.Serializable;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserProfileResponse implements Serializable {
-    private Users user;
+    private User user;
     @Builder.Default
     private boolean authenticated=false;
 }

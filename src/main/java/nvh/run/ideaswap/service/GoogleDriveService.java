@@ -20,6 +20,9 @@ import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 //https://www.youtube.com/watch?v=rANfiSmyMTQ
 @Service
 public class GoogleDriveService {
@@ -81,8 +84,9 @@ public class GoogleDriveService {
     /**
      * Delete file from Google Drive
      */
-    public void deleteFile(String fileId) throws IOException {
+    public void deleteFile(String fileUrl , String fileId) throws IOException {
         try {
+            if(fileId==null) fileId=extractFileIdFromUrl(fileUrl);
             driveService.files().delete(fileId).execute();
         } catch (Exception e){
             throw new RuntimeException("delete file_id("+fileId+")"+" failed",e);
@@ -114,4 +118,16 @@ public class GoogleDriveService {
             throw new RuntimeException("getFileInfo failed with fileId("+fileId+")",e);
         }
     }
+    private String extractFileIdFromUrl(String fileUrl) {
+        if (fileUrl == null || fileUrl.isEmpty()) {
+            return null;
+        }
+        Pattern pattern = Pattern.compile("/d/([a-zA-Z0-9_-]+)|id=([a-zA-Z0-9_-]+)");
+        Matcher matcher = pattern.matcher(fileUrl);
+        if (matcher.find()) {
+            return matcher.group(1) != null ? matcher.group(1) : matcher.group(2);
+        }
+        return null;
+    }
+
 }

@@ -4,9 +4,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.dto.HeartRequest;
-import nvh.run.ideaswap.data.entity.Hearts;
-import nvh.run.ideaswap.data.entity.Users;
-import nvh.run.ideaswap.data.repository.HeartsRepository;
+import nvh.run.ideaswap.data.entity.Heart;
+import nvh.run.ideaswap.data.entity.User;
+import nvh.run.ideaswap.data.repository.HeartRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -24,25 +24,25 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class HeartService {
-    HeartsRepository heartsRepository;
+    HeartRepository heartRepository;
     UserService userService;
 
 //    @Cacheable(value = "hearts",key = "'page:' + #page + ':size:' + #size")
-    public Page<Hearts> getAllHearts(int page, int size) {
+    public Page<Heart> getAllHearts(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Hearts> hearts;
+        Page<Heart> hearts;
         try {
-            hearts = heartsRepository.findAll(pageable);
+            hearts = heartRepository.findAll(pageable);
         } catch (Exception e) {
             throw new RuntimeException("Get all hearts failed",e);
         }
         return hearts;
     }
 //    @Cacheable(value="hearts")
-    public List<Hearts> getAllHearts() {
-        List<Hearts> hearts ;
+    public List<Heart> getAllHearts() {
+        List<Heart> hearts ;
         try {
-            hearts = heartsRepository.findAll();
+            hearts = heartRepository.findAll();
         } catch (Exception e) {
             throw new RuntimeException("Get all hearts failed",e);
         }
@@ -50,10 +50,10 @@ public class HeartService {
     }
 
 //    @Cacheable(value="hearts",key="#userID",condition = "#userID!=null")
-    public List<Hearts> getHeartsByUserID(String userID) {
-        List<Hearts> hearts ;
+    public List<Heart> getHeartsByUserID(String userID) {
+        List<Heart> hearts ;
         try {
-            hearts = heartsRepository.findByUserID(userID);
+            hearts = heartRepository.findByUserID(userID);
         } catch (Exception e) {
             throw new RuntimeException("Get all hearts failed",e);
         }
@@ -61,12 +61,12 @@ public class HeartService {
     }
 
     @CachePut(value="heart",key="#heartRequest.id",condition = "#heartRequest.id!=null")
-    public Hearts createHeart(HeartRequest heartRequest) {
-        Users user = userService.getUserById(heartRequest.getUserID());
-        Hearts heart;
+    public Heart createHeart(HeartRequest heartRequest) {
+        User user = userService.getUserById(heartRequest.getUserID());
+        Heart heart;
         try {
-            heart = heartsRepository.save(
-                    Hearts.builder()
+            heart = heartRepository.save(
+                    Heart.builder()
                             .id(heartRequest.getId())
                             .userID(user.getId())
                             .referenceID(heartRequest.getReferenceID())
@@ -81,10 +81,10 @@ public class HeartService {
     }
 
     @CacheEvict(value="heart",key="#id",condition = "#id!=null")
-    public Hearts deleteHeart(String id) {
-         Hearts heart = getHeartById(id);
+    public Heart deleteHeart(String id) {
+         Heart heart = getHeartById(id);
         try {
-            heartsRepository.deleteById(id);
+            heartRepository.deleteById(id);
         } catch (Exception e) {
             throw new RuntimeException("Delete heart failed",e);
         }
@@ -92,10 +92,10 @@ public class HeartService {
     }
 
     @Cacheable(value="heart",key="#id",condition = "#id!=null")
-    public Hearts getHeartById(String id) {
-        Hearts heart;
+    public Heart getHeartById(String id) {
+        Heart heart;
         try {
-            heart = heartsRepository.findById(id)
+            heart = heartRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Heart not found"));
         } catch (Exception e) {
             throw new RuntimeException("Get heart failed",e);
@@ -104,10 +104,10 @@ public class HeartService {
     }
 
     @Cacheable(value="hearts",key="#referenceID",condition = "#referenceID!=null")
-    public List<Hearts> getHeartsByReferenceID(String referenceID) {
-        List<Hearts> hearts ;
+    public List<Heart> getHeartsByReferenceID(String referenceID) {
+        List<Heart> hearts ;
         try {
-           hearts = heartsRepository.findByReferenceID(referenceID);
+           hearts = heartRepository.findByReferenceID(referenceID);
         } catch (Exception e) {
             throw new RuntimeException("Get all hearts failed",e);
         }

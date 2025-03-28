@@ -1,0 +1,17 @@
+package nvh.run.ideaswap.validator;
+
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
+import nvh.run.ideaswap.validator.impl.UniquePhoneNumberValidator;
+
+import java.lang.annotation.*;
+
+@Documented
+@Constraint(validatedBy = UniquePhoneNumberValidator.class) // Chỉ định validator
+@Target({ElementType.FIELD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface UniquePhoneNumber {
+    String message() default "Số điện thoại đã tồn tại"; // Thông báo mặc định
+    Class<?>[] groups() default {};
+    Class<? extends Payload>[] payload() default {};
+}

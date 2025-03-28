@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import nvh.run.ideaswap.data.entity.Codes;
+import nvh.run.ideaswap.data.entity.Code;
 import nvh.run.ideaswap.data.repository.CodeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,17 +22,17 @@ public class CodeService {
     private static final Logger logger = Logger.getLogger(CodeService.class.getName());
     CodeRepository codeRepository;
 
-    public Codes saveCode(Codes codes) {
-        Codes saved ;
+    public Code saveCode(Code code) {
+        Code saved ;
         try {
-            saved= codeRepository.save(codes);
+            saved= codeRepository.save(code);
         } catch (Exception e) {
             throw new RuntimeException("Save code failed ",e);
         }
         return saved;
     }
-    public Codes verifyCode(String userEmail,int code) {
-        Codes codeEntity;
+    public Code verifyCode(String userEmail, int code) {
+        Code codeEntity;
         Date dateNow = Date.from(Instant.now());
         try {
             codeEntity = codeRepository.findValidCode(code,userEmail,dateNow).orElseThrow(() -> new RuntimeException("Verification code not found or expired for email: "+ userEmail +" with code: "+code));

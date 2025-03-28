@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.log4j.Log4j2;
-import nvh.run.ideaswap.data.entity.Users;
+import nvh.run.ideaswap.data.entity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +49,7 @@ public class EmailService {
         }
     }
 
-    public boolean sendVerificationCode(String email,int code, Users user) {
+    public boolean sendVerificationCode(String email,int code, User user) {
         try {
             // Prepare the email content
 //            String htmlTemplate = new String(Files.readAllBytes(Paths.get("src/template/verification_email_template.html")));

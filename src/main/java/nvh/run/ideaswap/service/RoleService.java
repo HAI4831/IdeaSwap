@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.dto.RoleRequest;
-import nvh.run.ideaswap.data.entity.Roles;
+import nvh.run.ideaswap.data.entity.Role;
 import nvh.run.ideaswap.data.repository.RoleRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -26,9 +26,9 @@ public class RoleService {
     RoleRepository roleRepository;
 
 //    @Cacheable(value = "roles",key = "'page:' + #page + ':size:' + #size")
-    public Page<Roles> getAllRoles(int page, int size) {
+    public Page<Role> getAllRoles(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Roles> roles;
+        Page<Role> roles;
         try {
             roles = roleRepository.findAll(pageable);
         } catch (Exception e) {
@@ -37,8 +37,8 @@ public class RoleService {
         return roles;
     }
 //    @Cacheable(value = "roles",sync = true)// không nên cache cho get All vì
-    public List<Roles> getAllRoles() {
-        List<Roles> roles;
+    public List<Role> getAllRoles() {
+        List<Role> roles;
         try {
             roles = roleRepository.findAll();
         } catch (Exception e) {
@@ -48,8 +48,8 @@ public class RoleService {
     }
 
     @Cacheable(value = "role",key = "#id",condition = "#id!=null")
-    public Roles getRoleById(String id) {
-        Roles role ;
+    public Role getRoleById(String id) {
+        Role role ;
         try {
             role = roleRepository.findById(id).orElseThrow(() -> new RuntimeException("Role not found"));
         } catch (Exception e) {
@@ -59,8 +59,8 @@ public class RoleService {
     }
 
     @Cacheable(value = "role",key = "#name",condition = "#name!=null")
-    public Roles findByName(String name) {
-        Roles role;
+    public Role findByName(String name) {
+        Role role;
         try {
             role= roleRepository.findByName(name).orElseThrow(() -> new RuntimeException("Role not found"));
         } catch (Exception e) {
@@ -70,11 +70,11 @@ public class RoleService {
     }
 
     @CachePut(value = "role",key = "#roleRequest.id",condition = "#roleRequest.id!=null")
-    public Roles createRole(RoleRequest roleRequest) {
-        Roles role;
+    public Role createRole(RoleRequest roleRequest) {
+        Role role;
         try {
             role = roleRepository.save(
-                    Roles.builder()
+                    Role.builder()
                             .id(roleRequest.id())
                             .name(roleRequest.name())
                             .createdAt(LocalDateTime.now())
@@ -88,13 +88,13 @@ public class RoleService {
     }
 
     @CachePut(value = "role",key = "#roleRequest.id",condition = "#roleRequest.id!=null")
-    public Roles updateRole(String id, RoleRequest roleRequest) {
-        Roles roleUpdating;
+    public Role updateRole(String id, RoleRequest roleRequest) {
+        Role roleUpdating;
         roleUpdating=getRoleById(id); // Kiểm tra role tồn tại
-        Roles roleUpdated;
+        Role roleUpdated;
         try {
             roleUpdated = roleRepository.save(
-                    Roles.builder()
+                    Role.builder()
                             .id(id)
                             .name(roleRequest.name())
                             .createdAt(roleUpdating.getCreatedAt())
@@ -108,8 +108,8 @@ public class RoleService {
     }
 
     @CacheEvict(value = "role",key = "#id",condition = "#id!=null")
-    public Roles deleteRole(String id) {
-        Roles role = getRoleById(id);
+    public Role deleteRole(String id) {
+        Role role = getRoleById(id);
         try {
             roleRepository.deleteById(id);
         } catch (Exception e) {

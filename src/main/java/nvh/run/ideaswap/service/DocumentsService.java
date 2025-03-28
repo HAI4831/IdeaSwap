@@ -1,43 +1,64 @@
 package nvh.run.ideaswap.service;
 
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.dto.DocumentRequest;
 import nvh.run.ideaswap.data.dto.NotificationRequest;
-import nvh.run.ideaswap.data.entity.Categories;
-import nvh.run.ideaswap.data.entity.Documents;
-import nvh.run.ideaswap.data.entity.Users;
-import nvh.run.ideaswap.data.repository.DocumentsRepository;
+import nvh.run.ideaswap.data.entity.Censorship;
+import nvh.run.ideaswap.data.entity.Document;
+import nvh.run.ideaswap.data.entity.Status;
+import nvh.run.ideaswap.data.entity.User;
+import nvh.run.ideaswap.data.repository.DocumentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor
 public class DocumentsService {
-    DocumentsRepository documentsRepository;
+    DocumentRepository documentRepository;
     CategoryService categoryService;
     UserService userService;
-    private final CloudinaryService cloudinaryService;
-    private final NotificationService notificationService;
+    CloudinaryService cloudinaryService;
+    NotificationService notificationService;
+    CensorshipsService censorshipsService;
+    GoogleDriveService googleDriveService;
+    @Autowired
+    public DocumentsService(
+            DocumentRepository documentRepository,
+            CategoryService categoryService,
+            UserService userService,
+            CloudinaryService cloudinaryService,
+            NotificationService notificationService,
+            GoogleDriveService googleDriveService,
+            @Lazy CensorshipsService censorshipsService) { // Lazy loading
+        this.documentRepository = documentRepository;
+        this.categoryService = categoryService;
+        this.userService = userService;
+        this.cloudinaryService = cloudinaryService;
+        this.notificationService = notificationService;
+        this.googleDriveService = googleDriveService;
+        this.censorshipsService = censorshipsService;
+    }
 
 //    @Cacheable(value = "documents",key = "'page:' + #page + ':size:' + #size")
-    public Page<Documents> getAllDocuments(int page, int size) {
+    public Page<Document> getAllDocuments(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Documents> documentsPage ;
+        Page<Document> documentsPage ;
         try {
-            documentsPage = documentsRepository.findAll(pageable);
+            documentsPage = documentRepository.findAll(pageable);
         } catch (Exception e) {
             throw new RuntimeException("Get all documents failed",e);
         }
@@ -45,10 +66,10 @@ public class DocumentsService {
     }
 
 //    @Cacheable(value="documents")
-    public List<Documents> getAllDocuments() {
-        List<Documents> documents ;
+    public List<Document> getAllDocuments() {
+        List<Document> documents ;
         try {
-            documents = documentsRepository.findAll();
+            documents = documentRepository.findAll();
         } catch (Exception e) {
             throw new RuntimeException("Get all documents failed",e);
         }
@@ -56,10 +77,10 @@ public class DocumentsService {
     }
 
     @Cacheable(value="document",key="#id",condition = "#id!=null")
-    public Documents getDocumentById(String id) {
-        Documents document ;
+    public Document getDocumentById(String id) {
+        Document document ;
         try {
-            document = documentsRepository.findById(id)
+            document = documentRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Document not found"));
         } catch (Exception e) {
             throw new RuntimeException("Get document failed",e);
@@ -68,29 +89,38 @@ public class DocumentsService {
     }
 
     @CachePut(value="document",key="documentRequest.id",condition = "#documentRequest.id!=null")
-    public Documents createDocument(DocumentRequest documentRequest) {
-        Users user=userService.getUserById(documentRequest.getUserID());
-        Categories category = categoryService.getCategoryById(documentRequest.getCategoryID());
-        Documents document;
+    public Document createDocument(DocumentRequest documentRequest) {
+        User user=userService.getUserById(documentRequest.getUserID());
+//        Category category = categoryService.getCategoryById(documentRequest.getCategoryID());
+        Document document;
         try {
-            String imageUrl = cloudinaryService.uploadImage(documentRequest.getImageUrl(),null);
-//            if(imageUrl == null) {
-//                throw new RuntimeException("Document image upload failed");
-//            }
-            document = documentsRepository.save(
-                    Documents.builder()
-                            .id(documentRequest.getId())
-                            .userID(user.getId())
-                            .categoryID(category)
+            // Lưu file tạm
+            java.io.File tempFile = java.io.File.createTempFile("upload_", "_" + documentRequest.getFile().getOriginalFilename());
+            documentRequest.getFile().transferTo(tempFile);
+
+            // Upload lên Google Drive
+            String fileId = googleDriveService.uploadFile(tempFile.getAbsolutePath(), documentRequest.getFile().getContentType());
+
+            // Xóa file tạm
+            tempFile.delete();
+
+            // Lấy thông tin file từ Google Drive
+            com.google.api.services.drive.model.File uploadedFile = googleDriveService.getFileInfo(fileId);
+
+            // Lấy URL tải file trực tiếp
+            String fileUrl = uploadedFile.getWebContentLink();
+
+
+            String imageUrl = cloudinaryService.uploadImage(documentRequest.getImageBase64(),null,"document");
+
+            document = documentRepository.save(
+                    Document.builder()
+                            .userID(documentRequest.getUserID())
+//                    .categoryID(documentRequest.getCategoryID())
                             .title(documentRequest.getTitle())
                             .description(documentRequest.getDescription())
-                            .fileUrl(documentRequest.getFileUrl())
-                            .countDownload(documentRequest.getCountDownload())
                             .imageUrl(imageUrl)
-                            .status(documentRequest.getStatus())
-                            .score(documentRequest.getScore())
-                            .createdAt(LocalDateTime.now())
-                            .updatedAt(LocalDateTime.now())
+                            .fileUrl(fileUrl)
                             .build()
             );
         } catch (Exception e) {
@@ -100,50 +130,93 @@ public class DocumentsService {
                 NotificationRequest.builder()
                         .description("Document is awaiting approval")
                         .imageUrl(document.getImageUrl())
-                        .userIDs(List.of(document.getUserID()))
+                        .userIDs(List.of(user.getId()))
                         .build()
         );
-        return document;
-    }
-
-    @Cacheable(value="document",key="#id",condition = "#id!=null")
-    public Documents updateDocument(String id, DocumentRequest documentRequest) {
-        getDocumentById(id);
-        Users user=userService.getUserById(documentRequest.getUserID());
-        Categories category = categoryService.getCategoryById(documentRequest.getCategoryID());
-        Documents document;
         try {
-            String imageUrl = cloudinaryService.uploadImage(documentRequest.getImageUrl(),null);
-//            if(imageUrl == null) {
-//                throw new RuntimeException("Document image upload failed");
-//            }
-            document = documentsRepository.save(
-                    Documents.builder()
-                            .id(documentRequest.getId())
-                            .userID(user.getId())
-                            .categoryID(category)
-                            .title(documentRequest.getTitle())
-                            .description(documentRequest.getDescription())
-                            .fileUrl(documentRequest.getFileUrl())
-                            .countDownload(documentRequest.getCountDownload())
-                            .imageUrl(imageUrl)
-                            .status(documentRequest.getStatus())
-                            .score(documentRequest.getScore())
-                            .createdAt(LocalDateTime.now())
-                            .updatedAt(LocalDateTime.now())
-                            .build()
-            );
+            censorshipsService.createCensorship(Censorship.builder()
+                            .status(Status.pending)
+                            .contentID(document.getId())
+                            .feedback("Document is awaiting approval")
+                    .build());
         } catch (Exception e) {
-            throw new RuntimeException("Update document failed",e);
+            throw new RuntimeException("Create document failed",e);
         }
         return document;
     }
 
-    @CacheEvict(value="document",key="#id",condition = "#id!=null")
-    public Documents deleteDocument(String id) {
-        Documents document = getDocumentById(id);
+    @Cacheable(value = "document", key = "#id", condition = "#id != null")
+    public Document updateDocument(String id, DocumentRequest documentRequest) {
+        Document document = documentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Document not found"));
+
+        //        Category category = categoryService.getCategoryById(documentRequest.getCategoryID());
         try {
-            documentsRepository.deleteById(id);
+            // Cập nhật thông tin tài liệu nếu có
+            Optional.ofNullable(documentRequest.getUserID()).ifPresent(document::setUserID);
+            Optional.ofNullable(documentRequest.getTitle()).ifPresent(document::setTitle);
+            Optional.ofNullable(documentRequest.getDescription()).ifPresent(document::setDescription);
+
+            // Xử lý file nếu có
+            Optional.ofNullable(documentRequest.getFile())
+                    .filter(file -> !file.isEmpty())
+                    .ifPresent(file -> {
+                        try {
+                            java.io.File tempFile = java.io.File.createTempFile("upload_", "_" + file.getOriginalFilename());
+                            file.transferTo(tempFile);
+
+                            // Upload lên Google Drive
+                            String fileId = googleDriveService.uploadFile(tempFile.getAbsolutePath(), file.getContentType());
+
+                            // Xóa file tạm
+                            tempFile.delete();
+
+                            // Lấy thông tin file từ Google Drive
+                            com.google.api.services.drive.model.File uploadedFile = googleDriveService.getFileInfo(fileId);
+
+                            // Cập nhật file URL
+                            document.setFileUrl(uploadedFile.getWebContentLink());
+                        } catch (IOException e) {
+                            throw new RuntimeException("File upload failed", e);
+                        }
+                    });
+
+            // Xử lý image nếu có
+            Optional.ofNullable(documentRequest.getImageBase64())
+                    .filter(imageBase64 -> !imageBase64.isEmpty())
+                    .ifPresent(imageBase64 -> {
+                        String imageUrl = cloudinaryService.uploadImage(imageBase64, null, "document");
+                        document.setImageUrl(imageUrl);
+                    });
+
+            return documentRepository.save(document);
+        } catch (Exception e) {
+            throw new RuntimeException("Update document failed", e);
+        }
+    }
+
+
+    @CacheEvict(value="document",key="#id",condition = "#id!=null")
+    public Document deleteDocument(String id) {
+        Document document = getDocumentById(id);
+        try {
+            // Xóa ảnh từ Cloudinary (nếu có)
+            Optional.ofNullable(document.getImageUrl())
+                    .ifPresent(imageUrl -> cloudinaryService.deleteImage(imageUrl, null));
+
+            // Xóa file từ Google Drive (nếu có)
+            Optional.ofNullable(document.getFileUrl())
+                    .ifPresent(fileUrl -> {
+                        if (fileUrl  != null) {
+                            try {
+                                googleDriveService.deleteFile(fileUrl,null);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    });
+
+            documentRepository.deleteById(id);
         } catch (Exception e) {
             throw new RuntimeException("Delete document failed",e);
         }
@@ -151,11 +224,11 @@ public class DocumentsService {
     }
 
     @Cacheable(value="document",key="#id",condition = "#id!=null")
-    public Documents incrementDownload(String id) {
-        Documents document = getDocumentById(id);
+    public Document incrementDownload(String id) {
+        Document document = getDocumentById(id);
         document.setCountDownload(document.getCountDownload() + 1);
         try {
-            documentsRepository.save(document);
+            documentRepository.save(document);
         } catch (Exception e) {
             throw new RuntimeException("Increment download failed",e);
         }
@@ -163,10 +236,10 @@ public class DocumentsService {
     }
 
     @Cacheable(value="document",key="#keyword",condition = "#keyword!=null")
-    public List<Documents> searchDocuments(String keyword) {
-        List<Documents> documents ;
+    public List<Document> searchDocuments(String keyword) {
+        List<Document> documents ;
         try {
-            documents = documentsRepository.findByTitleContainingIgnoreCase(keyword);
+            documents = documentRepository.findByTitleContainingIgnoreCase(keyword);
         } catch (Exception e) {
             throw new RuntimeException("Search documents failed",e);
         }

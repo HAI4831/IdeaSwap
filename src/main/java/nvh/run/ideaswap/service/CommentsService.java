@@ -4,9 +4,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.dto.CommentRequest;
-import nvh.run.ideaswap.data.entity.Comments;
-import nvh.run.ideaswap.data.entity.Users;
-import nvh.run.ideaswap.data.repository.CommentsRepository;
+import nvh.run.ideaswap.data.entity.Comment;
+import nvh.run.ideaswap.data.entity.User;
+import nvh.run.ideaswap.data.repository.CommentRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -23,35 +23,35 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class CommentsService {
-    CommentsRepository commentsRepository;
+    CommentRepository commentRepository;
     UserService userService;
 
 //    @Cacheable(value = "comments",key = "'page:' + #page + ':size:' + #size")
-    public Page<Comments> getAllComments(int page, int size) {
+    public Page<Comment> getAllComments(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Comments> commentsPage;
+        Page<Comment> commentsPage;
         try {
-            commentsPage = commentsRepository.findAll(pageable);
+            commentsPage = commentRepository.findAll(pageable);
         } catch (Exception e) {
             throw new RuntimeException("Get all comments failed",e);
         }
         return commentsPage;
     }
 //    @Cacheable(value = "comments")
-    public List<Comments> getAllComments() {
-        List<Comments> comments;
+    public List<Comment> getAllComments() {
+        List<Comment> comments;
         try {
-            comments = commentsRepository.findAll();
+            comments = commentRepository.findAll();
         } catch (Exception e) {
             throw new RuntimeException("Get all comments failed",e);
         }
         return comments;
     }
     @Cacheable(value="comment", key="#id",condition = "#id!=null")
-    public Comments getCommentById(String id) {
-        Comments comment;
+    public Comment getCommentById(String id) {
+        Comment comment;
         try {
-            comment = commentsRepository.findById(id)
+            comment = commentRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Comment not found"));
         } catch (Exception e) {
             throw new RuntimeException("Get comment failed",e);
@@ -59,12 +59,12 @@ public class CommentsService {
         return comment;
     }
     @Cacheable(value="comment", key="#commentRequest.id",condition = "#commentRequest.id!=null")
-    public Comments createComment(CommentRequest commentRequest) {
-        Users user = userService.getUserById(commentRequest.getUserID()) ;
-        Comments comment;
+    public Comment createComment(CommentRequest commentRequest) {
+        User user = userService.getUserById(commentRequest.getUserID()) ;
+        Comment comment;
         try {
-            comment = commentsRepository.save(
-                    Comments.builder()
+            comment = commentRepository.save(
+                    Comment.builder()
                             .id(commentRequest.getId())
                             .userID(user.getId())
                             .content(commentRequest.getContent())
@@ -80,13 +80,13 @@ public class CommentsService {
         return comment;
     }
     @Cacheable(value="comment",key="#id",condition = "#id!=null")
-    public Comments updateComment(String id, CommentRequest commentRequest) {
+    public Comment updateComment(String id, CommentRequest commentRequest) {
         getCommentById(id);
-        Users user = userService.getUserById(commentRequest.getUserID()) ;
-        Comments comment;
+        User user = userService.getUserById(commentRequest.getUserID()) ;
+        Comment comment;
         try {
-            comment = commentsRepository.save(
-                    Comments.builder()
+            comment = commentRepository.save(
+                    Comment.builder()
                             .id(id)
                             .userID(user.getId())
                             .content(commentRequest.getContent())
@@ -102,10 +102,10 @@ public class CommentsService {
         return comment;
     }
     @CacheEvict(value="comment",key="#id",condition = "#id!=null")
-    public Comments deleteComment(String id) {
-        Comments comment = getCommentById(id);
+    public Comment deleteComment(String id) {
+        Comment comment = getCommentById(id);
         try {
-            commentsRepository.deleteById(id);
+            commentRepository.deleteById(id);
         }catch (Exception e) {
             throw new RuntimeException("Delete comment failed",e);
         }

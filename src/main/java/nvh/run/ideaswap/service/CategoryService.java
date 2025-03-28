@@ -3,7 +3,7 @@ package nvh.run.ideaswap.service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import nvh.run.ideaswap.data.entity.Categories;
+import nvh.run.ideaswap.data.entity.Category;
 import nvh.run.ideaswap.data.repository.CategoryRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -24,9 +24,9 @@ public class CategoryService {
     CategoryRepository categoryRepository;
 
 //    @Cacheable(value = "categories",key = "'page:' + #page + ':size:' + #size")
-    public Page<Categories> getAllCategories(int page, int size) {
+    public Page<Category> getAllCategories(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Categories> categoryPage;
+        Page<Category> categoryPage;
         try{
             categoryPage =categoryRepository.findAll(pageable);
         }catch (Exception e){
@@ -36,8 +36,8 @@ public class CategoryService {
     }
 
 //    @Cacheable(value = "categories")
-    public List<Categories> getAllCategories() {
-        List<Categories> categoryList;
+    public List<Category> getAllCategories() {
+        List<Category> categoryList;
         try{
             categoryList =categoryRepository.findAll();
         }catch (Exception e){
@@ -47,8 +47,8 @@ public class CategoryService {
     }
 
     @Cacheable(value = "category")
-    public Categories getCategoryById(String id) {
-        Categories category;
+    public Category getCategoryById(String id) {
+        Category category;
         try {
              category= categoryRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Category not found"));
@@ -59,7 +59,7 @@ public class CategoryService {
     }
 
     @CachePut(value = "category", key = "#category.id")
-    public Categories createCategory(Categories category) {
+    public Category createCategory(Category category) {
         try {
             category=categoryRepository.save(category);
         } catch (Exception e) {
@@ -69,9 +69,9 @@ public class CategoryService {
     }
 
     @CachePut(value = "category", key = "#category.id",condition = "#category.id!=null")
-    public Categories updateCategory(String id, Categories category) {
+    public Category updateCategory(String id, Category category) {
         getCategoryById(id);
-        Categories categoryUpdated;
+        Category categoryUpdated;
         category.setId(id);
        try {
            categoryUpdated=categoryRepository.save(category);
@@ -82,14 +82,14 @@ public class CategoryService {
     }
 
     @CacheEvict(value = "category", key = "#id",condition = "#id!=null")
-    public Categories deleteCategory(String id) {
-        Categories categories = getCategoryById(id);
+    public Category deleteCategory(String id) {
+        Category category = getCategoryById(id);
         try {
             categoryRepository.deleteById(id);
         }catch (Exception e){
             throw new RuntimeException("An error occurred while deleting the category", e);
         }
-        return categories;
+        return category;
     }
 
 }

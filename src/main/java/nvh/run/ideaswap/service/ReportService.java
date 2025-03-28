@@ -4,9 +4,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.dto.ReportRequest;
-import nvh.run.ideaswap.data.entity.Managers;
-import nvh.run.ideaswap.data.entity.Reports;
-import nvh.run.ideaswap.data.entity.Users;
+import nvh.run.ideaswap.data.entity.Manager;
+import nvh.run.ideaswap.data.entity.Report;
+import nvh.run.ideaswap.data.entity.User;
 import nvh.run.ideaswap.data.repository.ReportRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -30,9 +30,9 @@ public class ReportService {
     ManagerService managerService;
 
 //    @Cacheable(value = "reports",key = "'page:' + #page + ':size:' + #size")
-    public Page<Reports> getAllReports(int page, int size) {
+    public Page<Report> getAllReports(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Reports> reports;
+        Page<Report> reports;
         try {
             reports = reportRepository.findAll(pageable);
         } catch (Exception e) {
@@ -41,8 +41,8 @@ public class ReportService {
         return reports;
     }
 //    @Cacheable(value="reports")
-    public List<Reports> getAllReports() {
-        List<Reports> reports;
+    public List<Report> getAllReports() {
+        List<Report> reports;
         try {
             reports = reportRepository.findAll();
         } catch (Exception e) {
@@ -52,8 +52,8 @@ public class ReportService {
     }
 
     @Cacheable(value="report",key="#id",condition = "#id!=null")
-    public Reports getReportById(String id) {
-        Reports report ;
+    public Report getReportById(String id) {
+        Report report ;
         try {
             report = reportRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Report not found"));
@@ -64,10 +64,10 @@ public class ReportService {
     }
 
     @CachePut(value="report",key="#reportRequest.id",condition = "#reportRequest.id!=null")
-    public Reports createReport(ReportRequest reportRequest) {
-        Users user = userService.getUserById(reportRequest.getUserID());
-        Managers manager = managerService.getManagerById(reportRequest.getModeratorID());
-        Reports report = Reports.builder()
+    public Report createReport(ReportRequest reportRequest) {
+        User user = userService.getUserById(reportRequest.getUserID());
+        Manager manager = managerService.getManagerById(reportRequest.getModeratorID());
+        Report report = Report.builder()
                 .id(reportRequest.getId())
                 .userID(user.getId())
                 .moderatorID(manager.getId())
@@ -87,11 +87,11 @@ public class ReportService {
     }
 
     @CachePut(value="report",key="#id",condition = "#id!=null")
-    public Reports updateReport(String id, ReportRequest reportRequest) {
+    public Report updateReport(String id, ReportRequest reportRequest) {
         getReportById(id);
-        Users user = userService.getUserById(reportRequest.getUserID());
-        Managers manager = managerService.getManagerById(reportRequest.getModeratorID());
-        Reports report = Reports.builder()
+        User user = userService.getUserById(reportRequest.getUserID());
+        Manager manager = managerService.getManagerById(reportRequest.getModeratorID());
+        Report report = Report.builder()
                 .id(id)
                 .userID(user.getId())
                 .moderatorID(manager.getId())
@@ -111,8 +111,8 @@ public class ReportService {
     }
 
     @CacheEvict(value="report",key="#id",condition = "#id!=null")
-    public Reports deleteReport(String id) {
-        Reports report= getReportById(id);
+    public Report deleteReport(String id) {
+        Report report= getReportById(id);
         try {
             reportRepository.deleteById(id);
         } catch (Exception e) {

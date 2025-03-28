@@ -1,10 +1,10 @@
 package nvh.run.ideaswap.data.repository;
 
-import nvh.run.ideaswap.data.entity.Reports;
+import nvh.run.ideaswap.data.entity.Report;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
 
-public interface ReportRepository extends MongoRepository<Reports, String> {
-    List<Reports> findByStatus(String status);
+public interface ReportRepository extends MongoRepository<Report, String> {
+    List<Report> findByStatus(String status);
 }

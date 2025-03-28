@@ -1,15 +1,16 @@
 package nvh.run.ideaswap.service;
 
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.dto.NotificationRequest;
-import nvh.run.ideaswap.data.entity.Notifications;
-import nvh.run.ideaswap.data.entity.Users;
+import nvh.run.ideaswap.data.entity.Notification;
+import nvh.run.ideaswap.data.entity.User;
 import nvh.run.ideaswap.data.repository.NotificationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,14 +23,19 @@ import java.util.List;
 @Service
 @Transactional
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor
 public class NotificationService {
     NotificationRepository notificationRepository;
     UserService userService;
 
+    @Autowired
+    public NotificationService(NotificationRepository notificationRepository, @Lazy UserService userService) {
+        this.notificationRepository = notificationRepository;
+        this.userService = userService;
+    }
+
 //    @Cacheable(value = "messages",key = "'page:' + #page + ':size:' + #size")
-    public Page<Notifications> getAllNotifications(int page, int size) {
-        Page<Notifications> notifications;
+    public Page<Notification> getAllNotifications(int page, int size) {
+        Page<Notification> notifications;
         Pageable pageable = PageRequest.of(page, size);
         try {
             notifications = notificationRepository.findAll(pageable);
@@ -39,8 +45,8 @@ public class NotificationService {
         return notifications;
     }
 //    @Cacheable(value="notifications")
-    public List<Notifications> getAllNotifications() {
-        List<Notifications> notifications;
+    public List<Notification> getAllNotifications() {
+        List<Notification> notifications;
         try {
             notifications = notificationRepository.findAll();
         } catch (Exception e) {
@@ -50,8 +56,8 @@ public class NotificationService {
     }
 
     @Cacheable(value="notification",key="#id",condition = "#id!=null")
-    public Notifications getNotificationById(String id) {
-        Notifications notification;
+    public Notification getNotificationById(String id) {
+        Notification notification;
         try {
             notification = notificationRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Notification not found"));
@@ -62,11 +68,11 @@ public class NotificationService {
     }
 
     @CachePut(value="notification",key="notificationRequest.id",condition = "#notificationRequest.id!=null")
-    public Notifications createNotification(NotificationRequest notificationRequest) {
-        List<Users> users = notificationRequest.getUserIDs().stream().map(userService::findById).toList();
-        Notifications notification = Notifications.builder()
+    public Notification createNotification(NotificationRequest notificationRequest) {
+        List<User> users = notificationRequest.getUserIDs().stream().map(userService::findById).toList();
+        Notification notification = Notification.builder()
                 .id(notificationRequest.getId())
-                .userIDs(users.stream().map(Users::getId).toList())
+                .userIDs(users.stream().map(User::getId).toList())
                 .description(notificationRequest.getDescription())
                 .imageUrl(notificationRequest.getImageUrl())
                 .isUnRead(notificationRequest.isUnRead())
@@ -86,11 +92,11 @@ public class NotificationService {
     }
 
     @CachePut(value="notification",key="#id",condition = "#id!=null")
-    public Notifications updateNotification(String id, NotificationRequest notificationRequest) {
+    public Notification updateNotification(String id, NotificationRequest notificationRequest) {
         getNotificationById(id);
-        List<Users> users = notificationRequest.getUserIDs().stream().map(userService::findById).toList();
-        Notifications notification = Notifications.builder()
-                .userIDs(users.stream().map(Users::getId).toList())
+        List<User> users = notificationRequest.getUserIDs().stream().map(userService::findById).toList();
+        Notification notification = Notification.builder()
+                .userIDs(users.stream().map(User::getId).toList())
                 .description(notificationRequest.getDescription())
                 .imageUrl(notificationRequest.getImageUrl())
                 .isUnRead(notificationRequest.isUnRead())
@@ -111,24 +117,24 @@ public class NotificationService {
     }
 
     @CacheEvict(value="notification",key="#id",condition = "#id!=null")
-    public Notifications deleteNotification(String id) {
-        Notifications notifications = getNotificationById(id);
+    public Notification deleteNotification(String id) {
+        Notification notification = getNotificationById(id);
         try {
             notificationRepository.deleteById(id);
         } catch (Exception e) {
             throw new RuntimeException("Delete notification failed",e);
         }
-        return notifications;
+        return notification;
     }
 
     @Cacheable(value="notification",key="#userId",condition = "#id!=null")
-    public List<Notifications> getNotificationByUserId(String userId) {
-        List<Notifications> notificationsList;
+    public List<Notification> getNotificationsByUserId(String userId) {
+        List<Notification> notificationList;
         try {
-            notificationsList = notificationRepository.findByUserIDsContaining(userId);
+            notificationList = notificationRepository.findByUserIDsContaining(userId);
         } catch (Exception e) {
             throw new RuntimeException("Get notification failed",e);
         }
-        return notificationsList;
+        return notificationList;
     }
 }

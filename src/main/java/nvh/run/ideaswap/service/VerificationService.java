@@ -4,8 +4,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import nvh.run.ideaswap.data.entity.Codes;
-import nvh.run.ideaswap.data.entity.Users;
+import nvh.run.ideaswap.data.entity.Code;
+import nvh.run.ideaswap.data.entity.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,12 +24,12 @@ public class VerificationService {
     CodeService codeService;
     private static final Random RANDOM = new Random();
 
-    public Codes sendVerificationCode(String email) {
-        Users user = userService.findUserByEmail(email);
+    public Code sendVerificationCode(String email) {
+        User user = userService.findUserByEmail(email);
         int code = 100000 + RANDOM.nextInt(900000); // Random 6-digit number
         Date expirationDate = Date.from(Instant.now().plusSeconds(3600));
 
-        Codes verificationCode = Codes.builder()
+        Code verificationCode = Code.builder()
                 .code(code)
                 .codeExpiration(expirationDate)
                 .userEmail(email)

@@ -6,11 +6,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
-import nvh.run.ideaswap.common.validator.UniqueEmail;
-import nvh.run.ideaswap.common.validator.UniqueUsername;
 import nvh.run.ideaswap.data.entity.Gender;
+import nvh.run.ideaswap.validator.UniqueEmail;
+import nvh.run.ideaswap.validator.UniqueUsername;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Builder
 @Getter
@@ -43,8 +43,9 @@ public class RegisterRequest {
     private String phoneNumber;
     private String address;
     @Builder.Default
-    private Gender gender=Gender.male;
+    private Gender gender=Gender.Male;
     private int rating;
     private String description;
-    private LocalDateTime birthday;
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private LocalDate birthday;
 }

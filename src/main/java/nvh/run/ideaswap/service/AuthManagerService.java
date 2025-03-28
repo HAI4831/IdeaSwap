@@ -3,18 +3,21 @@ package nvh.run.ideaswap.service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import nvh.run.ideaswap.common.exceptions.exception.custom.auth.DatabaseException;
-import nvh.run.ideaswap.common.security.jwt.JwtUtilities;
-import nvh.run.ideaswap.common.security.service.ManagerDetailsExtImpl;
 import nvh.run.ideaswap.data.dto.auth.request.LoginRequest;
 import nvh.run.ideaswap.data.dto.auth.request.LogoutRequest;
 import nvh.run.ideaswap.data.dto.auth.request.RefreshTokenRequest;
 import nvh.run.ideaswap.data.dto.auth.request.RegisterRequest;
-import nvh.run.ideaswap.data.dto.auth.response.*;
+import nvh.run.ideaswap.data.dto.auth.response.LoginResponse;
+import nvh.run.ideaswap.data.dto.auth.response.ManagerProfileResponse;
+import nvh.run.ideaswap.data.dto.auth.response.RefreshTokenResponse;
+import nvh.run.ideaswap.data.dto.auth.response.RegisterResponse;
 import nvh.run.ideaswap.data.entity.Gender;
-import nvh.run.ideaswap.data.entity.Managers;
-import nvh.run.ideaswap.data.entity.Roles;
+import nvh.run.ideaswap.data.entity.Manager;
+import nvh.run.ideaswap.data.entity.Role;
 import nvh.run.ideaswap.data.repository.ManagerRepository;
+import nvh.run.ideaswap.exceptions.DatabaseException;
+import nvh.run.ideaswap.security.jwt.JwtUtilities;
+import nvh.run.ideaswap.security.service.ManagerDetailsExtImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -45,8 +48,8 @@ public class AuthManagerService {
     private final ManagerService managerService;
 
     public RegisterResponse register(RegisterRequest registerRequest) {
-        Roles role = roleService.findByName("manager");
-        Managers manager;
+        Role role = roleService.findByName("manager");
+        Manager manager;
         try {
             if (managerRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
                 throw new RuntimeException("Can't register new user because the user already exists.");
@@ -57,7 +60,7 @@ public class AuthManagerService {
         try {
             manager= managerRepository.save(
                     //map
-                    Managers.builder()
+                    Manager.builder()
                             .username(registerRequest.getUsername())
                             .password(registerRequest.getPassword() ==null ? passwordEncoder.encode("abCD@1234") : passwordEncoder.encode(registerRequest.getPassword()))  // Encode password
                             .firstName(registerRequest.getFirstName()==null ? "":registerRequest.getFirstName())
@@ -66,7 +69,7 @@ public class AuthManagerService {
                             .roleID(role.getId())
                             .phoneNumber(registerRequest.getPhoneNumber() == null ? "" : registerRequest.getPhoneNumber() )
                             .address(registerRequest.getAddress() == null ? "Ninh Bình" : registerRequest.getAddress())
-                            .gender(registerRequest.getGender() == null ? Gender.male : registerRequest.getGender())
+                            .gender(registerRequest.getGender() == null ? Gender.Male : registerRequest.getGender())
                             .avatar("https://antimatter.vn/wp-content/uploads/2022/11/anh-avatar-trang-fb-mac-dinh.jpg")
                             .birthday(registerRequest.getBirthday() == null ? LocalDate.parse("01/01/1970") : LocalDate.from(registerRequest.getBirthday()))
                             .build());
@@ -103,7 +106,7 @@ public class AuthManagerService {
         log.info("start AuthManagerService.getManagerProfile was called ");
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            Managers manager = managerService.findManagerByUsername(authentication.getName());
+            Manager manager = managerService.findManagerByUsername(authentication.getName());
             log.info("AuthManagerService.getManagerProfile was called with manager {}", manager);
             if(manager!=null)return ManagerProfileResponse.builder().manager(manager).authenticated(true).build();
 
@@ -141,10 +144,10 @@ public class AuthManagerService {
             String username = jwtUtilities.extractUsername(token);
 
             // Retrieve the user from the database
-            Managers manager = managerRepository.findByUsername(username)
+            Manager manager = managerRepository.findByUsername(username)
                     .orElseThrow(() -> new DatabaseException("User not found"));
 
-            Roles role = roleService.findByName("manager");
+            Role role = roleService.findByName("manager");
             // Create authentication object
             ManagerDetailsExtImpl userDetails = new ManagerDetailsExtImpl(manager, Collections.singleton(new SimpleGrantedAuthority(role.getName())));
             Authentication authentication = new UsernamePasswordAuthenticationToken(

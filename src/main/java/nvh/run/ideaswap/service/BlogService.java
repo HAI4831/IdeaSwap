@@ -1,19 +1,22 @@
 package nvh.run.ideaswap.service;
 
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import nvh.run.ideaswap.data.dto.BlogRequest;
 import nvh.run.ideaswap.data.dto.NotificationRequest;
-import nvh.run.ideaswap.data.entity.Blogs;
-import nvh.run.ideaswap.data.entity.Users;
+import nvh.run.ideaswap.data.entity.Blog;
+import nvh.run.ideaswap.data.entity.Censorship;
+import nvh.run.ideaswap.data.entity.Status;
+import nvh.run.ideaswap.data.entity.User;
 import nvh.run.ideaswap.data.repository.BlogRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,7 +28,6 @@ import java.util.List;
 @Service
 @Transactional
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor
 @Slf4j
 public class BlogService {
     BlogRepository blogRepository;
@@ -33,19 +35,36 @@ public class BlogService {
     UserService userService;
     NotificationService notificationService;
     CloudinaryService cloudinaryService;
+    CensorshipsService censorshipsService;
+    @Autowired
+    public BlogService(
+            BlogRepository blogRepository,
+            CategoryService categoryService,
+            UserService userService,
+            NotificationService notificationService,
+            CloudinaryService cloudinaryService,
+            @Lazy CensorshipsService censorshipsService) {
+        this.blogRepository = blogRepository;
+        this.categoryService = categoryService;
+        this.userService = userService;
+        this.notificationService = notificationService;
+        this.cloudinaryService = cloudinaryService;
+        this.censorshipsService = censorshipsService;
+    }
+
 
     private static final Logger logger = LoggerFactory.getLogger(BannerService.class);
 
     @Cacheable(value = "blogs",key = "'page:' + #page + ':size:' + #size")
-    public List<Blogs> getAllBlogs(int page,int size) {
+    public List<Blog> getAllBlogs(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        List<Blogs> blogList;
+        List<Blog> blogList;
         try {
             blogList = blogRepository.findAll(pageable)
                     .stream()
                     .map(blog ->
-                            Blogs.builder()
+                            Blog.builder()
                                     .id(blog.getId())
                                     .content(blog.getContent())
                                     .url(blog.getUrl())
@@ -61,13 +80,13 @@ public class BlogService {
     }
 
     @Cacheable(value = "blogs")
-    public List<Blogs> getAllBlogs() {
-        List<Blogs> blogList;
+    public List<Blog> getAllBlogs() {
+        List<Blog> blogList;
         try {
             blogList = blogRepository.findAll()
                     .stream()
                     .map(blog ->
-                            Blogs.builder()
+                            Blog.builder()
                                     .id(blog.getId())
                                     .content(blog.getContent())
                                     .url(blog.getUrl())
@@ -83,8 +102,8 @@ public class BlogService {
     }
 
     @Cacheable(value = "blog",key="#id")
-    public Blogs getBlogById(String id) {
-        Blogs blog;
+    public Blog getBlogById(String id) {
+        Blog blog;
         try {
             blog= blogRepository.findById(id).orElseThrow(() -> new RuntimeException("Blog not found"));
         } catch (Exception e) {
@@ -96,17 +115,17 @@ public class BlogService {
     @CacheEvict(value = "blogs", allEntries = true)
     @CachePut(value = "blog")
 //    @CachePut(value = "blog",key = "#blogRequest.id", condition = "#blogRequest.id!=null")
-    public Blogs createBlog(BlogRequest blogRequest) {
+    public Blog createBlog(BlogRequest blogRequest) {
 //        Categories categories = categoryService.getCategoryById(blogRequest.getCategoryID());
-        Users user = userService.getUserById(blogRequest.getUserID());
-        String imageUrl = cloudinaryService.uploadImage(blogRequest.getImageBase64(),null);
-        Blogs blog;
+        User user = userService.getUserById(blogRequest.getUserID());
+        String imageUrl = cloudinaryService.uploadImage(blogRequest.getImageBase64(),null,"blog");
+        Blog blog;
         try {
 //            if(imageUrl.isEmpty()){
 //                throw new RuntimeException("upload image failed");
 //            }
             blog = blogRepository.save(
-                    Blogs.builder()
+                    Blog.builder()
                             .id(blogRequest.getId())
                             .userID(user.getId())
 //                            .categoryID(categories.getId())
@@ -116,6 +135,13 @@ public class BlogService {
                             .updatedDate(LocalDateTime.now())
                             .build()
             );
+            censorshipsService.createCensorship(Censorship.builder()
+                            .status(Status.pending)
+                            .contentID(blog.getId())
+                            .feedback("Blog is awaiting approval")
+                    .build());
+
+
         }catch (Exception e){
             throw new RuntimeException("Create Blog failed",e);
         }
@@ -130,18 +156,18 @@ public class BlogService {
     }
 
     @CachePut(value = "blog",key = "#id",condition = "#id!=null")
-    public Blogs updateBlog(String id, BlogRequest blogRequest) {
+    public Blog updateBlog(String id, BlogRequest blogRequest) {
         getBlogById(id);
 //        Categories categories = categoryService.getCategoryById(blogRequest.getCategoryID());
-        Users user = userService.getUserById(blogRequest.getUserID());
-        String imageUrl = cloudinaryService.uploadImage(blogRequest.getImageBase64(),null);
-        Blogs updatedBlog;
+        User user = userService.getUserById(blogRequest.getUserID());
+        String imageUrl = cloudinaryService.uploadImage(blogRequest.getImageBase64(),null,"blog");
+        Blog updatedBlog;
         try {
             if(imageUrl.isEmpty()){
                 throw new RuntimeException("upload image failed");
             }
             updatedBlog = blogRepository.save(
-                    Blogs.builder()
+                    Blog.builder()
                             .id(id)
                             .userID(user.getId())
 //                            .categoryID(categories.getId())
@@ -158,8 +184,8 @@ public class BlogService {
     }
 
     @CacheEvict(value = "blog",key = "#id", condition = "#id!=null")
-    public Blogs deleteBlog(String id) {
-        Blogs blog = getBlogById(id);
+    public Blog deleteBlog(String id) {
+        Blog blog = getBlogById(id);
         try {
             cloudinaryService.deleteImage(blog.getUrl(),null);
             blogRepository.delete(blog);

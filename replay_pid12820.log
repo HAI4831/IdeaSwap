@@ -1365,7 +1365,7 @@ instanceKlass org/codehaus/groovy/runtime/memoize/UnlimitedConcurrentCache
 instanceKlass org/codehaus/groovy/runtime/memoize/EvictableCache
 instanceKlass org/codehaus/groovy/ast/expr/MethodCall
 instanceKlass org/codehaus/groovy/ast/stmt/LoopingStatement
-instanceKlass org/codehaus/groovy/control/messages/Message
+instanceKlass org/codehaus/groovy/control/message/Message
 instanceKlass org/codehaus/groovy/ast/CodeVisitorSupport
 instanceKlass org/codehaus/groovy/ast/GroovyClassVisitor
 instanceKlass org/codehaus/groovy/transform/ErrorCollecting

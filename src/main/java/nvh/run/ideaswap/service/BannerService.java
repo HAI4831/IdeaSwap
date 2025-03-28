@@ -4,8 +4,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.dto.BannerRequest;
-import nvh.run.ideaswap.data.entity.Banners;
-import nvh.run.ideaswap.data.entity.Managers;
+import nvh.run.ideaswap.data.entity.Banner;
+import nvh.run.ideaswap.data.entity.Manager;
 import nvh.run.ideaswap.data.repository.BannerRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -29,7 +29,7 @@ public class BannerService {
     CloudinaryService cloudinaryService;
 
 //    @Cacheable(value = "banners", key = "'page:' + #page + ':size:' + #size", condition = "#page != null && #size!=null")
-    public Page<Banners> getAllBanners(int page, int size) {
+    public Page<Banner> getAllBanners(int page, int size) {
         try {
             Pageable pageable = PageRequest.of(page, size);
             return bannerRepository.findAll(pageable);
@@ -38,8 +38,8 @@ public class BannerService {
         }
     }
 //    @Cacheable(value = "banners")
-    public List<Banners> getAllBanners() {
-        List<Banners> banners ;
+    public List<Banner> getAllBanners() {
+        List<Banner> banners ;
         try {
             banners = bannerRepository.findAll();
         }
@@ -50,8 +50,8 @@ public class BannerService {
     }
 
     @Cacheable(value = "banner", key = "#id")
-    public Banners getBannerById(String id) {
-        Banners banner;
+    public Banner getBannerById(String id) {
+        Banner banner;
         try {
             banner = bannerRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Banner not found with ID: " + id));
@@ -61,8 +61,8 @@ public class BannerService {
         return banner;
     }
     @Cacheable(value = "banner", key = "#site")
-    public Banners getBannerBySite(String site) {
-        Banners banner;
+    public Banner getBannerBySite(String site) {
+        Banner banner;
         try {
             banner = bannerRepository.findBannerBySite(site);
         } catch (Exception e) {
@@ -71,10 +71,10 @@ public class BannerService {
         return banner;
     }
     @CachePut(value = "banner", key = "#bannerRequest.id")
-    public Banners createBanner(BannerRequest bannerRequest) {
-        Managers manager = managerService.getManagerById(bannerRequest.getManagerID());
-        Banners banner = getBannerBySite(bannerRequest.getSite());
-        String imageUrl = cloudinaryService.uploadImage(bannerRequest.getImageBase64(),null);
+    public Banner createBanner(BannerRequest bannerRequest) {
+        Manager manager = managerService.getManagerById(bannerRequest.getManagerID());
+        Banner banner = getBannerBySite(bannerRequest.getSite());
+        String imageUrl = cloudinaryService.uploadImage(bannerRequest.getImageBase64(),null,"banner");
         try {
             if(imageUrl.isEmpty()) {
                 throw new RuntimeException("Image url upload failed");
@@ -83,7 +83,7 @@ public class BannerService {
                 throw new RuntimeException("Banner already exists");
             }
             banner = bannerRepository.save(
-                    Banners.builder()
+                    Banner.builder()
                             .id(bannerRequest.getId())
                             .managerID(manager.getId())
                             .name(bannerRequest.getName())
@@ -100,10 +100,10 @@ public class BannerService {
     }
 
     @CachePut(value = "banner", key = "#id")
-    public Banners updateBanner(String id, BannerRequest bannerRequest) {
-        Managers manager = managerService.getManagerById(bannerRequest.getManagerID());
-        Banners banner = getBannerById(id);
-        String imageUrl = cloudinaryService.uploadImage(bannerRequest.getImageBase64(),null);
+    public Banner updateBanner(String id, BannerRequest bannerRequest) {
+        Manager manager = managerService.getManagerById(bannerRequest.getManagerID());
+        Banner banner = getBannerById(id);
+        String imageUrl = cloudinaryService.uploadImage(bannerRequest.getImageBase64(),null,"banner");
         try {
             if(imageUrl == null){
                 throw new RuntimeException("Banner image upload failed");
@@ -112,7 +112,7 @@ public class BannerService {
                 throw new RuntimeException("Banner cannot be found");
             }
             banner = bannerRepository.save(
-                    Banners.builder()
+                    Banner.builder()
                             .id(bannerRequest.getId())
                             .managerID(manager.getId())
                             .name(bannerRequest.getName())
@@ -130,8 +130,8 @@ public class BannerService {
 
     @CacheEvict(value = "banner", key = "#id")
 //    @CacheEvict(value = "banners", allEntries = true)
-    public Banners deleteBanner(String id) {
-        Banners banner = getBannerById(id);
+    public Banner deleteBanner(String id) {
+        Banner banner = getBannerById(id);
         try {
             String result = cloudinaryService.deleteImage(banner.getImageUrl(),null);
             if(result == null) {

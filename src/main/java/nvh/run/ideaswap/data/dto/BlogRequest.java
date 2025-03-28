@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
-import nvh.run.ideaswap.common.validator.IsObjectID;
+import nvh.run.ideaswap.validator.IsObjectID;
 
 import java.time.LocalDateTime;
 

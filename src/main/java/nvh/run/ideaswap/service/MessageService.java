@@ -4,9 +4,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.dto.MessageRequest;
-import nvh.run.ideaswap.data.entity.Conversations;
-import nvh.run.ideaswap.data.entity.Messages;
-import nvh.run.ideaswap.data.entity.Users;
+import nvh.run.ideaswap.data.entity.Conversation;
+import nvh.run.ideaswap.data.entity.Message;
+import nvh.run.ideaswap.data.entity.User;
 import nvh.run.ideaswap.data.repository.MessageRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -30,9 +30,9 @@ public class MessageService {
     UserService userService;
 
 //    @Cacheable(value = "messages",key = "'page:' + #page + ':size:' + #size")
-    public Page<Messages> getAllMessages(int page, int size) {
+    public Page<Message> getAllMessages(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Messages> messages;
+        Page<Message> messages;
         try {
             messages = messageRepository.findAll(pageable);
         } catch (Exception e) {
@@ -41,8 +41,8 @@ public class MessageService {
         return messages;
     }
 //    @Cacheable(value="messages")
-    public List<Messages> getAllMessages() {
-        List<Messages> messages;
+    public List<Message> getAllMessages() {
+        List<Message> messages;
         try {
             messages = messageRepository.findAll();
         } catch (Exception e) {
@@ -52,8 +52,8 @@ public class MessageService {
     }
 
     @Cacheable(value="message",key="#id",condition = "#id!=null")
-    public Messages getMessageById(String id) {
-        Messages message ;
+    public Message getMessageById(String id) {
+        Message message ;
         try {
             message = messageRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Message not found"));
@@ -64,10 +64,10 @@ public class MessageService {
     }
 
     @CachePut(value="message",key="#messageRequest.id",condition = "#messageRequest.id!=null")
-    public Messages createMessage(MessageRequest messageRequest) {
-        Conversations conversation = conversationsService.getConversationById(messageRequest.getConversationID());
-        Users user = userService.getUserById(messageRequest.getSenderID());
-        Messages message = Messages.builder()
+    public Message createMessage(MessageRequest messageRequest) {
+        Conversation conversation = conversationsService.getConversationById(messageRequest.getConversationID());
+        User user = userService.getUserById(messageRequest.getSenderID());
+        Message message = Message.builder()
                 .id(messageRequest.getId())
                 .senderID(user.getId())
                 .conversationID(conversation.getId())
@@ -87,11 +87,11 @@ public class MessageService {
     }
 
     @CachePut(value="message",key="#id",condition = "#id!=null")
-    public Messages updateMessage(String id, MessageRequest messageRequest) {
+    public Message updateMessage(String id, MessageRequest messageRequest) {
         getMessageById(id);
-        Conversations conversation = conversationsService.getConversationById(messageRequest.getConversationID());
-        Users user = userService.getUserById(messageRequest.getSenderID());
-        Messages message = Messages.builder()
+        Conversation conversation = conversationsService.getConversationById(messageRequest.getConversationID());
+        User user = userService.getUserById(messageRequest.getSenderID());
+        Message message = Message.builder()
                 .id(messageRequest.getId())
                 .senderID(user.getId())
                 .conversationID(conversation.getId())
@@ -103,7 +103,7 @@ public class MessageService {
                 .updatedAt(LocalDateTime.now())
                 .build();
         message.setId(id);
-        Messages updatedMessage;
+        Message updatedMessage;
         try {
             updatedMessage = messageRepository.save(message);
         } catch (Exception e) {
@@ -114,8 +114,8 @@ public class MessageService {
     }
 
     @CacheEvict(value="message",key="#id",condition = "#id!=null")
-    public Messages deleteMessage(String id) {
-        Messages message = getMessageById(id);
+    public Message deleteMessage(String id) {
+        Message message = getMessageById(id);
         try {
             messageRepository.deleteById(id);
         } catch (Exception e) {
@@ -125,8 +125,8 @@ public class MessageService {
     }
 
     @Cacheable(value="message",key="#conversationId",condition = "#conversationId!=null")
-    public List<Messages> getMessageByconversationId(String conversationId) {
-        List<Messages> messageList ;
+    public List<Message> getMessageByconversationId(String conversationId) {
+        List<Message> messageList ;
         try {
             messageList = messageRepository.findByConversationID(conversationId);
         } catch (Exception e) {

@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import lombok.Builder;
 import lombok.Data;
-import nvh.run.ideaswap.data.entity.Managers;
-import nvh.run.ideaswap.data.entity.Users;
+import nvh.run.ideaswap.data.entity.Manager;
+import nvh.run.ideaswap.data.entity.User;
 
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -15,6 +15,6 @@ import nvh.run.ideaswap.data.entity.Users;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
 public class RegisterResponse {
-    private Users user;
-    private Managers manager;
+    private User user;
+    private Manager manager;
 }

@@ -3,7 +3,7 @@ package nvh.run.ideaswap.data.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
-import nvh.run.ideaswap.common.validator.IsObjectID;
+import nvh.run.ideaswap.validator.IsObjectID;
 import nvh.run.ideaswap.data.entity.Status;
 
 import java.time.LocalDateTime;

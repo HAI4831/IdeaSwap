@@ -3,13 +3,17 @@ package nvh.run.ideaswap.service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import nvh.run.ideaswap.common.exceptions.exception.ExceptionWrapper;
-import nvh.run.ideaswap.common.exceptions.exception.custom.auth.UsernameAlreadyExistException;
+import nvh.run.ideaswap.data.dto.NotificationRequest;
 import nvh.run.ideaswap.data.dto.UserRequest;
-import nvh.run.ideaswap.data.entity.Codes;
-import nvh.run.ideaswap.data.entity.Roles;
-import nvh.run.ideaswap.data.entity.Users;
+import nvh.run.ideaswap.data.dto.auth.request.RegisterRequest;
+import nvh.run.ideaswap.data.entity.Code;
+import nvh.run.ideaswap.data.entity.Gender;
+import nvh.run.ideaswap.data.entity.Role;
+import nvh.run.ideaswap.data.entity.User;
 import nvh.run.ideaswap.data.repository.IUserRepository;
+import nvh.run.ideaswap.exceptions.DatabaseException;
+import nvh.run.ideaswap.exceptions.UsernameAlreadyExistException;
+import nvh.run.ideaswap.exceptions.custom.ExceptionWrapper;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -21,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -33,11 +38,13 @@ public class UserService {
     PasswordEncoder passwordEncoder;
     CloudinaryService cloudinaryService;
     CodeService codeService;
+    NotificationService notificationService;
+
 
 //    @Cacheable(value = "users",key = "'page:' + #page + ':size:' + #size")
-    public Page<Users> getAllUsers(int page, int size) {
+    public Page<User> getAllUsers(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Users> users ;
+        Page<User> users ;
         try {
             users = iUserRepository.findAll(pageable);
         } catch (Exception e) {
@@ -46,8 +53,8 @@ public class UserService {
         return users;
     }
 //    @Cacheable(value="users")
-    public List<Users> getAllUsers() {
-        List<Users> users ;
+    public List<User> getAllUsers() {
+        List<User> users ;
         try {
             users = iUserRepository.findAll();
         } catch (Exception e) {
@@ -57,98 +64,123 @@ public class UserService {
     }
 
     @Cacheable(value = "user", key = "#id", condition = "#id != null")
-    public Users getUserById(String id) {
+    public User getUserById(String id) {
         return getUserByIdInternal(id); // Tách logic ra khỏi @Cacheable
     }
     //thử dùng wrapper
-    private Users getUserByIdInternal(String id) {
+    private User getUserByIdInternal(String id) {
         return ExceptionWrapper.RuntimeWrapper(() ->
                         iUserRepository.findById(id)
                                 .orElseThrow(() -> new RuntimeException("User not found")),
                 "Retrieve User By ID failed"
         );
     }
-//    @CachePut(value="user",key="#userRequest.id",condition = "#userRequest.id!=null")
-//    public Users createUser(UserRequest userRequest) {
-//        Users user;
-//        try {
-//            String imageUrl;
-//            if(userRequest.getRating()==null) userRequest.setRating(0);
-//            if(userRequest.getAvatar()==null) imageUrl= "https://antimatter.vn/wp-content/uploads/2022/11/anh-avatar-trang-fb-mac-dinh.jpg";
-//            else imageUrl = cloudinaryService.uploadImage(userRequest.getAvatar());
-//            if (imageUrl == null) {
-//                throw new RuntimeException("Course image upload failed");
-//            }
-//            if(existsByEmail(userRequest.getEmail())) throw new RuntimeException("Email already exist");
-//            if(existsByPhoneNumber(userRequest.getPhoneNumber())) throw new RuntimeException("Phone number already exist");
-//            if(existsByUsername(userRequest.getUsername())) throw new RuntimeException("Username already exist");
-//            Roles role = roleService.getRoleById(userRequest.getRoleID());
-//            if(userRequest.getPassword()==null) userRequest.setPassword("$2a$10$ZD/EROx56XOvcutCg9jHxeXrz.iqMstXUCksTyvBb8gfD8SPPm7uW");
-//            user = iUserRepository.save(
-//                    Users.builder()
-//                            .id(userRequest.getId())
-//                            .roleID(role.getId())
-//                            .email(userRequest.getEmail())
-//                            .username(userRequest.getUsername())
-//                            .password(userRequest.getPassword()!=null ? passwordEncoder.encode(userRequest.getPassword()):"$2a$10$ZD/EROx56XOvcutCg9jHxeXrz.iqMstXUCksTyvBb8gfD8SPPm7uW")
-//                            .firstName(userRequest.getFirstName()!=null ? userRequest.getFirstName():"")
-//                            .lastName(userRequest.getLastName()!=null ? userRequest.getLastName():"")
-//                            .phoneNumber(userRequest.getPhoneNumber())
-//                            .address(userRequest.getAddress()!=null ? userRequest.getAddress():"")
-//                            .gender(userRequest.getGender()!=null ? userRequest.getGender(): Gender.male)
-//                            .avatar(imageUrl!=null ? imageUrl:"https://antimatter.vn/wp-content/uploads/2022/11/anh-avatar-trang-fb-mac-dinh.jpg")
-//                            .description(userRequest.getDescription())
-//                            .rating(userRequest.getRating()!=null ? userRequest.getRating():0)
-//                            .version(2L)
-//                            .birthday(userRequest.getBirthday())
-//                            .createdAt(LocalDateTime.now())
-//                            .updatedAt(LocalDateTime.now())
-//                            .build()
-//            );
-//        } catch (Exception e) {
-//            throw new RuntimeException("Create User failed",e);
-//        }
-//        return user;
-//    }
-    @Cacheable(value="user",key="#id",condition = "#id!=null")
-    public Users updateUser(String id, UserRequest userRequest) {
-        getUserById(id);
-        Roles role = roleService.getRoleById(userRequest.getRoleID());
-        Users updatedUser ;
+    public User createUser(RegisterRequest registerRequest) {
+        Role role = roleService.findByName("user");
+        User user;
         try {
-            String imageUrl = cloudinaryService.uploadImage(userRequest.getAvatar(),null);
-//            if (imageUrl == null) {
-//                throw new RuntimeException("Course image upload failed");
-//            }
-            updatedUser = iUserRepository.save(
-                    Users.builder()
-                            .id(id)
-                            .roleID(role.getId())
-                            .email(userRequest.getEmail())
-                            .username(userRequest.getUsername())
-                            .password(passwordEncoder.encode(userRequest.getPassword()))
-                            .firstName(userRequest.getFirstName())
-                            .lastName(userRequest.getLastName())
-                            .phoneNumber(userRequest.getPhoneNumber())
-                            .address(userRequest.getAddress())
-                            .gender(userRequest.getGender())
-                            .avatar(imageUrl)
-                            .description(userRequest.getDescription())
-                            .rating(userRequest.getRating())
-                            .version(2L)
-                            .birthday(userRequest.getBirthday())
-                            .createdAt(LocalDateTime.now())
-                            .updatedAt(LocalDateTime.now())
-                            .build()
+
+            // Kiểm tra xem email, username, phoneNumber có bị trùng không
+            iUserRepository.existsByUsername(registerRequest.getUsername()).orElseThrow(
+                    ()->new RuntimeException("Username already exists.")
             );
+            if (iUserRepository.existsByEmail(registerRequest.getEmail())) {
+                throw new RuntimeException("Email already in use.");
+            }
+
+            if (registerRequest.getPhoneNumber() != null && iUserRepository.existsByPhoneNumber(registerRequest.getPhoneNumber())) {
+                throw new RuntimeException("Phone number already in use.");
+            }
+
+            if (iUserRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
+                throw new RuntimeException("Can't register new user because the user already exists.");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("An error occurred while checking the user: " + e.getMessage(), e);
+        }
+        try {
+
+            user= iUserRepository.save(
+                    //map
+                    User.builder()
+                            .username(registerRequest.getUsername())
+                            .password(registerRequest.getPassword() ==null ? passwordEncoder.encode("abCD@1234") : passwordEncoder.encode(registerRequest.getPassword()))  // Encode password
+                            .firstName(registerRequest.getFirstName()==null ? "":registerRequest.getFirstName())
+                            .lastName(registerRequest.getLastName()==null?"":registerRequest.getLastName())
+                            .email(registerRequest.getEmail())
+                            .roleID(role.getId())
+                            .phoneNumber(registerRequest.getPhoneNumber() == null ? "" : registerRequest.getPhoneNumber() )
+                            .rating(0)
+                            .address(registerRequest.getAddress() == null ? "Ninh Bình" : registerRequest.getAddress())
+                            .gender(registerRequest.getGender() == null ? Gender.Male : registerRequest.getGender())
+                            .avatar("https://antimatter.vn/wp-content/uploads/2022/11/anh-avatar-trang-fb-mac-dinh.jpg")
+                            .description(registerRequest.getDescription()==null ? "" :registerRequest.getDescription() )
+                            .build());
+        }
+        catch (Exception e){
+            throw new DatabaseException("Register failed for user ", e);
+        }
+        notificationService.createNotification(
+                NotificationRequest.builder()
+                        .id(null)
+                        .userIDs(List.of(user.getId()))
+                        .description("A new user just registered")
+                        .imageUrl(user.getAvatar())
+                        .build()
+        );
+        return user;
+    }
+
+    @Cacheable(value="user",key="#id",condition = "#id!=null")
+    public User updateUser(String id, UserRequest userRequest) {
+
+        User updatedUser = iUserRepository.findById(id).orElseThrow(()-> new RuntimeException("update user failed , user not found with id "+id)) ;
+        try {
+            // Kiểm tra xem email, username, phoneNumber có bị trùng không
+            if (userRequest.getEmail() != null && iUserRepository.existsByEmailAndIdNot(userRequest.getEmail(), id)) {
+                throw new RuntimeException("Email already in use by another user.");
+            }
+
+            if (userRequest.getUsername() != null && iUserRepository.existsByUsernameAndIdNot(userRequest.getUsername(), id)) {
+                throw new RuntimeException("Username already in use by another user.");
+            }
+
+            if (userRequest.getPhoneNumber() != null && iUserRepository.existsByPhoneNumberAndIdNot(userRequest.getPhoneNumber(), id)) {
+                throw new RuntimeException("Phone number already in use by another user.");
+            }
+
+
+            // Nếu có avatar mới thì upload lên Cloudinary
+            if (userRequest.getImageBase64() != null && !userRequest.getImageBase64().isEmpty()) {
+                String imageUrl = cloudinaryService.uploadImage(userRequest.getImageBase64(), null, "avatar");
+                updatedUser.setAvatar(imageUrl);
+            }
+
+            // Cập nhật các giá trị nếu chúng không null
+            Optional.ofNullable(userRequest.getEmail()).ifPresent(updatedUser::setEmail);
+            Optional.ofNullable(userRequest.getUsername()).ifPresent(updatedUser::setUsername);
+            Optional.ofNullable(userRequest.getPassword()).map(passwordEncoder::encode).ifPresent(updatedUser::setPassword);
+            Optional.ofNullable(userRequest.getFirstName()).ifPresent(updatedUser::setFirstName);
+            Optional.ofNullable(userRequest.getLastName()).ifPresent(updatedUser::setLastName);
+            Optional.ofNullable(userRequest.getPhoneNumber()).ifPresent(updatedUser::setPhoneNumber);
+            Optional.ofNullable(userRequest.getAddress()).ifPresent(updatedUser::setAddress);
+            Optional.ofNullable(userRequest.getGender()).ifPresent(updatedUser::setGender);
+            Optional.ofNullable(userRequest.getDescription()).ifPresent(updatedUser::setDescription);
+            Optional.ofNullable(userRequest.getBirthday()).ifPresent(updatedUser::setBirthday);
+
+            // Cập nhật thời gian chỉnh sửa
+            updatedUser.setUpdatedAt(LocalDateTime.now());
+
+            // Lưu lại đối tượng đã được cập nhật
+            return iUserRepository.save(updatedUser);
+
         } catch (Exception e) {
             throw new RuntimeException("Update User failed",e);
         }
-        return updatedUser;
     }
     @CacheEvict(value="user",key="#id",condition = "#id!=null")
-    public Users deleteUser(String id) {
-       Users user= getUserById(id);
+    public User deleteUser(String id) {
+       User user= getUserById(id);
         try {
             iUserRepository.deleteById(id);
         } catch (Exception e) {
@@ -157,8 +189,8 @@ public class UserService {
         return user;
     }
     @Cacheable(value="user",key="#username",condition = "#username!=null")
-    public Users findByUsername(String username) {
-        Users user;
+    public User findByUsername(String username) {
+        User user;
         try {
             user=iUserRepository.findByUsername(username).orElseThrow(()->new RuntimeException("User not found with username:{}"+username));
         }
@@ -168,8 +200,8 @@ public class UserService {
         return user;
     }
     @Cacheable(value="user",key="#id",condition = "#id!=null")
-    public Users findById(String id) {
-        Users user ;
+    public User findById(String id) {
+        User user ;
         try {
             user = iUserRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         } catch (Exception e) {
@@ -178,9 +210,9 @@ public class UserService {
         return user;
     }
     @Cacheable(value="user",key="#phoneNumber",condition = "#phoneNumber!=null")
-    public Users findByPhoneNumber(String phoneNumber){
+    public User findByPhoneNumber(String phoneNumber){
         log.info("Find By Phone Number:{}",phoneNumber);
-        Users user ;
+        User user ;
         try {
            user = iUserRepository.findByPhoneNumber(phoneNumber).orElseThrow(()->new RuntimeException("User not found with phoneNumber:{}"+phoneNumber));
         } catch (RuntimeException e) {
@@ -189,8 +221,8 @@ public class UserService {
         return user;
     }
     @Cacheable(value="user",key="#email",condition = "#email!=null")
-    public Users findUserByEmail(String email){
-        Users user ;
+    public User findUserByEmail(String email){
+        User user ;
         try {
             user = iUserRepository.findUsersByEmail(email);
         } catch (RuntimeException e) {
@@ -208,8 +240,8 @@ public class UserService {
         return iUserRepository.existsByEmail(email);
     }
 
-    public Users forgetPassword(String email, String username) {
-        Users user;
+    public User forgetPassword(String email, String username) {
+        User user;
         try {
             user = iUserRepository.findUsersByEmailOrUsernameContains(email,username);
         } catch (RuntimeException e) {
@@ -218,10 +250,10 @@ public class UserService {
         return user;
     }
 
-    public Users resetPassword(String id, String email, String newPassword, int code) {
-        Users user;
+    public User resetPassword(String id, String email, String newPassword, int code) {
+        User user;
         try {
-            Codes checkCode = codeService.verifyCode(email,code);
+            Code checkCode = codeService.verifyCode(email,code);
             user = getUserById(id);
             user.setPassword(passwordEncoder.encode(newPassword));
             user=iUserRepository.save(user);
@@ -230,41 +262,4 @@ public class UserService {
         }
         return user;
     }
-//    public Users createUser(UserRequest userRequest) {
-//        Users user;
-//        try {
-//            String imageUrl = cloudinaryService.uploadImage(userRequest.getAvatar());
-//            if (imageUrl == null) {
-//                throw new RuntimeException("Course image upload failed");
-//            }
-//            if(existsByEmail(userRequest.getEmail())) throw new RuntimeException("Email already exist");
-//            if(existsByPhoneNumber(userRequest.getPhoneNumber())) throw new RuntimeException("Phone number already exist");
-//            if(existsByUsername(userRequest.getUsername())) throw new RuntimeException("Username already exist");
-//            Roles role = roleService.getRoleById(userRequest.getRoleID());
-//            user = iUserRepository.save(
-//                    Users.builder()
-//                            .id(userRequest.getId())
-//                            .roleID(role.getId())
-//                            .email(userRequest.getEmail())
-//                            .username(userRequest.getUsername())
-//                            .password(passwordEncoder.encode(userRequest.getPassword()))
-//                            .firstName(userRequest.getFirstName())
-//                            .lastName(userRequest.getLastName())
-//                            .phoneNumber(userRequest.getPhoneNumber())
-//                            .address(userRequest.getAddress())
-//                            .gender(userRequest.getGender())
-//                            .avatar(imageUrl)
-//                            .description(userRequest.getDescription())
-//                            .rating(userRequest.getRating())
-//                            .version(2L)
-//                            .birthday(userRequest.getBirthday())
-//                            .createdAt(LocalDateTime.now())
-//                            .updatedAt(LocalDateTime.now())
-//                            .build()
-//            );
-//        } catch (Exception e) {
-//            throw new RuntimeException("Create User failed",e);
-//        }
-//        return user;
-//    }
 }

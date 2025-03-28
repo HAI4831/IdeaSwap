@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.dto.NotificationRequest;
 import nvh.run.ideaswap.data.entity.*;
-import nvh.run.ideaswap.data.repository.CensorshipsRepository;
+import nvh.run.ideaswap.data.repository.CensorshipRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -25,30 +25,30 @@ import java.util.function.Function;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class CensorshipsService {
-    CensorshipsRepository censorshipsRepository;
+    CensorshipRepository censorshipRepository;
     NotificationService notificationService;
     BlogService blogService;
     UserService userService;
     VideoService videoService;
     DocumentsService documentsService;
     //    @Cacheable(value="censorship")
-    public List<Censorships> getAllCensorships() {
-        List<Censorships> censorships;
+    public List<Censorship> getAllCensorships() {
+        List<Censorship> censorships;
         try {
-            censorships = censorshipsRepository.findAll();
+            censorships = censorshipRepository.findAll();
         } catch (Exception e) {
             throw new RuntimeException("Get all censorships failed",e);
         }
         return censorships;
     }
     @CachePut(value="censorship",key="#censorship.id",condition = "#censorship.id!=null")
-    public Censorships updateCensorshipByContentID(@Valid Censorships censorship) {
-        Censorships updatedCensorship = getCensorshipByContentID(censorship.getContentID());
+    public Censorship updateCensorshipByContentID(@Valid Censorship censorship) {
+        Censorship updatedCensorship = getCensorshipByContentID(censorship.getContentID());
         try {
             if (updatedCensorship == null) {
                 throw new RuntimeException("Update censorship failed: Can't find censorship by contentID");
             }
-            updatedCensorship = censorshipsRepository.save(censorship);
+            updatedCensorship = censorshipRepository.save(censorship);
         } catch (Exception e) {
             throw new RuntimeException("Update censorship failed",e);
         }
@@ -61,16 +61,16 @@ public class CensorshipsService {
 
         String contentType = null;
         Object content = null;
-        Users user = null;
+        User user = null;
 
         for (var entry : contentFetchers.entrySet()) {
             content = entry.getValue().apply(contentID);
             if (content != null) {
                 contentType = entry.getKey();
                 user = switch (contentType) {
-                    case "blog" -> userService.getUserById(((Blogs) content).getUserID());
-                    case "video" -> userService.getUserById(((Videos) content).getUserID());
-                    case "document" -> userService.getUserById(((Documents) content).getUserID());
+                    case "blog" -> userService.getUserById(((Blog) content).getUserID());
+                    case "video" -> userService.getUserById(((Video) content).getUserID());
+                    case "document" -> userService.getUserById(((Document) content).getUserID());
                     default -> null;
                 };
                 break;
@@ -78,9 +78,9 @@ public class CensorshipsService {
         }
 
         if (content != null && user != null) {
-            String imageUrl = (content instanceof Blogs) ? ((Blogs) content).getUrl()
-                    : (content instanceof Videos) ? ((Videos) content).getImageUrl()
-                    : (content instanceof Documents) ? ((Documents) content).getImageUrl()
+            String imageUrl = (content instanceof Blog) ? ((Blog) content).getUrl()
+                    : (content instanceof Video) ? ((Video) content).getImageUrl()
+                    : (content instanceof Document) ? ((Document) content).getImageUrl()
                     : null;
 
             notificationService.createNotification(
@@ -95,10 +95,10 @@ public class CensorshipsService {
         return updatedCensorship;
     }
     @Cacheable(value="censorship",key="#id",condition = "#id!=null")
-    public Censorships getCensorshipById(String id) {
-        Censorships censorship;
+    public Censorship getCensorshipById(String id) {
+        Censorship censorship;
         try {
-            censorship = censorshipsRepository.findById(id)
+            censorship = censorshipRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Censorship not found"));
         } catch (Exception e) {
             throw new RuntimeException("Get censorship id:"+id+" failed",e);
@@ -106,12 +106,12 @@ public class CensorshipsService {
         return censorship;
     }
     @CachePut(value="censorship",key="#id",condition = "#id!=null")
-    public Censorships updateCensorship(String id, Censorships censorship) {
+    public Censorship updateCensorship(String id, Censorship censorship) {
         getCensorshipById(id);
-        Censorships updatedCensorship;
+        Censorship updatedCensorship;
         censorship.setId(id);
         try {
-            updatedCensorship = censorshipsRepository.save(censorship);
+            updatedCensorship = censorshipRepository.save(censorship);
         } catch (Exception e) {
             throw new RuntimeException("Update censorship with id:"+id+" failed",e);
         }
@@ -128,30 +128,30 @@ public class CensorshipsService {
         return updatedCensorship;
     }
     @Cacheable(value="censorship",key="#contentID",condition = "#contentID!=null")
-    public  Censorships getCensorshipByContentID(String contentID) {
-        Censorships censorship=null;
+    public Censorship getCensorshipByContentID(String contentID) {
+        Censorship censorship=null;
         try {
-            censorship = censorshipsRepository.findCensorshipsByContentID(contentID);
+            censorship = censorshipRepository.findCensorshipsByContentID(contentID);
         } catch (Exception e) {
             throw new RuntimeException("censorship Find By ContentID failed",e);
         }
         return censorship;
     }
 //    @Cacheable(value = "censorships",key = "'page:' + #page + ':size:' + #size")
-    public Page<Censorships> getAllCensorships(int page, int size) {
+    public Page<Censorship> getAllCensorships(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Censorships> censorshipsPage;
+        Page<Censorship> censorshipsPage;
         try {
-            censorshipsPage = censorshipsRepository.findAll(pageable);
+            censorshipsPage = censorshipRepository.findAll(pageable);
         } catch (Exception e) {
             throw new RuntimeException("Get all censorships failed",e);
         }
         return censorshipsPage;
     }
     @CachePut(value="censorship",key="#censorship.id",condition = "#censorship.id!=null")
-    public Censorships createCensorship(Censorships censorship) {
+    public Censorship createCensorship(Censorship censorship) {
         try {
-            censorship = censorshipsRepository.save(censorship);
+            censorship = censorshipRepository.save(censorship);
         } catch (Exception e) {
             throw new RuntimeException("Create censorship failed",e);
         }
@@ -165,13 +165,13 @@ public class CensorshipsService {
         return censorship;
     }
     @CacheEvict(value="censorship",key="#id")
-    public Censorships deleteCensorship(String id) {
-        Censorships censorships = getCensorshipById(id);
+    public Censorship deleteCensorship(String id) {
+        Censorship censorship = getCensorshipById(id);
         try {
-            censorshipsRepository.deleteById(id);
+            censorshipRepository.deleteById(id);
         } catch (Exception e) {
             throw new RuntimeException("Delete censorship failed",e);
         }
-        return censorships;
+        return censorship;
     }
 }

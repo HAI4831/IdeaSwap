@@ -5,8 +5,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.dto.ManagerRequest;
-import nvh.run.ideaswap.data.entity.Managers;
-import nvh.run.ideaswap.data.entity.Roles;
+import nvh.run.ideaswap.data.entity.Manager;
+import nvh.run.ideaswap.data.entity.Role;
 import nvh.run.ideaswap.data.repository.IManagerRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public class ManagerService {
     private final CloudinaryService cloudinaryService;
 
 //    @Cacheable(value = "managers",key = "'page:' + #page + ':size:' + #size")
-    public Page<Managers> getAllManagers(int page, int size) {
+    public Page<Manager> getAllManagers(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         try {
             return managerRepository.findAll(pageable);
@@ -45,7 +45,7 @@ public class ManagerService {
         }
     }
 //    @Cacheable(value="managers")
-    public List<Managers> getAllManagers() {
+    public List<Manager> getAllManagers() {
         try {
             return managerRepository.findAll();
         } catch (Exception e) {
@@ -54,7 +54,7 @@ public class ManagerService {
     }
 
     @Cacheable(value="manager",key="#id",condition = "#id!=null")
-    public Managers getManagerById(String id) {
+    public Manager getManagerById(String id) {
         try {
             return managerRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Manager not found"));
@@ -63,7 +63,7 @@ public class ManagerService {
         }
     }
     @Cacheable(value="manager",key="#username",condition = "#username!=null")
-    public Managers findManagerByUsername(String username) {
+    public Manager findManagerByUsername(String username) {
         try {
             return managerRepository.findByUsername(username)
                     .orElseThrow(() -> new RuntimeException("Manager not found"));
@@ -73,15 +73,15 @@ public class ManagerService {
     }
 
     @CachePut(value="manager",key="#managerRequest._id",condition = "#managerRequest._id!=null")
-    public Managers createManager(@Valid ManagerRequest managerRequest) {
-        Roles role = roleService.getRoleById(managerRequest.getRoleID());
+    public Manager createManager(@Valid ManagerRequest managerRequest) {
+        Role role = roleService.getRoleById(managerRequest.getRoleID());
 
         try {
-            String imageUrl = cloudinaryService.uploadImage(managerRequest.getAvatar(),null);
+            String imageUrl = cloudinaryService.uploadImage(managerRequest.getAvatar(),null,"avatarManager");
 //            if (imageUrl == null) {
 //                throw new RuntimeException("Course image upload failed");
 //            }
-            Managers manager = Managers.builder()
+            Manager manager = Manager.builder()
                     .id(managerRequest.get_id())
                     .roleID(role.getId())
                     .firstName(managerRequest.getFirstName())
@@ -109,16 +109,16 @@ public class ManagerService {
     }
 
     @CachePut(value="manager",key="#id")
-    public Managers updateManager(String id, ManagerRequest managerRequest) {
+    public Manager updateManager(String id, ManagerRequest managerRequest) {
         getManagerById(id);
-        Roles role = roleService.getRoleById(managerRequest.getRoleID());
+        Role role = roleService.getRoleById(managerRequest.getRoleID());
 
         try {
-            String imageUrl = cloudinaryService.uploadImage(managerRequest.getAvatar(),null);
+            String imageUrl = cloudinaryService.uploadImage(managerRequest.getAvatar(),null,"avatarManager");
             if (imageUrl == null) {
                 throw new RuntimeException("Course image upload failed");
             }
-            Managers manager = Managers.builder()
+            Manager manager = Manager.builder()
                     .id(managerRequest.get_id())
                     .roleID(role.getId())
                     .firstName(managerRequest.getFirstName())
@@ -140,8 +140,8 @@ public class ManagerService {
     }
 
     @CacheEvict(value="manager",key="#id")
-    public Managers deleteManager(String id) {
-        Managers manager = getManagerById(id);
+    public Manager deleteManager(String id) {
+        Manager manager = getManagerById(id);
         try {
             managerRepository.deleteById(id);
         } catch (Exception e) {

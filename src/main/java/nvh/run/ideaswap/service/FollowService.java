@@ -4,8 +4,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.dto.FollowRequest;
-import nvh.run.ideaswap.data.entity.Follows;
-import nvh.run.ideaswap.data.entity.Users;
+import nvh.run.ideaswap.data.entity.Follow;
+import nvh.run.ideaswap.data.entity.User;
 import nvh.run.ideaswap.data.repository.FollowRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -14,9 +14,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,9 +28,9 @@ public class FollowService {
     UserService userService;
 
 //    @Cacheable(value = "follows",key = "'page:' + #page + ':size:' + #size")
-    public Page<Follows> getAllFollows(int page, int size) {
+    public Page<Follow> getAllFollows(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Follows> follows;
+        Page<Follow> follows;
         try {
             follows = followRepository.findAll(pageable);
         } catch (Exception e) {
@@ -37,8 +39,8 @@ public class FollowService {
         return follows;
     }
 //    @Cacheable("follows")
-    public List<Follows> getAllFollows() {
-        List<Follows> follows;
+    public List<Follow> getAllFollows() {
+        List<Follow> follows;
         try {
             follows = followRepository.findAll();
         } catch (Exception e) {
@@ -48,8 +50,8 @@ public class FollowService {
     }
 
     @Cacheable(value="follow",key="#userID",condition = "#userID!=null")
-    public List<Follows> getFollowsByUserID(String userID) {
-        List<Follows> follows ;
+    public List<Follow> getFollowsByUserID(String userID) {
+        List<Follow> follows ;
         try {
             follows = followRepository.findByUserID(userID);
         } catch (Exception e) {
@@ -58,8 +60,8 @@ public class FollowService {
         return follows;
     }
     @Cacheable(value = "follow",key="#id",condition = "#id!=null")
-    public Follows getFollowById(String id) {
-        Follows follow;
+    public Follow getFollowById(String id) {
+        Follow follow;
         try {
             follow = followRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Follow not found"));
@@ -70,13 +72,13 @@ public class FollowService {
     }
 
     @CachePut(value="follow",key="#followRequest.id",condition = "#followRequest.id!=null")
-    public Follows createFollow(FollowRequest followRequest) {
-        Users user=userService.getUserById(followRequest.getUserID());
-        Users follower=userService.getUserById(followRequest.getFollowerID());
-        Follows follow;
+    public Follow createFollow(FollowRequest followRequest) {
+        User user=userService.getUserById(followRequest.getUserID());
+        User follower=userService.getUserById(followRequest.getFollowerID());
+        Follow follow;
         try {
             follow = followRepository.save(
-                    Follows.builder()
+                    Follow.builder()
                             .id(followRequest.getId())
                             .followerID(follower.getId())
                             .userID(user.getId())
@@ -91,8 +93,8 @@ public class FollowService {
     }
 
     @CacheEvict(value="follow",key="#id",condition = "#id!=null")
-    public Follows deleteFollow(String id) {
-        Follows follow = getFollowById(id);
+    public Follow deleteFollowById(String id) {
+        Follow follow = getFollowById(id);
         try {
             followRepository.deleteById(id);
         } catch (Exception e) {
@@ -100,4 +102,20 @@ public class FollowService {
         }
         return follow;
     }
+
+    @Transactional
+    public Follow deleteFollow(FollowRequest followRequest) {
+        Optional<Follow> followOpt = followRepository.findByFollowerIDAndUserID(
+                followRequest.getFollowerID(),
+                followRequest.getUserID());
+
+        if (followOpt.isEmpty()) {
+            throw new RuntimeException("Delete failed, Follow not found with follower ID: "
+                    + followRequest.getFollowerID() + " and user ID: " + followRequest.getUserID());
+        }
+
+        followRepository.delete(followOpt.get());
+        return followOpt.get();
+    }
+
 }

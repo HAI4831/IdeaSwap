@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
-import nvh.run.ideaswap.common.validator.IsObjectID;
+import nvh.run.ideaswap.validator.IsObjectID;
 
 import java.time.LocalDateTime;
 @Data
@@ -20,7 +20,7 @@ public class VideoRequest {
     private String courseID;//course
     private String title;
     private String description;
-    private String imageUrl;//base64
+    private String imageBase64;
 //    private MultipartFile imageUrl;
     private String videoUrl;
     private int view;

@@ -4,8 +4,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.dto.ShareRequest;
-import nvh.run.ideaswap.data.entity.Shares;
-import nvh.run.ideaswap.data.entity.Users;
+import nvh.run.ideaswap.data.entity.Share;
+import nvh.run.ideaswap.data.entity.User;
 import nvh.run.ideaswap.data.repository.ShareRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -28,9 +28,9 @@ public class ShareService {
     UserService userService;
 
 //    @Cacheable(value = "shares",key = "'page:' + #page + ':size:' + #size")
-    public Page<Shares> getAll(int page, int size) {
+    public Page<Share> getAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Shares> sharesList;
+        Page<Share> sharesList;
         try {
             sharesList = shareRepository.findAll(pageable);
         } catch (Exception e) {
@@ -39,19 +39,19 @@ public class ShareService {
         return sharesList;
     }
 //    @Cacheable(value="shares")
-    public List<Shares> getAll() {
-        List<Shares> sharesList;
+    public List<Share> getAll() {
+        List<Share> shareList;
         try {
-            sharesList = shareRepository.findAll();
+            shareList = shareRepository.findAll();
         } catch (Exception e) {
             throw new RuntimeException("Find all shares failed", e);
         }
-        return sharesList;
+        return shareList;
     }
 
     @Cacheable(value="share",key="#id",condition = "#id!=null")
-    public Shares getById(String id) {
-        Shares share;
+    public Share getById(String id) {
+        Share share;
         try {
             share = shareRepository.findById(id).orElse(null);
         } catch (Exception e) {
@@ -61,12 +61,12 @@ public class ShareService {
     }
 
     @CachePut(value="share",key="#shareRequest.id",condition = "#shareRequest.id!=null")
-    public Shares save(ShareRequest shareRequest) {
-        Shares share;
-        Users user = userService.getUserById(shareRequest.getUserID());
+    public Share save(ShareRequest shareRequest) {
+        Share share;
+        User user = userService.getUserById(shareRequest.getUserID());
         try {
             share = shareRepository.save(
-                    Shares.builder()
+                    Share.builder()
                             .userID(user.getId())
                             .referenceID(shareRequest.getReferenceID())
                             .createdAt(LocalDateTime.now())
@@ -81,13 +81,13 @@ public class ShareService {
     }
 
     @Cacheable(value="share",key="#id",condition = "#id!=null")
-    public Shares update(String id, ShareRequest shareRequest) {
-        Shares updatedShare;
-        Users user = userService.getUserById(shareRequest.getUserID());
-        Shares share = getById(id);
+    public Share update(String id, ShareRequest shareRequest) {
+        Share updatedShare;
+        User user = userService.getUserById(shareRequest.getUserID());
+        Share share = getById(id);
         try {
             updatedShare = shareRepository.save(
-                    Shares.builder()
+                    Share.builder()
                             .userID(user.getId())
                             .referenceID(shareRequest.getReferenceID())
                             .createdAt(share.getCreatedAt())
@@ -102,8 +102,8 @@ public class ShareService {
     }
 
     @CacheEvict(value="share",key="#id",condition = "#id!=null")
-    public Shares delete(String id) {
-        Shares share = getById(id);
+    public Share delete(String id) {
+        Share share = getById(id);
         try {
             shareRepository.delete(share);
         } catch (Exception e) {
