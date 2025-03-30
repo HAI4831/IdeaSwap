@@ -80,23 +80,34 @@ public class UserService {
         User user;
         try {
 
-            // Kiểm tra xem email, username, phoneNumber có bị trùng không
-            iUserRepository.existsByUsername(registerRequest.getUsername()).orElseThrow(
-                    ()->new RuntimeException("Username already exists.")
-            );
-            if (iUserRepository.existsByEmail(registerRequest.getEmail())) {
-                throw new RuntimeException("Email already in use.");
+            // Kiểm tra username không được trống
+            if (registerRequest.getUsername() == null || registerRequest.getUsername().trim().isEmpty()) {
+                throw new RuntimeException("Username cannot be empty.");
             }
-
-            if (registerRequest.getPhoneNumber() != null && iUserRepository.existsByPhoneNumber(registerRequest.getPhoneNumber())) {
-                throw new RuntimeException("Phone number already in use.");
-            }
-
+            // Kiểm tra username đã tồn tại hay chưa
             if (iUserRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
-                throw new RuntimeException("Can't register new user because the user already exists.");
+                throw new RuntimeException("Username already exists.");
             }
+
+            // Kiểm tra email hợp lệ
+            if (registerRequest.getEmail() == null || !isValidEmail(registerRequest.getEmail())) {
+                throw new RuntimeException("Invalid email format.");
+            }
+            // Kiểm tra email đã tồn tại
+            if (iUserRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
+                throw new RuntimeException("Email already exists.");
+            }
+
+            // Kiểm tra số điện thoại hợp lệ
+            if (registerRequest.getPhoneNumber() != null && !registerRequest.getPhoneNumber().trim().isEmpty() && isValidPhoneNumber(registerRequest.getPhoneNumber())) {
+                // Kiểm tra phone number đã tồn tại
+                if (iUserRepository.findByPhoneNumber(registerRequest.getPhoneNumber()).isPresent()) {
+                    throw new RuntimeException("Phone number already in use.");
+                }
+            }
+
         } catch (Exception e) {
-            throw new RuntimeException("An error occurred while checking the user: " + e.getMessage(), e);
+            throw new RuntimeException("An error occurred while vaildate the user: " + e.getMessage(), e);
         }
         try {
 
@@ -109,7 +120,7 @@ public class UserService {
                             .lastName(registerRequest.getLastName()==null?"":registerRequest.getLastName())
                             .email(registerRequest.getEmail())
                             .roleID(role.getId())
-                            .phoneNumber(registerRequest.getPhoneNumber() == null ? "" : registerRequest.getPhoneNumber() )
+                            .phoneNumber(registerRequest.getPhoneNumber() == null ? null : registerRequest.getPhoneNumber() )
                             .rating(0)
                             .address(registerRequest.getAddress() == null ? "Ninh Bình" : registerRequest.getAddress())
                             .gender(registerRequest.getGender() == null ? Gender.Male : registerRequest.getGender())
@@ -262,4 +273,15 @@ public class UserService {
         }
         return user;
     }
+    //_____________helper method
+    public boolean isValidPhoneNumber(String phoneNumber) {
+        // Kiểm tra không null và khớp với regex
+        return phoneNumber.matches("^\\d{10,15}$");
+    }
+
+    public boolean isValidEmail(String email) {
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        return email.matches(emailRegex);
+    }
 }
+

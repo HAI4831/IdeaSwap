@@ -12,11 +12,6 @@ import java.time.LocalDate;
 @Builder
 public class ManagerRequest {
     @IsObjectID
-    private String _id;
-//    @IsObjectID
-//    @JsonProperty("_id")
-//    private String id;
-    @IsObjectID
     private String roleID;
     private String firstName;
     private String lastName;
@@ -25,8 +20,7 @@ public class ManagerRequest {
     private String phoneNumber;
     private String address;
     private String password;
-    private String avatar;//base64
-//    private MultipartFile avatar;
+    private String avatarBase64;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
     private Gender gender;

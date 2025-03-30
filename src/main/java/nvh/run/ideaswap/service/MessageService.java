@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -86,32 +87,34 @@ public class MessageService {
         return message;
     }
 
-    @CachePut(value="message",key="#id",condition = "#id!=null")
+    @CachePut(value = "message", key = "#id", condition = "#id != null")
     public Message updateMessage(String id, MessageRequest messageRequest) {
-        getMessageById(id);
-        Conversation conversation = conversationsService.getConversationById(messageRequest.getConversationID());
-        User user = userService.getUserById(messageRequest.getSenderID());
-        Message message = Message.builder()
-                .id(messageRequest.getId())
-                .senderID(user.getId())
-                .conversationID(conversation.getId())
-                .content(messageRequest.getContent())
-                .messageParentID(messageRequest.getMessageParentID())
-                .fileUrl(messageRequest.getFileUrl())
-                .type(messageRequest.getType())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
-        message.setId(id);
-        Message updatedMessage;
-        try {
-            updatedMessage = messageRepository.save(message);
-        } catch (Exception e) {
-            throw new RuntimeException("Update message failed",e);
-        }
+        // Lấy Message hiện tại từ DB
+        Message existingMessage = messageRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Message not found"));
 
-        return updatedMessage;
+        // Lấy Conversation nếu có ID mới, nếu không giữ nguyên ID cũ
+        Conversation conversation = Optional.ofNullable(messageRequest.getConversationID())
+                .map(conversationsService::getConversationById)
+                .orElseGet(() -> conversationsService.getConversationById(existingMessage.getConversationID()));
+
+        // Lấy Sender nếu có ID mới, nếu không giữ nguyên ID cũ
+        User user = Optional.ofNullable(messageRequest.getSenderID())
+                .map(userService::getUserById)
+                .orElseGet(() -> userService.getUserById(existingMessage.getSenderID()));
+
+        // Cập nhật dữ liệu, giữ nguyên giá trị cũ nếu trường mới bị null
+        existingMessage.setSenderID(user.getId());
+        existingMessage.setConversationID(conversation.getId());
+        Optional.ofNullable(messageRequest.getContent()).ifPresent(existingMessage::setContent);
+        Optional.ofNullable(messageRequest.getMessageParentID()).ifPresent(existingMessage::setMessageParentID);
+        Optional.ofNullable(messageRequest.getFileUrl()).ifPresent(existingMessage::setFileUrl);
+        Optional.ofNullable(messageRequest.getType()).ifPresent(existingMessage::setType);
+        existingMessage.setUpdatedAt(LocalDateTime.now()); // Chỉ cập nhật thời gian sửa đổi
+
+        return messageRepository.save(existingMessage);
     }
+
 
     @CacheEvict(value="message",key="#id",condition = "#id!=null")
     public Message deleteMessage(String id) {

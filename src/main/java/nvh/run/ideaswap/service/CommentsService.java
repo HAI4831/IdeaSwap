@@ -8,6 +8,7 @@ import nvh.run.ideaswap.data.entity.Comment;
 import nvh.run.ideaswap.data.entity.User;
 import nvh.run.ideaswap.data.repository.CommentRepository;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -79,28 +81,34 @@ public class CommentsService {
         }
         return comment;
     }
-    @Cacheable(value="comment",key="#id",condition = "#id!=null")
+    @CachePut(value = "comment", key = "#id", condition = "#id!=null")
     public Comment updateComment(String id, CommentRequest commentRequest) {
-        getCommentById(id);
-        User user = userService.getUserById(commentRequest.getUserID()) ;
-        Comment comment;
-        try {
-            comment = commentRepository.save(
-                    Comment.builder()
-                            .id(id)
-                            .userID(user.getId())
-                            .content(commentRequest.getContent())
-                            .parentCommentID(commentRequest.getParentCommentID())
-                            .referenceID(commentRequest.getReferenceID())
-                            .createdDate(LocalDateTime.now())
-                            .updatedDate(LocalDateTime.now())
-                            .build()
-            );
-        } catch (Exception e) {
-            throw new RuntimeException("Update comment failed",e);
+        // Lấy comment hiện tại từ database
+        Comment existingComment = getCommentById(id);
+        if (existingComment == null) {
+            throw new RuntimeException("Comment not found");
         }
-        return comment;
+
+        try {
+            // Lấy user nếu có userID mới, giữ nguyên nếu không có
+            User user = Optional.ofNullable(commentRequest.getUserID())
+                    .map(userService::getUserById)
+                    .orElse(null);
+
+            // Cập nhật các trường có giá trị mới, giữ nguyên nếu null
+            existingComment.setUserID(Optional.ofNullable(user).map(User::getId).orElse(existingComment.getUserID()));
+            existingComment.setContent(Optional.ofNullable(commentRequest.getContent()).orElse(existingComment.getContent()));
+            existingComment.setParentCommentID(Optional.ofNullable(commentRequest.getParentCommentID()).orElse(existingComment.getParentCommentID()));
+            existingComment.setReferenceID(Optional.ofNullable(commentRequest.getReferenceID()).orElse(existingComment.getReferenceID()));
+            existingComment.setUpdatedDate(LocalDateTime.now()); // Cập nhật thời gian cập nhật
+
+            // Lưu lại comment đã cập nhật
+            return commentRepository.save(existingComment);
+        } catch (Exception e) {
+            throw new RuntimeException("Update comment failed", e);
+        }
     }
+
     @CacheEvict(value="comment",key="#id",condition = "#id!=null")
     public Comment deleteComment(String id) {
         Comment comment = getCommentById(id);

@@ -27,7 +27,7 @@ public class CensorshipController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Object> updateCensorshipByContentID(@Valid @RequestBody Censorship censorship) {
+    public ResponseEntity<Object> updateCensorshipByContentID(@RequestBody Censorship censorship) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,

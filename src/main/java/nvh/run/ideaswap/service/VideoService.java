@@ -127,38 +127,76 @@ public class VideoService {
         return video;
     }
 
-    @CachePut(value = "video", key = "#videoRequest.id", condition = "#videoRequest.id != null")
+    @CachePut(value = "video", key = "#id", condition = "#id != null")
     public Video update(String id, VideoRequest videoRequest) {
+        // Lấy Video hiện tại từ DB
         Video existingVideo = videoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Video not found"));
 
-        User user = Optional.ofNullable(videoRequest.getUserID())
+        // Lấy User nếu có userID mới, nếu null thì giữ nguyên
+        String userId = Optional.ofNullable(videoRequest.getUserID())
                 .map(userService::getUserById)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .map(User::getId)
+                .orElse(existingVideo.getUserID());
 
-        Course course = Optional.ofNullable(videoRequest.getCourseID())
+        // Lấy Course nếu có courseID mới, nếu null thì giữ nguyên
+        String courseId = Optional.ofNullable(videoRequest.getCourseID())
                 .map(coursesService::getCourseById)
-                .orElseThrow(() -> new RuntimeException("Course not found"));
+                .map(Course::getId)
+                .orElse(existingVideo.getCourseID());
 
+        // Cập nhật ảnh nếu có, giữ nguyên nếu không có ảnh mới
         String imageUrl = Optional.ofNullable(videoRequest.getImageBase64())
                 .map(img -> cloudinaryService.uploadImage(img, null, "video"))
-                .orElse(existingVideo.getImageUrl()); // Giữ nguyên ảnh cũ nếu không có ảnh mới
+                .orElse(existingVideo.getImageUrl());
 
-        Video updatedVideo = existingVideo.toBuilder()
-                .userID(user.getId())
-                .courseID(course.getId())
-                .title(Optional.ofNullable(videoRequest.getTitle()).orElse(existingVideo.getTitle()))
-                .description(Optional.ofNullable(videoRequest.getDescription()).orElse(existingVideo.getDescription()))
-                .view(Optional.ofNullable(videoRequest.getView()).orElse(existingVideo.getView()))
-                .videoUrl(Optional.ofNullable(videoRequest.getVideoUrl()).orElse(existingVideo.getVideoUrl()))
-                .imageUrl(imageUrl)
-                .updatedAt(LocalDateTime.now())
-                .createdAt(existingVideo.getCreatedAt()) // Giữ nguyên thời gian tạo ban đầu
-                .id(id)
-                .build();
+        // Cập nhật các trường nếu có giá trị mới, giữ nguyên nếu null
+        Optional.ofNullable(videoRequest.getTitle()).ifPresent(existingVideo::setTitle);
+        Optional.ofNullable(videoRequest.getDescription()).ifPresent(existingVideo::setDescription);
+        Optional.ofNullable(videoRequest.getView()).ifPresent(existingVideo::setView);
+        Optional.ofNullable(videoRequest.getVideoUrl()).ifPresent(existingVideo::setVideoUrl);
 
-        return videoRepository.save(updatedVideo);
+        existingVideo.setUserID(userId);
+        existingVideo.setCourseID(courseId);
+        existingVideo.setImageUrl(imageUrl);
+        existingVideo.setUpdatedAt(LocalDateTime.now()); // Cập nhật thời gian sửa đổi
+
+        return videoRepository.save(existingVideo);
     }
+
+
+//    @CachePut(value = "video", key = "#videoRequest.id", condition = "#videoRequest.id != null")
+//    public Video update(String id, VideoRequest videoRequest) {
+//        Video existingVideo = videoRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("Video not found"));
+//
+//        User user = Optional.ofNullable(videoRequest.getUserID())
+//                .map(userService::getUserById)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        Course course = Optional.ofNullable(videoRequest.getCourseID())
+//                .map(coursesService::getCourseById)
+//                .orElseThrow(() -> new RuntimeException("Course not found"));
+//
+//        String imageUrl = Optional.ofNullable(videoRequest.getImageBase64())
+//                .map(img -> cloudinaryService.uploadImage(img, null, "video"))
+//                .orElse(existingVideo.getImageUrl()); // Giữ nguyên ảnh cũ nếu không có ảnh mới
+//
+//        Video updatedVideo = existingVideo.toBuilder()
+//                .userID(user.getId())
+//                .courseID(course.getId())
+//                .title(Optional.ofNullable(videoRequest.getTitle()).orElse(existingVideo.getTitle()))
+//                .description(Optional.ofNullable(videoRequest.getDescription()).orElse(existingVideo.getDescription()))
+//                .view(Optional.ofNullable(videoRequest.getView()).orElse(existingVideo.getView()))
+//                .videoUrl(Optional.ofNullable(videoRequest.getVideoUrl()).orElse(existingVideo.getVideoUrl()))
+//                .imageUrl(imageUrl)
+//                .updatedAt(LocalDateTime.now())
+//                .createdAt(existingVideo.getCreatedAt()) // Giữ nguyên thời gian tạo ban đầu
+//                .id(id)
+//                .build();
+//
+//        return videoRepository.save(updatedVideo);
+//    }
 
 //    @CachePut(value="video",key="#videoRequest.id",condition = "#videoRequest.id!=null")
 //    public Video update(String id , VideoRequest videoRequest) {

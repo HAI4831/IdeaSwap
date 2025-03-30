@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 //c1
-@Document(collection = "Notifications")
+@Document(collection = "notifications")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

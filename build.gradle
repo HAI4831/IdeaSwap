@@ -25,6 +25,9 @@ repositories {
 }
 
 dependencies {
+    // https://mvnrepository.com/artifact/com.itextpdf/itextpdf
+    implementation("com.itextpdf:itextpdf:5.5.13.4")
+
     implementation 'org.springframework.boot:spring-boot-starter-cache'
 
     // https://mvnrepository.com/artifact/io.lettuce/lettuce-core

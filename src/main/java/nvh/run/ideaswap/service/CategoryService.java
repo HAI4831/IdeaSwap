@@ -14,7 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -68,18 +70,27 @@ public class CategoryService {
         return category;
     }
 
-    @CachePut(value = "category", key = "#category.id",condition = "#category.id!=null")
+    @CachePut(value = "category", key = "#id", condition = "#id!=null")
     public Category updateCategory(String id, Category category) {
-        getCategoryById(id);
-        Category categoryUpdated;
-        category.setId(id);
-       try {
-           categoryUpdated=categoryRepository.save(category);
-       } catch (Exception e) {
-           throw new RuntimeException("An error occurred while updating the category", e);
-       }
-       return categoryUpdated;
+        // Lấy danh mục hiện tại từ database
+        Category existingCategory = getCategoryById(id);
+        if (existingCategory == null) {
+            throw new RuntimeException("Category not found");
+        }
+
+        try {
+            // Chỉ cập nhật các trường có giá trị mới, giữ nguyên nếu null
+            existingCategory.setName(Optional.ofNullable(category.getName()).orElse(existingCategory.getName()));
+            existingCategory.setDescription(Optional.ofNullable(category.getDescription()).orElse(existingCategory.getDescription()));
+            existingCategory.setUpdatedAt(LocalDateTime.now()); // Cập nhật thời gian cập nhật
+
+            // Lưu lại category đã cập nhật
+            return categoryRepository.save(existingCategory);
+        } catch (Exception e) {
+            throw new RuntimeException("An error occurred while updating the category", e);
+        }
     }
+
 
     @CacheEvict(value = "category", key = "#id",condition = "#id!=null")
     public Category deleteCategory(String id) {

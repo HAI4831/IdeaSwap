@@ -59,13 +59,13 @@ public class HeartController {
 
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Object> deleteHeart(@PathVariable String id) {
+    @DeleteMapping("/delete")
+    public ResponseEntity<Object> deleteHeart(@RequestBody HeartRequest heartRequest) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
                         "message", "Heart deleted successfully",
-                        "hearts", heartService.deleteHeart(id)
+                        "hearts", heartService.deleteHeart(heartRequest)
                 )
         );
     }

@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -91,30 +92,31 @@ public class NotificationService {
         return notification;
     }
 
-    @CachePut(value="notification",key="#id",condition = "#id!=null")
+    @CachePut(value = "notification", key = "#id", condition = "#id != null")
     public Notification updateNotification(String id, NotificationRequest notificationRequest) {
-        getNotificationById(id);
-        List<User> users = notificationRequest.getUserIDs().stream().map(userService::findById).toList();
-        Notification notification = Notification.builder()
-                .userIDs(users.stream().map(User::getId).toList())
-                .description(notificationRequest.getDescription())
-                .imageUrl(notificationRequest.getImageUrl())
-                .isUnRead(notificationRequest.isUnRead())
-                .actorID(notificationRequest.getActorID())
-                .referenceType(notificationRequest.getReferenceType())
-                .isModal(notificationRequest.isModal())
-                .referenceID(notificationRequest.getReferenceID())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
-        notification.setId(id);
-        try {
-            notification = notificationRepository.save(notification);
-        } catch (Exception e) {
-            throw new RuntimeException("Update notification failed",e);
-        }
-        return notification;
+        // Lấy Notification hiện tại từ DB
+        Notification existingNotification = notificationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Notification not found"));
+
+        // Lấy danh sách User nếu có userIDs mới, nếu không giữ nguyên danh sách cũ
+        List<User> users = Optional.ofNullable(notificationRequest.getUserIDs())
+                .map(ids -> ids.stream().map(userService::findById).toList())
+                .orElse(existingNotification.getUserIDs().stream().map(userService::findById).toList());
+
+        // Cập nhật dữ liệu, giữ nguyên giá trị cũ nếu trường mới bị null
+        existingNotification.setUserIDs(users.stream().map(User::getId).toList());
+        Optional.ofNullable(notificationRequest.getDescription()).ifPresent(existingNotification::setDescription);
+        Optional.ofNullable(notificationRequest.getImageUrl()).ifPresent(existingNotification::setImageUrl);
+        Optional.ofNullable(notificationRequest.isUnRead()).ifPresent(existingNotification::setUnRead);
+        Optional.ofNullable(notificationRequest.getActorID()).ifPresent(existingNotification::setActorID);
+        Optional.ofNullable(notificationRequest.getReferenceType()).ifPresent(existingNotification::setReferenceType);
+        Optional.ofNullable(notificationRequest.isModal()).ifPresent(existingNotification::setModal);
+        Optional.ofNullable(notificationRequest.getReferenceID()).ifPresent(existingNotification::setReferenceID);
+        existingNotification.setUpdatedAt(LocalDateTime.now()); // Chỉ cập nhật thời gian sửa đổi
+
+        return notificationRepository.save(existingNotification);
     }
+
 
     @CacheEvict(value="notification",key="#id",condition = "#id!=null")
     public Notification deleteNotification(String id) {

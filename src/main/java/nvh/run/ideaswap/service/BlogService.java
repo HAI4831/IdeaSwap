@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -70,8 +71,8 @@ public class BlogService {
                                     .url(blog.getUrl())
                                     .userID(blog.getUserID())
                                     .categoryID(blog.getCategoryID())
-                                    .createdDate(blog.getCreatedDate())
-                                    .updatedDate(blog.getUpdatedDate())
+                                    .createdAt(blog.getCreatedAt())
+                                    .updatedAt(blog.getUpdatedAt())
                                     .build()).toList();
         } catch (Exception e) {
             throw new RuntimeException("Retrieve List Blogs failed",e);
@@ -92,8 +93,8 @@ public class BlogService {
                                     .url(blog.getUrl())
                                     .userID(blog.getUserID())
                                     .categoryID(blog.getCategoryID())
-                                    .createdDate(blog.getCreatedDate())
-                                    .updatedDate(blog.getUpdatedDate())
+                                    .createdAt(blog.getCreatedAt())
+                                    .updatedAt(blog.getUpdatedAt())
                                     .build()).toList();
         } catch (Exception e) {
             throw new RuntimeException("Retrieve List Blogs failed",e);
@@ -131,8 +132,8 @@ public class BlogService {
 //                            .categoryID(categories.getId())
                             .content(blogRequest.getContent())
                             .url(imageUrl==null||imageUrl.isEmpty()?null:imageUrl)
-                            .createdDate(LocalDateTime.now())
-                            .updatedDate(LocalDateTime.now())
+                            .createdAt(LocalDateTime.now())
+                            .updatedAt(LocalDateTime.now())
                             .build()
             );
             censorshipsService.createCensorship(Censorship.builder()
@@ -155,32 +156,33 @@ public class BlogService {
         return blog;
     }
 
-    @CachePut(value = "blog",key = "#id",condition = "#id!=null")
+    @CachePut(value = "blog", key = "#id", condition = "#id!=null")
     public Blog updateBlog(String id, BlogRequest blogRequest) {
-        getBlogById(id);
-//        Categories categories = categoryService.getCategoryById(blogRequest.getCategoryID());
-        User user = userService.getUserById(blogRequest.getUserID());
-        String imageUrl = cloudinaryService.uploadImage(blogRequest.getImageBase64(),null,"blog");
-        Blog updatedBlog;
-        try {
-            if(imageUrl.isEmpty()){
-                throw new RuntimeException("upload image failed");
-            }
-            updatedBlog = blogRepository.save(
-                    Blog.builder()
-                            .id(id)
-                            .userID(user.getId())
-//                            .categoryID(categories.getId())
-                            .content(blogRequest.getContent())
-                            .url(imageUrl)
-                            .createdDate(LocalDateTime.now())
-                            .updatedDate(LocalDateTime.now())
-                            .build()
-            );
-        }catch (Exception e){
-            throw new RuntimeException("Update Blog failed",e);
+        // Lấy blog hiện tại từ database
+        Blog existingBlog = getBlogById(id);
+        if (existingBlog == null) {
+            throw new RuntimeException("Blog not found");
         }
-        return updatedBlog;
+
+        // Lấy user từ ID
+        User user = userService.getUserById(blogRequest.getUserID());
+
+        // Upload ảnh nếu có, nếu không thì giữ nguyên ảnh cũ
+        Optional<String> optionalImageUrl = Optional.ofNullable(blogRequest.getImageBase64())
+                .map(base64 -> cloudinaryService.uploadImage(base64, null, "blog"));
+
+        try {
+            // Chỉ cập nhật các trường có giá trị mới, giữ nguyên nếu null
+            existingBlog.setUserID(Optional.ofNullable(user.getId()).orElse(existingBlog.getUserID()));
+            existingBlog.setContent(Optional.ofNullable(blogRequest.getContent()).orElse(existingBlog.getContent()));
+            optionalImageUrl.ifPresent(existingBlog::setUrl); // Cập nhật ảnh nếu có ảnh mới
+            existingBlog.setUpdatedAt(LocalDateTime.now()); // Chỉ cập nhật updatedAt
+
+            // Lưu lại blog đã cập nhật
+            return blogRepository.save(existingBlog);
+        } catch (Exception e) {
+            throw new RuntimeException("Update Blog failed", e);
+        }
     }
 
     @CacheEvict(value = "blog",key = "#id", condition = "#id!=null")

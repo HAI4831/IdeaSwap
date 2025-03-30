@@ -67,7 +67,6 @@ public class HeartService {
         try {
             heart = heartRepository.save(
                     Heart.builder()
-                            .id(heartRequest.getId())
                             .userID(user.getId())
                             .referenceID(heartRequest.getReferenceID())
                             .createdAt(LocalDateTime.now())
@@ -81,10 +80,10 @@ public class HeartService {
     }
 
     @CacheEvict(value="heart",key="#id",condition = "#id!=null")
-    public Heart deleteHeart(String id) {
-         Heart heart = getHeartById(id);
+    public Heart deleteHeart(HeartRequest heartRequest) {
+         Heart heart = heartRepository.findByUserIDAndReferenceID(heartRequest.getUserID(), heartRequest.getReferenceID());
         try {
-            heartRepository.deleteById(id);
+            heartRepository.delete(heart);
         } catch (Exception e) {
             throw new RuntimeException("Delete heart failed",e);
         }

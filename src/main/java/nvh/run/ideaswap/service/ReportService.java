@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -86,29 +87,33 @@ public class ReportService {
         return report;
     }
 
-    @CachePut(value="report",key="#id",condition = "#id!=null")
+    @CachePut(value = "report", key = "#id", condition = "#id != null")
     public Report updateReport(String id, ReportRequest reportRequest) {
-        getReportById(id);
-        User user = userService.getUserById(reportRequest.getUserID());
-        Manager manager = managerService.getManagerById(reportRequest.getModeratorID());
-        Report report = Report.builder()
-                .id(id)
-                .userID(user.getId())
-                .moderatorID(manager.getId())
-                .content(reportRequest.getContent())
-                .referenceID(reportRequest.getReferenceID())
-                .type(reportRequest.getType())
-                .status(reportRequest.getStatus())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
-        try {
-            report = reportRepository.save(report);
-        } catch (Exception e) {
-            throw new RuntimeException("Update report failed",e);
-        }
-        return report;
+        // Lấy Report hiện tại từ DB
+        Report existingReport = reportRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Report not found"));
+
+        // Lấy User và Manager nếu có ID mới, nếu không giữ nguyên giá trị cũ
+        User user = Optional.ofNullable(reportRequest.getUserID())
+                .map(userService::getUserById)
+                .orElseGet(() -> userService.getUserById(existingReport.getUserID()));
+
+        Manager manager = Optional.ofNullable(reportRequest.getModeratorID())
+                .map(managerService::getManagerById)
+                .orElseGet(() -> managerService.getManagerById(existingReport.getModeratorID()));
+
+        // Cập nhật các trường, giữ nguyên giá trị cũ nếu null
+        existingReport.setUserID(user.getId());
+        existingReport.setModeratorID(manager.getId());
+        Optional.ofNullable(reportRequest.getContent()).ifPresent(existingReport::setContent);
+        Optional.ofNullable(reportRequest.getReferenceID()).ifPresent(existingReport::setReferenceID);
+        Optional.ofNullable(reportRequest.getType()).ifPresent(existingReport::setType);
+        Optional.ofNullable(reportRequest.getStatus()).ifPresent(existingReport::setStatus);
+        existingReport.setUpdatedAt(LocalDateTime.now()); // Chỉ cập nhật thời gian sửa đổi
+
+        return reportRepository.save(existingReport);
     }
+
 
     @CacheEvict(value="report",key="#id",condition = "#id!=null")
     public Report deleteReport(String id) {

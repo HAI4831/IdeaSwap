@@ -80,10 +80,11 @@ public class CloudinaryService {
         Map result;
         try {
             result = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+            return result.get("result").toString(); // Trả về "ok" nếu xóa thành công
         } catch (IOException e) {
-            throw new RuntimeException("delete image failed",e);
+            return null;
+//            throw new RuntimeException("delete image failed",e);
         }
-        return result.get("result").toString(); // Trả về "ok" nếu xóa thành công
     }
     String byteToBase64(byte[] bytes) {
         return Base64.getEncoder().encodeToString(bytes);

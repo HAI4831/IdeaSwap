@@ -15,7 +15,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 //c0
 @Data
 @NoArgsConstructor
@@ -42,8 +42,8 @@ public class Censorship implements Serializable
     private String feedback;
 
     @CreatedDate
-    private LocalDateTime createdDate;
+    private Instant createdDate=Instant.now();
 
     @LastModifiedDate
-    private LocalDateTime updatedDate;
+    private Instant updatedDate=Instant.now();
 }

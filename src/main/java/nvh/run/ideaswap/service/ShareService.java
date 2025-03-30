@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -80,26 +81,26 @@ public class ShareService {
         return share;
     }
 
-    @Cacheable(value="share",key="#id",condition = "#id!=null")
+    @Cacheable(value = "share", key = "#id", condition = "#id != null")
     public Share update(String id, ShareRequest shareRequest) {
-        Share updatedShare;
-        User user = userService.getUserById(shareRequest.getUserID());
-        Share share = getById(id);
-        try {
-            updatedShare = shareRepository.save(
-                    Share.builder()
-                            .userID(user.getId())
-                            .referenceID(shareRequest.getReferenceID())
-                            .createdAt(share.getCreatedAt())
-                            .updatedAt(LocalDateTime.now())
-                            .id(share.getId())
-                            .build()
-            );
-        } catch (Exception e) {
-            throw new RuntimeException("Update share failed", e);
-        }
-        return updatedShare;
+        // Lấy Share hiện tại từ DB
+        Share existingShare = shareRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Share not found with id: " + id));
+
+        // Lấy User nếu có userID mới, nếu null thì giữ nguyên
+        String userId = Optional.ofNullable(shareRequest.getUserID())
+                .map(userService::getUserById)
+                .map(User::getId)
+                .orElse(existingShare.getUserID());
+
+        // Cập nhật các trường nếu có giá trị mới, giữ nguyên nếu null
+        Optional.ofNullable(shareRequest.getReferenceID()).ifPresent(existingShare::setReferenceID);
+        existingShare.setUserID(userId);
+        existingShare.setUpdatedAt(LocalDateTime.now()); // Chỉ cập nhật thời gian sửa đổi
+
+        return shareRepository.save(existingShare);
     }
+
 
     @CacheEvict(value="share",key="#id",condition = "#id!=null")
     public Share delete(String id) {

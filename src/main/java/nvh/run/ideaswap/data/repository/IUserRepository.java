@@ -30,4 +30,6 @@ public interface IUserRepository extends MongoRepository<User, String> {
     User findUsersByEmail(@Email(message = "Email không hợp lệ") @NotBlank(message = "Email không được để trống") @Size(max = 320, message = "Email không được vượt quá 320 ký tự") String email);
 
     User findUsersByEmailOrUsernameContains(@Email(message = "Email không hợp lệ") @NotBlank(message = "Email không được để trống") @Size(max = 320, message = "Email không được vượt quá 320 ký tự") String email, @NotBlank(message = "Tên người dùng không được để trống") @Size(max = 50, message = "Tên người dùng không được vượt quá 50 ký tự") String username);
+
+    Optional<Object> findByEmail(@Email(message = "Email không hợp lệ") @NotBlank(message = "Email không được để trống") @Size(max = 320, message = "Email không được vượt quá 320 ký tự") String email);
 }

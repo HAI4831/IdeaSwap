@@ -94,21 +94,11 @@ public class DocumentsService {
 //        Category category = categoryService.getCategoryById(documentRequest.getCategoryID());
         Document document;
         try {
-            // Lưu file tạm
-            java.io.File tempFile = java.io.File.createTempFile("upload_", "_" + documentRequest.getFile().getOriginalFilename());
-            documentRequest.getFile().transferTo(tempFile);
-
             // Upload lên Google Drive
-            String fileId = googleDriveService.uploadFile(tempFile.getAbsolutePath(), documentRequest.getFile().getContentType());
-
-            // Xóa file tạm
-            tempFile.delete();
-
-            // Lấy thông tin file từ Google Drive
-            com.google.api.services.drive.model.File uploadedFile = googleDriveService.getFileInfo(fileId);
+            String fileId = googleDriveService.uploadFile(documentRequest.getFile());
 
             // Lấy URL tải file trực tiếp
-            String fileUrl = uploadedFile.getWebContentLink();
+            String fileUrl =googleDriveService.getFileUrlByFileId(fileId);
 
 
             String imageUrl = cloudinaryService.uploadImage(documentRequest.getImageBase64(),null,"document");
@@ -162,20 +152,9 @@ public class DocumentsService {
                     .filter(file -> !file.isEmpty())
                     .ifPresent(file -> {
                         try {
-                            java.io.File tempFile = java.io.File.createTempFile("upload_", "_" + file.getOriginalFilename());
-                            file.transferTo(tempFile);
-
-                            // Upload lên Google Drive
-                            String fileId = googleDriveService.uploadFile(tempFile.getAbsolutePath(), file.getContentType());
-
-                            // Xóa file tạm
-                            tempFile.delete();
-
-                            // Lấy thông tin file từ Google Drive
-                            com.google.api.services.drive.model.File uploadedFile = googleDriveService.getFileInfo(fileId);
-
+                            String fileId = googleDriveService.uploadFile(documentRequest.getFile());
                             // Cập nhật file URL
-                            document.setFileUrl(uploadedFile.getWebContentLink());
+                            document.setFileUrl(googleDriveService.getFileUrlByFileId(fileId));
                         } catch (IOException e) {
                             throw new RuntimeException("File upload failed", e);
                         }
@@ -211,7 +190,7 @@ public class DocumentsService {
                             try {
                                 googleDriveService.deleteFile(fileUrl,null);
                             } catch (IOException e) {
-                                throw new RuntimeException(e);
+//                                throw new RuntimeException(e);
                             }
                         }
                     });

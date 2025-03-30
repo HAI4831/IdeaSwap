@@ -13,6 +13,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.auth.oauth2.ServiceAccountCredentials;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -60,26 +61,43 @@ public class GoogleDriveService {
     /**
      * Upload file to Google Drive
      */
-    public String uploadFile(String filePath, String mimeType) throws IOException {
-//        id folder google cloud muốn lưu vào đây có thể là folder khác tài khoản từ đó lưu doc của tài khoản service account drive vào tài khoản cá nhân
-        File fileMetadata = new File();
-        String fileName = new java.io.File(filePath).getName();
-        fileMetadata.setName(fileName);
-        fileMetadata.setParents(Collections.singletonList(FOLDER_ID));
+    public String uploadFile(MultipartFile file) throws IOException {
+        // Tạo file tạm
+        java.io.File tempFile = java.nio.file.Files.createTempFile("upload_", "_" + file.getOriginalFilename()).toFile();
+        file.transferTo(tempFile);
 
-        try (InputStream fileInputStream = new FileInputStream(filePath)) {
+//        Đường dẫn của tệp lưu tạm trên máy.
+        String filePath = tempFile.getAbsolutePath();
+//         Loại MIME của tệp (ví dụ: "image/png", "application/pdf").
+        String mimeType = file.getContentType();
+
+        // Tạo metadata cho file trên Google Drive
+        File fileMetadata = new File();
+        //        Đặt tên cho tệp theo tên tệp gốc.
+        fileMetadata.setName(file.getOriginalFilename());
+        //        ID của thư mục trên Google Drive.
+        fileMetadata.setParents(Collections.singletonList(FOLDER_ID));
+        //Mở tệp ở đường dẫn filePath để đọc dữ liệu.
+        try (InputStream fileInputStream = new FileInputStream(tempFile)) {
             com.google.api.client.http.AbstractInputStreamContent content =
                     new com.google.api.client.http.InputStreamContent(mimeType, fileInputStream);
-
-            File file = driveService.files().create(fileMetadata, content)
+        //Gửi yêu cầu create(...) để tải lên.
+        //.setFields("id") chỉ lấy fileId của tệp tải lên (không lấy toàn bộ thông tin để tiết kiệm tài nguyên).
+            File uploadedFile = driveService.files().create(fileMetadata, content)
                     .setFields("id")
                     .execute();
-
-            return file.getId();
+            //Trả về fileId
+            return uploadedFile.getId();
         } catch (Exception e) {
-            throw new RuntimeException("upload file to drive failed folder_id:"+FOLDER_ID+";fileName:"+fileName+";tmpFileLocal:"+filePath,e);
+            throw new RuntimeException("Upload file to Drive failed. folder_id: " + FOLDER_ID +
+                    "; fileName: " + file.getOriginalFilename() +
+                    "; tmpFileLocal: " + filePath, e);
+        } finally {
+            // Xóa file tạm sau khi upload
+            tempFile.delete();
         }
     }
+
 
     /**
      * Delete file from Google Drive
@@ -87,7 +105,7 @@ public class GoogleDriveService {
     public void deleteFile(String fileUrl , String fileId) throws IOException {
         try {
             if(fileId==null) fileId=extractFileIdFromUrl(fileUrl);
-            driveService.files().delete(fileId).execute();
+            if(fileId != null) driveService.files().delete(fileId).execute();
         } catch (Exception e){
             throw new RuntimeException("delete file_id("+fileId+")"+" failed",e);
         }
@@ -108,6 +126,14 @@ public class GoogleDriveService {
         }
 
         return result.getFiles();
+    }
+    public String getFileUrlByFileId(String fileId){
+        try {
+            com.google.api.services.drive.model.File uploadedFile = getFileInfo(fileId);
+            return uploadedFile.getWebContentLink();//fileUrl
+        } catch (IOException e) {
+            throw new RuntimeException("get fileUrl by fileId failed",e);
+        }
     }
     public File getFileInfo(String fileId) throws IOException {
         try {

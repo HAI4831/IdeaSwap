@@ -5,9 +5,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import nvh.run.ideaswap.data.dto.ConversationRequest;
 import nvh.run.ideaswap.data.entity.Conversation;
-import nvh.run.ideaswap.data.entity.User;
+import nvh.run.ideaswap.data.entity.Member;
 import nvh.run.ideaswap.data.repository.ConversationRepository;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -60,25 +62,21 @@ public class ConversationsService {
     }
     @Cacheable(value="conversation",key="#userId",condition = "#userId!=null")
     public List<Conversation> getConversationByUserId(String userId) {
-        User user = userService.getUserById(userId);
-        List<Conversation> conversationList;
         try {
-            conversationList = conversationRepository.findByMemberIDsIn(List.of(user.getId())).orElseThrow(() -> new RuntimeException("Conversation not found"));
+            return conversationRepository.findByMemberList_UserId(userId);
         } catch (Exception e) {
             throw new RuntimeException("Get conversation failed",e);
         }
-        return conversationList;
     }
 
     @Cacheable(value="conversation",key="#conversationRequest.id",condition = "#conversationRequest.id!=null")
     public Conversation createConversation(ConversationRequest conversationRequest) {
         Conversation conversation;
-        List<User> userList = conversationRequest.getMembers().stream().map(userService::getUserById).toList();
+        List<Member> memberList = conversationRequest.getMembers();
         try {
             conversation = conversationRepository.save(
                     Conversation.builder()
-                            .id(conversationRequest.getId())
-                            .memberIDs(userList.stream().map(User::getId).toList())
+                            .memberList(memberList)
                             .wallpaperUrl(conversationRequest.getWallpaperUrl())
                             .createdDate(LocalDateTime.now())
                             .updatedDate(LocalDateTime.now())
@@ -90,26 +88,55 @@ public class ConversationsService {
         return conversation;
     }
 
-    @Cacheable(value="conversation",key="#id",condition = "#id!=null")
+    @CachePut(value = "conversation", key = "#id", condition = "#id!=null")
     public Conversation updateConversation(String id, ConversationRequest conversationRequest) {
-        getConversationById(id);
-        Conversation conversation;
-        List<User> userList = conversationRequest.getMembers().stream().map(userService::getUserById).toList();
+        // Lấy Conversation hiện tại từ DB
+        Conversation existingConversation = conversationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Conversation not found with id: " + id));
+
         try {
-            conversation = conversationRepository.save(
-                    Conversation.builder()
-                            .id(conversationRequest.getId())
-                            .memberIDs(userList.stream().map(User::getId).toList())
-                            .wallpaperUrl(conversationRequest.getWallpaperUrl())
-                            .createdDate(LocalDateTime.now())
-                            .updatedDate(LocalDateTime.now())
-                            .build()
+            // Cập nhật danh sách thành viên nếu có dữ liệu mới
+            Optional.ofNullable(conversationRequest.getMembers()).ifPresent(
+                    existingConversation::setMemberList
             );
+
+            // Cập nhật hình nền nếu có giá trị mới
+            Optional.ofNullable(conversationRequest.getWallpaperUrl())
+                    .ifPresent(existingConversation::setWallpaperUrl);
+
+            // Cập nhật thời gian cập nhật
+            existingConversation.setUpdatedDate(LocalDateTime.now());
+
+            // Lưu lại Conversation đã chỉnh sửa
+            return conversationRepository.save(existingConversation);
         } catch (Exception e) {
-            throw new RuntimeException("Update conversation failed",e);
+            throw new RuntimeException("Update conversation failed", e);
         }
-        return conversation;
     }
+
+
+//    @Cacheable(value = "conversation", key = "#id", condition = "#id!=null")
+//    public Conversation updateConversation(String id, ConversationRequest conversationRequest) {
+//        // Lấy Conversation hiện tại từ DB
+//        Conversation conversation = conversationRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("Conversation not found with id: " + id));
+//
+//        // Cập nhật các giá trị mới từ conversationRequest
+//        List<String> userIds = conversationRequest.getMembers().stream()
+//                .map(MemberRequest::userId)
+//                .toList();
+//
+//        conversation.setMemberIDs(userIds);
+//        conversation.setWallpaperUrl(conversationRequest.getWallpaperUrl());
+//        conversation.setUpdatedDate(LocalDateTime.now()); // Chỉ cập nhật updatedDate
+//
+//        try {
+//            // Lưu lại Conversation đã chỉnh sửa
+//            return conversationRepository.save(conversation);
+//        } catch (Exception e) {
+//            throw new RuntimeException("Update conversation failed", e);
+//        }
+//    }
 
     @CacheEvict(value="conversation",key="#id",condition = "#id!=null")
     public Conversation deleteConversation(String id) {

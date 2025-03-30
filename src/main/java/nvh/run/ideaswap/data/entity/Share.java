@@ -15,7 +15,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 //c1
-@Document(collection = "Shares")
+@Document(collection = "shares")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

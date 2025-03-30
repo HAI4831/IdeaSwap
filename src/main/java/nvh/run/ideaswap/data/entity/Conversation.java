@@ -31,9 +31,7 @@ public class Conversation implements Serializable
 
     @NotEmpty(message = "Members cannot be empty")
     @IsObjectID
-    private List<String> memberIDs;
-//    @DBRef
-//    private List<Users> members;
+    private List<Member> memberList;
 
     @Builder.Default
     private String wallpaperUrl="";

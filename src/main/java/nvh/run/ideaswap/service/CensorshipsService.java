@@ -16,8 +16,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Service
@@ -43,20 +45,28 @@ public class CensorshipsService {
     }
     @CachePut(value="censorship",key="#censorship.id",condition = "#censorship.id!=null")
     public Censorship updateCensorshipByContentID(@Valid Censorship censorship) {
-        Censorship updatedCensorship = getCensorshipByContentID(censorship.getContentID());
+        Censorship updatingCensorship = getCensorshipByContentID(censorship.getContentID());
         try {
-            if (updatedCensorship == null) {
+            if (updatingCensorship == null) {
                 throw new RuntimeException("Update censorship failed: Can't find censorship by contentID");
             }
-            updatedCensorship = censorshipRepository.save(censorship);
         } catch (Exception e) {
             throw new RuntimeException("Update censorship failed",e);
         }
-        String contentID = updatedCensorship.getContentID();
+        String contentID = updatingCensorship.getContentID();
+
+        // Fetch content theo ID
         Map<String, Function<String, Object>> contentFetchers = Map.of(
                 "blog", blogService::getBlogById,
                 "video", videoService::getById,
                 "document", documentsService::getDocumentById
+        );
+
+// Fetch user từ content (bọc sẵn try-catch)
+        Map<String, Function<Object, User>> userFetchers = Map.of(
+                "blog", content -> safeGetUserById(((Blog) content).getUserID()),
+                "video", content -> safeGetUserById(((Video) content).getUserID()),
+                "document", content -> safeGetUserById(((Document) content).getUserID())
         );
 
         String contentType = null;
@@ -64,15 +74,10 @@ public class CensorshipsService {
         User user = null;
 
         for (var entry : contentFetchers.entrySet()) {
-            content = entry.getValue().apply(contentID);
+            content = safeGetContentByContentId(entry.getValue(), contentID);
             if (content != null) {
                 contentType = entry.getKey();
-                user = switch (contentType) {
-                    case "blog" -> userService.getUserById(((Blog) content).getUserID());
-                    case "video" -> userService.getUserById(((Video) content).getUserID());
-                    case "document" -> userService.getUserById(((Document) content).getUserID());
-                    default -> null;
-                };
+                user = userFetchers.getOrDefault(contentType, c -> null).apply(content);
                 break;
             }
         }
@@ -83,16 +88,21 @@ public class CensorshipsService {
                     : (content instanceof Document) ? ((Document) content).getImageUrl()
                     : null;
 
+            Optional.ofNullable(censorship.getStatus()).ifPresent(updatingCensorship::setStatus);
+            Optional.ofNullable(censorship.getFeedback()).ifPresent(updatingCensorship::setFeedback);
+
+            updatingCensorship.setUpdatedDate(Instant.now());
+
             notificationService.createNotification(
                     NotificationRequest.builder()
-                            .description(updatedCensorship.getFeedback())
+                            .description(updatingCensorship.getFeedback())
                             .imageUrl(imageUrl)
                             .userIDs(List.of(user.getId()))
                             .build()
             );
         }
 
-        return updatedCensorship;
+        return censorshipRepository.save(updatingCensorship);
     }
     @Cacheable(value="censorship",key="#id",condition = "#id!=null")
     public Censorship getCensorshipById(String id) {
@@ -107,25 +117,15 @@ public class CensorshipsService {
     }
     @CachePut(value="censorship",key="#id",condition = "#id!=null")
     public Censorship updateCensorship(String id, Censorship censorship) {
-        getCensorshipById(id);
-        Censorship updatedCensorship;
-        censorship.setId(id);
+        Censorship updatingCensorship = censorshipRepository.findCensorshipsByContentID(censorship.getContentID());
         try {
-            updatedCensorship = censorshipRepository.save(censorship);
+            updatingCensorship.setStatus(censorship.getStatus());
+            updatingCensorship.setFeedback(censorship.getFeedback());
+            updatingCensorship = censorshipRepository.save(updatingCensorship);
         } catch (Exception e) {
             throw new RuntimeException("Update censorship with id:"+id+" failed",e);
         }
-//        Blogs blog = blogService.getBlogById(updatedCensorship.getContentID());
-//        String user;
-
-//        notificationService.createNotification(
-//                NotificationRequest.builder()
-//                        .description(updatedCensorship.getFeedback())
-//                        .userIDs(null)
-//                        .imageUrl(null)
-//                        .build()
-//        );
-        return updatedCensorship;
+        return updatingCensorship;
     }
     @Cacheable(value="censorship",key="#contentID",condition = "#contentID!=null")
     public Censorship getCensorshipByContentID(String contentID) {
@@ -173,5 +173,19 @@ public class CensorshipsService {
             throw new RuntimeException("Delete censorship failed",e);
         }
         return censorship;
+    }
+    private User safeGetUserById(String userId) {
+        try {
+            return userService.getUserById(userId);
+        } catch (Exception e) {
+            return null; // Nếu lỗi, trả về null
+        }
+    }
+    private Object safeGetContentByContentId(Function<String, Object> fetcher, String contentID) {
+        try {
+            return fetcher.apply(contentID);
+        } catch (Exception e) {
+            return null; // Nếu lỗi, trả về null
+        }
     }
 }

@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -62,6 +63,7 @@ public class ManagerService {
             throw new RuntimeException("Retrieve Manager By ID failed", e);
         }
     }
+
     @Cacheable(value="manager",key="#username",condition = "#username!=null")
     public Manager findManagerByUsername(String username) {
         try {
@@ -74,70 +76,115 @@ public class ManagerService {
 
     @CachePut(value="manager",key="#managerRequest._id",condition = "#managerRequest._id!=null")
     public Manager createManager(@Valid ManagerRequest managerRequest) {
-        Role role = roleService.getRoleById(managerRequest.getRoleID());
-
+        Role role = roleService.findByName("manager");
         try {
-            String imageUrl = cloudinaryService.uploadImage(managerRequest.getAvatar(),null,"avatarManager");
-//            if (imageUrl == null) {
-//                throw new RuntimeException("Course image upload failed");
-//            }
+            if(managerRepository.findByUsername(managerRequest.getUsername()).isPresent()) {
+                throw new RuntimeException("Manager already exists");
+            }
+            if(managerRepository.findByEmail(managerRequest.getEmail()).isPresent()){
+                throw new RuntimeException("Email already exists");
+            }
+            if(managerRepository.findByPhoneNumber(managerRequest.getPhoneNumber()).isPresent()){
+                throw new RuntimeException("Phone number already exists");
+            }
+
+
+            // Xử lý avatar: Nếu null thì sử dụng ảnh mặc định
+            String imageUrl = Optional.ofNullable(managerRequest.getAvatarBase64())
+                    .map(avatar -> cloudinaryService.uploadImage(avatar, null, "avatarManager"))
+                    .orElse("https://antimatter.vn/wp-content/uploads/2022/11/anh-avatar-trang-fb-mac-dinh.jpg");
+
+            // Xây dựng đối tượng Manager với giá trị mặc định nếu trường đó null
             Manager manager = Manager.builder()
-                    .id(managerRequest.get_id())
-                    .roleID(role.getId())
-                    .firstName(managerRequest.getFirstName())
-                    .lastName(managerRequest.getLastName())
-                    .email(managerRequest.getEmail())
-                    .phoneNumber(managerRequest.getPhoneNumber())
-                    .address(managerRequest.getAddress())
-                    .password(passwordEncoder.encode(managerRequest.getPassword()))
+                    .username(managerRequest.getUsername()) // Giữ nguyên username
+                    .password(Optional.ofNullable(managerRequest.getPassword())
+                            .map(passwordEncoder::encode)
+                            .orElse(passwordEncoder.encode("abCD@1234"))) // Mật khẩu mặc định nếu null
+                    .roleID(role.getId()) // Giữ nguyên roleID
+                    .firstName(Optional.ofNullable(managerRequest.getFirstName()).orElse("")) // Nếu null, gán chuỗi rỗng
+                    .lastName(Optional.ofNullable(managerRequest.getLastName()).orElse(""))
+                    .email(managerRequest.getEmail()) // Email bắt buộc nên không cần kiểm tra null
+                    .phoneNumber(Optional.ofNullable(managerRequest.getPhoneNumber()).orElse(""))
+                    .address(Optional.ofNullable(managerRequest.getAddress()).orElse("Ninh Bình")) // Địa chỉ mặc định
                     .avatar(imageUrl)
-                    .birthday(managerRequest.getBirthday())
+                    .birthday(managerRequest.getBirthday()) // Có thể null, không cần mặc định
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now())
                     .build();
 
-            if (existsByEmail(manager.getEmail()))
-                throw new RuntimeException("Email already exists");
-            if (existsByPhoneNumber(manager.getPhoneNumber()))
-                throw new RuntimeException("Phone number already exists");
-            if (existsByUsername(manager.getUsername()))
-                throw new RuntimeException("Username already exists");
+//            if (existsByEmail(manager.getEmail()))
+//                throw new RuntimeException("Email already exists");
+//            if (existsByPhoneNumber(manager.getPhoneNumber()))
+//                throw new RuntimeException("Phone number already exists");
+//            if (existsByUsername(manager.getUsername()))
+//                throw new RuntimeException("Username already exists");
             return managerRepository.save(manager);
         } catch (Exception e) {
             throw new RuntimeException("Create Manager failed", e);
         }
     }
 
-    @CachePut(value="manager",key="#id")
+    @CachePut(value = "manager", key = "#id")
     public Manager updateManager(String id, ManagerRequest managerRequest) {
-        getManagerById(id);
-        Role role = roleService.getRoleById(managerRequest.getRoleID());
+        // Lấy thông tin Manager hiện tại
+        Manager existingManager = getManagerById(id);
 
         try {
-            String imageUrl = cloudinaryService.uploadImage(managerRequest.getAvatar(),null,"avatarManager");
-            if (imageUrl == null) {
-                throw new RuntimeException("Course image upload failed");
-            }
-            Manager manager = Manager.builder()
-                    .id(managerRequest.get_id())
-                    .roleID(role.getId())
-                    .firstName(managerRequest.getFirstName())
-                    .lastName(managerRequest.getLastName())
-                    .email(managerRequest.getEmail())
-                    .phoneNumber(managerRequest.getPhoneNumber())
-                    .address(managerRequest.getAddress())
-                    .password(passwordEncoder.encode(managerRequest.getPassword()))
-                    .avatar(imageUrl)
-                    .birthday(managerRequest.getBirthday())
-                    .createdAt(LocalDateTime.now())
-                    .updatedAt(LocalDateTime.now())
-                    .build();
-            manager.setId(id);
-            return managerRepository.save(manager);
+            // Nếu có ảnh mới thì upload, ngược lại giữ nguyên
+            String imageUrl = Optional.ofNullable(managerRequest.getAvatarBase64())
+                    .map(avatar -> cloudinaryService.uploadImage(avatar, null, "avatarManager"))
+                    .orElse(existingManager.getAvatar());
+
+            // Cập nhật các trường nếu có giá trị, giữ nguyên nếu không có
+            existingManager.setFirstName(Optional.ofNullable(managerRequest.getFirstName()).orElse(existingManager.getFirstName()));
+            existingManager.setLastName(Optional.ofNullable(managerRequest.getLastName()).orElse(existingManager.getLastName()));
+            existingManager.setEmail(Optional.ofNullable(managerRequest.getEmail()).orElse(existingManager.getEmail()));
+            existingManager.setPhoneNumber(Optional.ofNullable(managerRequest.getPhoneNumber()).orElse(existingManager.getPhoneNumber()));
+            existingManager.setAddress(Optional.ofNullable(managerRequest.getAddress()).orElse(existingManager.getAddress()));
+
+            // Nếu có password mới thì encode, không thì giữ nguyên
+            Optional.ofNullable(managerRequest.getPassword())
+                    .ifPresent(password -> existingManager.setPassword(passwordEncoder.encode(password)));
+
+            existingManager.setAvatar(imageUrl);
+            existingManager.setBirthday(Optional.ofNullable(managerRequest.getBirthday()).orElse(existingManager.getBirthday()));
+            existingManager.setUpdatedAt(LocalDateTime.now()); // Chỉ cập nhật thời gian cập nhật
+
+            return managerRepository.save(existingManager);
         } catch (Exception e) {
             throw new RuntimeException("Update Manager failed", e);
         }
     }
+
+
+//    @CachePut(value="manager",key="#id")
+//    public Manager updateManager(String id, ManagerRequest managerRequest) {
+//        getManagerById(id);
+//        Role role = roleService.getRoleById(managerRequest.getRoleID());
+//
+//        try {
+//            String imageUrl = cloudinaryService.uploadImage(managerRequest.getAvatar(),null,"avatarManager");
+//
+//            Manager manager = Manager.builder()
+//                    .id(managerRequest.get_id())
+//                    .roleID(role.getId())
+//                    .firstName(managerRequest.getFirstName())
+//                    .lastName(managerRequest.getLastName())
+//                    .email(managerRequest.getEmail())
+//                    .phoneNumber(managerRequest.getPhoneNumber())
+//                    .address(managerRequest.getAddress())
+//                    .password(passwordEncoder.encode(managerRequest.getPassword()))
+//                    .avatar(imageUrl)
+//                    .birthday(managerRequest.getBirthday())
+//                    .createdAt(LocalDateTime.now())
+//                    .updatedAt(LocalDateTime.now())
+//                    .build();
+//            manager.setId(id);
+//            return managerRepository.save(manager);
+//        } catch (Exception e) {
+//            throw new RuntimeException("Update Manager failed", e);
+//        }
+//    }
 
     @CacheEvict(value="manager",key="#id")
     public Manager deleteManager(String id) {

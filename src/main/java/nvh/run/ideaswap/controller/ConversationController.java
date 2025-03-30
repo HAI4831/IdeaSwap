@@ -37,12 +37,12 @@ public class ConversationController {
         );
     }
     @GetMapping("/{userId}")
-    public ResponseEntity<?> getConversationByUserId(@PathVariable String userId) {
+    public ResponseEntity<?> getConversationsByUserId(@PathVariable String userId) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
                         "message", "Retrieve Conversation successfully",
-                        "conversation", conversationsService.getConversationByUserId(userId)
+                        "conversations", conversationsService.getConversationByUserId(userId)
                 )
         );
     }

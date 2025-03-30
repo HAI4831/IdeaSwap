@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -101,32 +102,37 @@ public class BannerService {
 
     @CachePut(value = "banner", key = "#id")
     public Banner updateBanner(String id, BannerRequest bannerRequest) {
+        // Tìm manager theo ID
         Manager manager = managerService.getManagerById(bannerRequest.getManagerID());
+
+        // Tìm Banner hiện có trong DB
         Banner banner = getBannerById(id);
-        String imageUrl = cloudinaryService.uploadImage(bannerRequest.getImageBase64(),null,"banner");
-        try {
-            if(imageUrl == null){
-                throw new RuntimeException("Banner image upload failed");
-            }
-            if(banner == null) {
-                throw new RuntimeException("Banner cannot be found");
-            }
-            banner = bannerRepository.save(
-                    Banner.builder()
-                            .id(bannerRequest.getId())
-                            .managerID(manager.getId())
-                            .name(bannerRequest.getName())
-                            .site(bannerRequest.getSite())
-                            .imageUrl(imageUrl)
-                            .createdDate(bannerRequest.getCreatedDate())
-                            .updatedDate(LocalDateTime.now())
-                            .build()
-            );
-        } catch (Exception e) {
-            throw new RuntimeException("Update banner failed",e);
+        if (banner == null) {
+            throw new RuntimeException("Banner cannot be found");
         }
-        return banner;
+
+        // Upload ảnh mới (nếu có)
+        Optional<String> optionalImageUrl = Optional.ofNullable(bannerRequest.getImageBase64())
+                .map(base64 -> cloudinaryService.uploadImage(base64, null, "banner"));
+
+        try {
+            // Cập nhật các giá trị mới vào banner đã tìm được
+            banner.setManagerID(manager.getId());
+            banner.setName(bannerRequest.getName());
+            banner.setSite(bannerRequest.getSite());
+
+            // Cập nhật ảnh mới nếu tồn tại, giữ nguyên nếu không có ảnh mới
+            optionalImageUrl.ifPresent(banner::setImageUrl);
+
+            banner.setUpdatedDate(LocalDateTime.now()); // Chỉ cập nhật updatedDate
+
+            // Lưu lại banner đã chỉnh sửa
+            return bannerRepository.save(banner);
+        } catch (Exception e) {
+            throw new RuntimeException("Update banner failed", e);
+        }
     }
+
 
     @CacheEvict(value = "banner", key = "#id")
 //    @CacheEvict(value = "banners", allEntries = true)

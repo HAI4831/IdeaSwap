@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -87,25 +88,19 @@ public class RoleService {
         return role;
     }
 
-    @CachePut(value = "role",key = "#roleRequest.id",condition = "#roleRequest.id!=null")
+    @CachePut(value = "role", key = "#id", condition = "#id != null")
     public Role updateRole(String id, RoleRequest roleRequest) {
-        Role roleUpdating;
-        roleUpdating=getRoleById(id); // Kiểm tra role tồn tại
-        Role roleUpdated;
-        try {
-            roleUpdated = roleRepository.save(
-                    Role.builder()
-                            .id(id)
-                            .name(roleRequest.name())
-                            .createdAt(roleUpdating.getCreatedAt())
-                            .updatedAt(LocalDateTime.now())
-                    .build()
-            );
-        } catch (Exception e) {
-            throw new RuntimeException("Update role failed",e);
-        }
-        return roleUpdated;
+        // Lấy Role hiện tại từ DB
+        Role existingRole = roleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Role not found with id: " + id));
+
+        // Cập nhật các trường nếu có giá trị mới, giữ nguyên nếu null
+        Optional.ofNullable(roleRequest.name()).ifPresent(existingRole::setName);
+        existingRole.setUpdatedAt(LocalDateTime.now()); // Chỉ cập nhật thời gian sửa đổi
+
+        return roleRepository.save(existingRole);
     }
+
 
     @CacheEvict(value = "role",key = "#id",condition = "#id!=null")
     public Role deleteRole(String id) {

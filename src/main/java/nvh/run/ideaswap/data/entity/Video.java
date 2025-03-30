@@ -18,7 +18,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 //c2
-@Document(collection = "Videos")
+@Document(collection = "videos")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

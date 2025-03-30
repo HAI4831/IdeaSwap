@@ -22,7 +22,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-import static nvh.run.ideaswap.security.SpringSecurityConfig.PUBLIC_URLS;
+import static nvh.run.ideaswap.config.constants.AppConstants.PUBLIC_URLS;
+
 
 @Slf4j
 @Component
